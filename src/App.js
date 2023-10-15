@@ -1,23 +1,20 @@
-import logo from './logo.svg';
+
+import { Space } from 'antd';
 import './App.css';
+import Header from './components/admin/Header';
+import SideMenu from './components/admin/SideMenu';
+import PageContent from './views/pagecontent/admin';
+import { Footer } from 'antd/es/layout/layout';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Header/>
+      <Space>
+        <SideMenu/>
+        <PageContent/>
+      </Space>
+      <Footer/>
     </div>
   );
 }
