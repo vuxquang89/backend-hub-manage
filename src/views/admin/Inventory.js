@@ -57,7 +57,7 @@ function Inventory() {
             dataIndex: "brand",
           },
           {
-            title: "CAtegory",
+            title: "Category",
             dataIndex: "category",
           },
         ]}

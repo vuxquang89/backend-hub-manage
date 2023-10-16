@@ -21,7 +21,10 @@ function Header() {
       <Image width={40} src=""></Image>
       <Typography.Title>Admin Dashboard</Typography.Title>
       <Space>
-        <Badge count={orders.length}>
+        <Badge
+          // count={orders.length}
+          count={5}
+        >
           <BellFilled
             style={{ fontSize: 24 }}
             onClick={() => {
