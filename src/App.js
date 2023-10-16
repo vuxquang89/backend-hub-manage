@@ -1,20 +1,17 @@
-
-import { Space } from 'antd';
-import './App.css';
-import Header from './components/admin/Header';
-import SideMenu from './components/admin/SideMenu';
-import PageContent from './views/pagecontent/admin';
-import { Footer } from 'antd/es/layout/layout';
+import { Space } from "antd";
+import "./App.css";
+import Header from "./components/admin/Header";
+import SideMenu from "./components/admin/SideMenu";
+import PageContent from "./components/admin/PageContent";
 
 function App() {
   return (
     <div className="App">
-      <Header/>
-      <Space>
-        <SideMenu/>
-        <PageContent/>
-      </Space>
-      <Footer/>
+      <Header />
+      <div className="SideMenuAndPageContent">
+        <SideMenu />
+        <PageContent />
+      </div>
     </div>
   );
 }
