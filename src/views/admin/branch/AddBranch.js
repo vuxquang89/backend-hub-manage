@@ -12,6 +12,7 @@ import { RollbackOutlined } from "@ant-design/icons";
 import { FormProvider, useForm } from "react-hook-form";
 import "./AddBranch.css";
 import { stringToCode } from "../../../utils/stringToCode";
+import { toast } from "react-toastify";
 
 function AddBranch() {
   const methods = useForm();
@@ -21,6 +22,7 @@ function AddBranch() {
   const onSubmit = methods.handleSubmit((data) => {
     console.log(data);
     methods.reset();
+    toast.success("Thêm mới thành công");
     setSuccess(true);
   });
 

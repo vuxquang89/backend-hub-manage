@@ -1,22 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
 import "./EditUser.css";
 import {
   MailOutlined,
   PhoneOutlined,
-  EnvironmentOutlined,
-  CalendarOutlined,
   UserOutlined,
+  RollbackOutlined,
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
+import { FormProvider, useForm } from "react-hook-form";
+import {
+  fullname_validation,
+  email_validation,
+  phone_validation,
+} from "../../../utils/inputUserValidations";
+import Input from "../../../components/input/Input";
 
 function EditUser() {
+  const methods = useForm();
+  const [success, setSuccess] = useState(false);
+
+  const onSubmit = methods.handleSubmit((data) => {
+    console.log(data);
+    methods.reset();
+
+    setSuccess(true);
+  });
+
   return (
     <div className="user ps-12 pe-12">
       <div className="userTitleContainer">
-        <h4 className="userTitle">Edit User</h4>
-        <Link to="/admin/users/add">
-          <button className="userAddButton">Create</button>
-        </Link>
+        <h4 className="userTitle">Chỉnh sửa User</h4>
+        <div className="buttonContainer">
+          <Link to="/admin/users/add">
+            <button className="userAddButton">Thêm mới</button>
+          </Link>
+          <RollbackOutlined className="buttonRollBack" />
+        </div>
       </div>
       <div className="userContainer">
         <div className="userShow">
@@ -27,21 +46,16 @@ function EditUser() {
               className="userShowImg"
             />
             <div className="userShowTopTitle">
-              <span className="userShowUsername">Anna Becker</span>
-              <span className="userShowUserTitle">Software Engineer</span>
+              <span className="userShowUsername">DUY</span>
             </div>
           </div>
           <div className="userShowBottom">
-            <span className="userShowTitle">Account Details</span>
+            <span className="userShowTitle">Chi tiết tài khoản</span>
             <div className="userShowInfo">
               <UserOutlined className="userShowIcon" />
-              <span className="userShowInfoTitle">annabeck99</span>
+              <span className="userShowInfoTitle">duy</span>
             </div>
-            <div className="userShowInfo">
-              <CalendarOutlined className="userShowIcon" />
-              <span className="userShowInfoTitle">10.12.1999</span>
-            </div>
-            <span className="userShowTitle">Contact Details</span>
+
             <div className="userShowInfo">
               <PhoneOutlined className="userShowIcon" />
               <span className="userShowInfoTitle">+1 123 456 67</span>
@@ -50,71 +64,32 @@ function EditUser() {
               <MailOutlined className="userShowIcon" />
               <span className="userShowInfoTitle">annabeck99@gmail.com</span>
             </div>
-            <div className="userShowInfo">
-              <EnvironmentOutlined className="userShowIcon" />
-              <span className="userShowInfoTitle">New York | USA</span>
-            </div>
           </div>
         </div>
         <div className="userUpdate">
-          <span className="userUpdateTitle">Edit</span>
-          <form className="userUpdateForm">
-            <div className="userUpdateLeft">
-              <div className="userUpdateItem">
-                <label>Username</label>
-                <input
-                  type="text"
-                  placeholder="annabeck99"
-                  className="userUpdateInput"
-                />
+          <span className="userUpdateTitle">Thông tin chỉnh sửa</span>
+          <FormProvider {...methods}>
+            <form className="userUpdateForm">
+              <div className="userUpdateLeft">
+                <div className="userUpdateItem">
+                  <Input {...fullname_validation} className="userUpdateInput" />
+                </div>
+                <div className="userUpdateItem">
+                  <Input {...email_validation} className="userUpdateInput" />
+                </div>
+                <div className="userUpdateItem">
+                  <Input {...phone_validation} className="userUpdateInput" />
+                </div>
+                <div className="userUpdateItem">
+                  <button onClick={onSubmit} className="userUpdateButton">
+                    Cập nhật
+                  </button>
+                </div>
               </div>
-              <div className="userUpdateItem">
-                <label>Full Name</label>
-                <input
-                  type="text"
-                  placeholder="Anna Becker"
-                  className="userUpdateInput"
-                />
-              </div>
-              <div className="userUpdateItem">
-                <label>Email</label>
-                <input
-                  type="text"
-                  placeholder="annabeck99@gmail.com"
-                  className="userUpdateInput"
-                />
-              </div>
-              <div className="userUpdateItem">
-                <label>Phone</label>
-                <input
-                  type="text"
-                  placeholder="+1 123 456 67"
-                  className="userUpdateInput"
-                />
-              </div>
-              <div className="userUpdateItem">
-                <label>Address</label>
-                <input
-                  type="text"
-                  placeholder="New York | USA"
-                  className="userUpdateInput"
-                />
-              </div>
-            </div>
-            <div className="userUpdateRight">
-              <div className="userUpdateUpload">
-                <img
-                  className="userUpdateImg"
-                  src="https://images.pexels.com/photos/1152994/pexels-photo-1152994.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
-                  alt=""
-                />
-
-                <input type="file" id="file" style={{ display: "none" }} />
-              </div>
-              <button className="userUpdateButton">Update</button>
-            </div>
-          </form>
+            </form>
+          </FormProvider>
         </div>
+        <div className="f-1"></div>
       </div>
     </div>
   );

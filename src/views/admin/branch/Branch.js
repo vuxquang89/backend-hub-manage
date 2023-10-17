@@ -4,6 +4,7 @@ import { Typography, Space, Table, Flex } from "antd";
 import { Link } from "react-router-dom";
 import { DeleteOutlined } from "@ant-design/icons";
 import { listBranch } from "../../../API/dummyData";
+import { toast } from "react-toastify";
 
 function Branch() {
   const [loading, setLoading] = useState(false);
@@ -23,7 +24,7 @@ function Branch() {
     let data = dataSource;
 
     data = data.filter((item) => item.branchId !== record.branchId);
-
+    toast.success("Xóa thành công");
     setDataSource(data);
   };
 

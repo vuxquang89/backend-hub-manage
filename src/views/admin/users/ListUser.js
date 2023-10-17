@@ -4,6 +4,7 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { userRows } from "../../../API/dummyData";
 import { Link, useLocation } from "react-router-dom";
 import "./ListUser.css";
+import { toast } from "react-toastify";
 
 function ListUser() {
   const [loading, setLoading] = useState(false);
@@ -23,7 +24,7 @@ function ListUser() {
     let data = dataSource;
     console.log(record.id);
     data = data.filter((item) => item.id !== record.id);
-
+    toast.success("Xóa thành công");
     setDataSource(data);
   };
 
@@ -32,7 +33,7 @@ function ListUser() {
       <Flex justify="space-between" align="center">
         <Typography.Title level={4}>List User</Typography.Title>
         <Link to="/admin/users/add">
-          <button className="btnAddUser">Create</button>
+          <button className="btnAddUser">Thêm mới</button>
         </Link>
       </Flex>
       <Table
@@ -50,16 +51,21 @@ function ListUser() {
             dataIndex: "username",
           },
           {
-            title: "Transaction",
-            dataIndex: "transaction",
+            title: "Fullname",
+            dataIndex: "fullname",
           },
           {
             title: "Email",
             dataIndex: "email",
           },
           {
-            title: "Status",
-            dataIndex: "status",
+            title: "Phone",
+            dataIndex: "phone",
+          },
+
+          {
+            title: "Role",
+            dataIndex: "role",
           },
           {
             title: "Action",

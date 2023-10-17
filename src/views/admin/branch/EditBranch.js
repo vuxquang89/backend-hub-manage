@@ -108,8 +108,13 @@ function EditBranch() {
                     className="userUpdateInput"
                   />
                 </div>
+                <div className="userUpdateItem">
+                  <button onClick={onSubmit} className="userUpdateButton">
+                    Cập nhật
+                  </button>
+                </div>
               </div>
-              <div className="userUpdateRight">
+              {/* <div className="userUpdateRight">
                 <div className="userUpdateUpload">
                   <img
                     className="userUpdateImg"
@@ -119,13 +124,12 @@ function EditBranch() {
 
                   <input type="file" id="file" style={{ display: "none" }} />
                 </div>
-                <button onClick={onSubmit} className="userUpdateButton">
-                  Cập nhật
-                </button>
-              </div>
+                
+              </div> */}
             </form>
           </FormProvider>
         </div>
+        <div className="f-1"></div>
       </div>
     </div>
   );
