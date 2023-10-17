@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Table, Avatar } from "antd";
+import { Typography, Table, Avatar, Space, Button, Flex } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { userRows } from "../../API/dummyData";
+import { userRows } from "../../../API/dummyData";
 import { Link, useLocation } from "react-router-dom";
 import "./ListUser.css";
 
@@ -28,8 +28,13 @@ function ListUser() {
   };
 
   return (
-    <div>
-      <Typography.Title level={4}>List User</Typography.Title>
+    <div className="ps-12">
+      <Flex justify="space-between" align="center">
+        <Typography.Title level={4}>List User</Typography.Title>
+        <Link to="/admin/users/add">
+          <button className="btnAddUser">Create</button>
+        </Link>
+      </Flex>
       <Table
         loading={loading}
         columns={[
@@ -62,7 +67,7 @@ function ListUser() {
             dataIndex: "id",
             render: (text, record) => (
               <>
-                <Link to={"/users/" + record.id + "/edit"}>
+                <Link to={"/admin/users/" + record.id}>
                   <button
                     className="btnUserEdit"
                     onClick={() => {

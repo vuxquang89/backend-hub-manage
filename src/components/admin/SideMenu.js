@@ -35,23 +35,23 @@ function SideMenu() {
           {
             label: "Dashboard",
             icon: <AppstoreOutlined />,
-            key: "/",
+            key: "/admin",
           },
           {
-            label: "Inventory",
+            label: "Chi nhánh",
             icon: <ShopOutlined />,
-            key: "/inventory",
+            key: "/admin/branch",
           },
           {
             label: "Orders",
             icon: <ShoppingCartOutlined />,
-            key: "/orders",
+            key: "/admin/orders",
           },
 
           {
             label: "Users",
             icon: <UserOutlined />,
-            key: "/users",
+            key: "/admin/users",
           },
         ]}
       />

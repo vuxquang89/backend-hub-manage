@@ -90,3 +90,48 @@ export const userRows = [
     transaction: "$120.00",
   },
 ];
+
+export const listBranch = [
+  {
+    branchId: "cn_1",
+    branchName: "Chi nhánh 1",
+    deputyTechnicalDirector: "Mr Oanh",
+    emailDeputyTechnicalDirector: "oanh@gmail.com",
+    phoneDeputyTechnicalDirector: "0901810223",
+  },
+  {
+    branchId: "cn_2",
+    branchName: "Chi nhánh 2",
+    deputyTechnicalDirector: "Mr Oanh",
+    emailDeputyTechnicalDirector: "oanh@gmail.com",
+    phoneDeputyTechnicalDirector: "0901810223",
+  },
+  {
+    branchId: "cn_3",
+    branchName: "Chi nhánh 3",
+    deputyTechnicalDirector: "Mr Oanh",
+    emailDeputyTechnicalDirector: "oanh@gmail.com",
+    phoneDeputyTechnicalDirector: "0901810223",
+  },
+  {
+    branchId: "cn_4",
+    branchName: "Chi nhánh 4",
+    deputyTechnicalDirector: "Mr Oanh",
+    emailDeputyTechnicalDirector: "oanh@gmail.com",
+    phoneDeputyTechnicalDirector: "0901810223",
+  },
+  {
+    branchId: "cn_5",
+    branchName: "Chi nhánh 5",
+    deputyTechnicalDirector: "Mr Oanh",
+    emailDeputyTechnicalDirector: "oanh@gmail.com",
+    phoneDeputyTechnicalDirector: "0901810223",
+  },
+  {
+    branchId: "cn_6",
+    branchName: "Chi nhánh 6",
+    deputyTechnicalDirector: "Mr Oanh",
+    emailDeputyTechnicalDirector: "oanh@gmail.com",
+    phoneDeputyTechnicalDirector: "0901810223",
+  },
+];

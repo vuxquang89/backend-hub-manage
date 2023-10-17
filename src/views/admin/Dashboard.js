@@ -8,7 +8,7 @@ import { getOrders } from "../../API";
 class DashBoard extends React.Component {
   render() {
     return (
-      <Space size={20} direction="vertical">
+      <Space size={20} direction="vertical" className="ps-12">
         <Typography.Title level={4}>DashBoard</Typography.Title>
         <Space direction="horizontal">
           <DashBoardCard title={"Orders"} value={1234} />

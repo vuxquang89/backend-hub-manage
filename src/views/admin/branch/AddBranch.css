@@ -1,0 +1,23 @@
+.inputAdd {
+  height: 20px;
+  padding: 10px;
+  border: 1px solid gray;
+  border-radius: 5px;
+}
+
+.titleContainer {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.btnRollBack {
+  color: white;
+  background-color: #ff7c00;
+  border: none;
+  padding: 7px 10px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-right: 10px;
+}

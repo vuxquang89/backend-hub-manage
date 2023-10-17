@@ -2,7 +2,7 @@ import { Typography, Space, Table, Avatar, Rate } from "antd";
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import { getInventory } from "../../API";
+import { getInventory } from "../../../API";
 
 function Inventory() {
   const [loading, setLoading] = useState(false);
@@ -17,7 +17,7 @@ function Inventory() {
   }, []);
 
   return (
-    <Space size={20} direction="vertical">
+    <Space size={20} direction="vertical" className="ps-12">
       <Typography.Title level={4}>Inventory</Typography.Title>
       <Table
         loading={loading}

@@ -13,5 +13,17 @@
   background-color: rgba(0, 0, 0, 0.05);
 }
 
-.BoxItem {
+.Card {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.CardItem {
+  flex: 1;
+  margin: 0 20px;
+  padding: 30px;
+  border-radius: 10px;
+  cursor: pointer;
+  -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
 }
