@@ -6,7 +6,7 @@ import {
   UserOutlined,
   RollbackOutlined,
 } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FormProvider, useForm } from "react-hook-form";
 import {
   fullname_validation,
@@ -14,8 +14,10 @@ import {
   phone_validation,
 } from "../../../utils/inputUserValidations";
 import Input from "../../../components/input/Input";
+import avatar from "../../../assets/images/user.png";
 
 function EditUser() {
+  let navigate = useNavigate();
   const methods = useForm();
   const [success, setSuccess] = useState(false);
 
@@ -34,17 +36,16 @@ function EditUser() {
           <Link to="/admin/users/add">
             <button className="userAddButton">Thêm mới</button>
           </Link>
-          <RollbackOutlined className="buttonRollBack" />
+          <RollbackOutlined
+            onClick={() => navigate(-1)}
+            className="buttonRollBack"
+          />
         </div>
       </div>
       <div className="userContainer">
         <div className="userShow">
           <div className="userShowTop">
-            <img
-              src="https://images.pexels.com/photos/1152994/pexels-photo-1152994.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
-              alt=""
-              className="userShowImg"
-            />
+            <img src={avatar} alt="" className="userShowImg" />
             <div className="userShowTopTitle">
               <span className="userShowUsername">DUY</span>
             </div>
@@ -68,6 +69,13 @@ function EditUser() {
         </div>
         <div className="userUpdate">
           <span className="userUpdateTitle">Thông tin chỉnh sửa</span>
+          <div className="mt-5">
+            {success && (
+              <p className="flex items-center gap-1 mb-5 font-semibold text-red-500">
+                Form has been submitted successfully
+              </p>
+            )}
+          </div>
           <FormProvider {...methods}>
             <form className="userUpdateForm">
               <div className="userUpdateLeft">

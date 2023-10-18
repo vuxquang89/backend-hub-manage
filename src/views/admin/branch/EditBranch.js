@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   MailOutlined,
   PhoneOutlined,
@@ -15,8 +15,10 @@ import {
   phone_validation,
   email_validation,
 } from "../../../utils/inputBranchValidations";
+import home from "../../../assets/images/home.jpg";
 
 function EditBranch() {
+  let navigate = useNavigate();
   const methods = useForm();
   const [success, setSuccess] = useState(false);
 
@@ -36,17 +38,16 @@ function EditBranch() {
             <button className="userAddButton">Thêm mới</button>
           </Link>
 
-          <RollbackOutlined className="buttonRollBack" />
+          <RollbackOutlined
+            onClick={() => navigate(-1)}
+            className="buttonRollBack"
+          />
         </div>
       </div>
       <div className="userContainer">
         <div className="userShow">
           <div className="userShowTop">
-            <img
-              src="https://images.pexels.com/photos/1152994/pexels-photo-1152994.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
-              alt=""
-              className="userShowImg"
-            />
+            <img src={home} alt="" className="userShowImg" />
             <div className="userShowTopTitle">
               <span className="userShowUsername">Chi nhánh 1</span>
               <span className="userShowUserTitle">cn_1</span>

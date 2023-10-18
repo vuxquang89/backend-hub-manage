@@ -10,11 +10,13 @@ import {
 } from "../../../utils/inputBranchValidations";
 import { RollbackOutlined } from "@ant-design/icons";
 import { FormProvider, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import "./AddBranch.css";
 import { stringToCode } from "../../../utils/stringToCode";
 import { toast } from "react-toastify";
 
 function AddBranch() {
+  let navigate = useNavigate();
   const methods = useForm();
   const [success, setSuccess] = useState(false);
   const [code, setCode] = useState("");
@@ -38,7 +40,12 @@ function AddBranch() {
     <div className="newUser ps-12">
       <div className="titleContainer">
         <h4 className="newUserTitle">Thêm chi nhánh mới</h4>
-        <button className="btnRollBack">
+        <button
+          onClick={() => {
+            navigate(-1);
+          }}
+          className="btnRollBack"
+        >
           <RollbackOutlined /> Quay lại
         </button>
       </div>

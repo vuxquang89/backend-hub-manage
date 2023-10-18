@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./AddUser.css";
 import { FormProvider, useForm } from "react-hook-form";
 import { RollbackOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 import Input from "../../../components/input/Input";
 import {
   username_validation,
@@ -12,6 +13,7 @@ import {
 } from "../../../utils/inputUserValidations";
 
 function AddUser() {
+  let navigate = useNavigate();
   const methods = useForm();
   const [success, setSuccess] = useState(false);
 
@@ -25,7 +27,7 @@ function AddUser() {
     <div className="newUser ps-12">
       <div className="titleContainer">
         <h4 className="newUserTitle">Thêm mới User</h4>
-        <button className="btnRollBack">
+        <button onClick={() => navigate(-1)} className="btnRollBack">
           <RollbackOutlined /> Quay lại
         </button>
       </div>

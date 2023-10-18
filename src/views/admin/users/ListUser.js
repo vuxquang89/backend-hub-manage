@@ -5,6 +5,7 @@ import { userRows } from "../../../API/dummyData";
 import { Link, useLocation } from "react-router-dom";
 import "./ListUser.css";
 import { toast } from "react-toastify";
+import avatar from "../../../assets/images/user.png";
 
 function ListUser() {
   const [loading, setLoading] = useState(false);
@@ -43,7 +44,7 @@ function ListUser() {
             title: "Avatar",
             dataIndex: "avatar",
             render: (link) => {
-              return <Avatar src={link} />;
+              return <Avatar src={avatar} />;
             },
           },
           {
