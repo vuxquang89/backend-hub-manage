@@ -9,6 +9,8 @@ import AddUser from "../../views/admin/users/AddUser";
 import Branch from "../../views/admin/branch/Branch";
 import AddBranch from "../../views/admin/branch/AddBranch";
 import EditBranch from "../../views/admin/branch/EditBranch";
+import ListHub from "../../views/admin/hub/ListHub";
+import DetailHub from "../../views/admin/hub/DetailHub";
 
 class AppRouters extends React.Component {
   render() {
@@ -26,6 +28,9 @@ class AppRouters extends React.Component {
         <Route path="/admin/branch" element={<Branch />} />
         <Route path="/admin/branch/add" element={<AddBranch />} />
         <Route path="/admin/branch/:id" element={<EditBranch />} />
+
+        <Route path="/admin/hub" element={<ListHub />} />
+        <Route path="/admin/hub/:id" element={<DetailHub />} />
       </Routes>
     );
   }

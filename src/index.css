@@ -87,3 +87,13 @@ code {
   cursor: pointer;
   color: #ff4800;
 }
+
+.buttonEditCell {
+  border: none;
+  border-radius: 10px;
+  padding: 5px 10px;
+  background-color: #b0863b;
+  color: white;
+  cursor: pointer;
+  margin-right: 20px;
+}

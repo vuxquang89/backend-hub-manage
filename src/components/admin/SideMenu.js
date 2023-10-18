@@ -43,9 +43,9 @@ function SideMenu() {
             key: "/admin/branch",
           },
           {
-            label: "Orders",
+            label: "Hub",
             icon: <ShoppingCartOutlined />,
-            key: "/admin/orders",
+            key: "/admin/hub",
           },
 
           {

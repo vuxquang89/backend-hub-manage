@@ -143,3 +143,62 @@ export const listBranch = [
     phoneDeputyTechnicalDirector: "0901810223",
   },
 ];
+
+export const listHub = [
+  {
+    hubId: "hub_cn_1",
+    hubName: "Hub chi nhánh 1",
+    hubAddress: "Quận 1",
+    hubCity: "Hồ Chí Minh",
+    hubManagerName: "Minh",
+    hubManagerPhone: "0901993448",
+  },
+  {
+    hubId: "hub_cn_2",
+    hubName: "Hub chi nhánh 2",
+    hubAddress: "Quận 2",
+    hubCity: "Hồ Chí Minh",
+    hubManagerName: "Minh",
+    hubManagerPhone: "0901993448",
+  },
+  {
+    hubId: "hub_cn_3",
+    hubName: "Hub chi nhánh 3",
+    hubAddress: "Quận 3",
+    hubCity: "Hồ Chí Minh",
+    hubManagerName: "Minh",
+    hubManagerPhone: "0901993448",
+  },
+  {
+    hubId: "hub_cn_4",
+    hubName: "Hub chi nhánh 4",
+    hubAddress: "Quận 4",
+    hubCity: "Hồ Chí Minh",
+    hubManagerName: "Minh",
+    hubManagerPhone: "0901993448",
+  },
+  {
+    hubId: "hub_cn_5",
+    hubName: "Hub chi nhánh 5",
+    hubAddress: "Quận 5",
+    hubCity: "Hồ Chí Minh",
+    hubManagerName: "Minh",
+    hubManagerPhone: "0901993448",
+  },
+  {
+    hubId: "hub_cn_6",
+    hubName: "Hub chi nhánh 6",
+    hubAddress: "Quận 6",
+    hubCity: "Hồ Chí Minh",
+    hubManagerName: "Minh",
+    hubManagerPhone: "0901993448",
+  },
+  {
+    hubId: "hub_cn_7",
+    hubName: "Hub chi nhánh 7",
+    hubAddress: "Quận 7",
+    hubCity: "Hồ Chí Minh",
+    hubManagerName: "Minh",
+    hubManagerPhone: "0901993448",
+  },
+];

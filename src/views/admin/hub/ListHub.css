@@ -1,0 +1,17 @@
+.inputEditCell {
+  font-weight: 400;
+  line-height: 20px;
+  width: 120px;
+  border-radius: 5px;
+  border: 1px solid #939393;
+  color: #8d8b8b;
+}
+
+.buttonViewCell {
+  margin-right: 10px;
+  color: #dc9009;
+}
+
+.formListHub p {
+  font-size: 12px;
+}
