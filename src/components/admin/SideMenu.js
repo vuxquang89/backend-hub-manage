@@ -4,8 +4,9 @@ import { Menu } from "antd";
 import {
   AppstoreOutlined,
   ShopOutlined,
-  ShoppingCartOutlined,
+  HomeOutlined,
   UserOutlined,
+  ApiOutlined,
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
@@ -39,15 +40,19 @@ function SideMenu() {
           },
           {
             label: "Chi nhánh",
-            icon: <ShopOutlined />,
+            icon: <HomeOutlined />,
             key: "/admin/branch",
           },
           {
             label: "Hub",
-            icon: <ShoppingCartOutlined />,
+            icon: <ShopOutlined />,
             key: "/admin/hub",
           },
-
+          {
+            label: "Thiết bị",
+            icon: <ApiOutlined />,
+            key: "/admin/device",
+          },
           {
             label: "Users",
             icon: <UserOutlined />,

@@ -4,7 +4,7 @@ import { findInputError, isFormInvalid } from "../../utils";
 import cn from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
 
-const Input = ({
+const InputCustom = ({
   name,
   label,
   type,
@@ -89,4 +89,4 @@ const Input = ({
   );
 };
 
-export default Input;
+export default InputCustom;

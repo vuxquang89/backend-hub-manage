@@ -13,7 +13,7 @@ import {
   email_validation,
   phone_validation,
 } from "../../../utils/inputUserValidations";
-import Input from "../../../components/input/Input";
+import InputCustom from "../../../components/input/Input";
 import avatar from "../../../assets/images/user.png";
 
 function EditUser() {
@@ -80,13 +80,22 @@ function EditUser() {
             <form className="userUpdateForm">
               <div className="userUpdateLeft">
                 <div className="userUpdateItem">
-                  <Input {...fullname_validation} className="userUpdateInput" />
+                  <InputCustom
+                    {...fullname_validation}
+                    className="userUpdateInput"
+                  />
                 </div>
                 <div className="userUpdateItem">
-                  <Input {...email_validation} className="userUpdateInput" />
+                  <InputCustom
+                    {...email_validation}
+                    className="userUpdateInput"
+                  />
                 </div>
                 <div className="userUpdateItem">
-                  <Input {...phone_validation} className="userUpdateInput" />
+                  <InputCustom
+                    {...phone_validation}
+                    className="userUpdateInput"
+                  />
                 </div>
                 <div className="userUpdateItem">
                   <button onClick={onSubmit} className="userUpdateButton">

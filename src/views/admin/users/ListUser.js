@@ -1,15 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Table, Avatar, Space, Button, Flex } from "antd";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import {
+  Typography,
+  Table,
+  Avatar,
+  Space,
+  Input,
+  Flex,
+  Popconfirm,
+  message,
+} from "antd";
+import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
 import { userRows } from "../../../API/dummyData";
 import { Link, useLocation } from "react-router-dom";
 import "./ListUser.css";
 import { toast } from "react-toastify";
 import avatar from "../../../assets/images/user.png";
+import SpanLoading from "../../../components/loading/SpanLoading";
 
 function ListUser() {
   const [loading, setLoading] = useState(false);
   const [dataSource, setDataSource] = useState([]);
+  const [searchedText, setSearchText] = useState("");
+  const [editingId, setEditingId] = useState("");
+  const [formLoading, setFormLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -21,12 +34,27 @@ function ListUser() {
     // });
   }, []);
 
-  const handleDeleteOnClick = (record) => {
+  const confirmDeleteUser = (e) => {
+    console.log(">>>comfirm delete", editingId);
+    setFormLoading(true);
     let data = dataSource;
-    console.log(record.id);
-    data = data.filter((item) => item.id !== record.id);
-    toast.success("Xóa thành công");
+
+    data = data.filter((item) => item.id !== editingId);
+    //toast.success("Xóa thành công");
     setDataSource(data);
+
+    setTimeout(() => {
+      setFormLoading(false);
+      message.success("Xóa thành công");
+    }, 2000);
+  };
+  const cancel = (e) => {
+    console.log(e);
+    //message.error('Click on No');
+  };
+
+  const handleDeleteOnClick = (record) => {
+    setEditingId(record.id);
   };
 
   return (
@@ -37,6 +65,18 @@ function ListUser() {
           <button className="btnAddUser">Thêm mới</button>
         </Link>
       </Flex>
+      <Space style={{ marginBottom: 8 }}>
+        <Input
+          placeholder="Search..."
+          onSearch={(value) => {
+            setSearchText(value);
+          }}
+          onChange={(e) => {
+            setSearchText(e.target.value);
+          }}
+          prefix={<SearchOutlined />}
+        />
+      </Space>
       <Table
         loading={loading}
         columns={[
@@ -50,6 +90,21 @@ function ListUser() {
           {
             title: "Username",
             dataIndex: "username",
+            filteredValue: [searchedText],
+            onFilter: (value, record) => {
+              return (
+                String(record.username)
+                  .toLowerCase()
+                  .includes(value.toLowerCase()) ||
+                String(record.fullname)
+                  .toLowerCase()
+                  .includes(value.toLowerCase()) ||
+                String(record.email)
+                  .toLowerCase()
+                  .includes(value.toLowerCase()) ||
+                String(record.phone).toLowerCase().includes(value.toLowerCase())
+              );
+            },
           },
           {
             title: "Fullname",
@@ -84,10 +139,20 @@ function ListUser() {
                     Edit
                   </button>
                 </Link>
-                <DeleteOutlined
-                  className="btnUserDelete"
-                  onClick={() => handleDeleteOnClick(record)}
-                />
+
+                <Popconfirm
+                  title="Alarm"
+                  description="Bạn có chắc muốn xóa?"
+                  onConfirm={confirmDeleteUser}
+                  onCancel={cancel}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <DeleteOutlined
+                    className="btnUserDelete"
+                    onClick={() => handleDeleteOnClick(record)}
+                  />
+                </Popconfirm>
               </>
             ),
           },
@@ -97,6 +162,7 @@ function ListUser() {
           pageSize: 5,
         }}
       ></Table>
+      {formLoading && <SpanLoading />}
     </div>
   );
 }

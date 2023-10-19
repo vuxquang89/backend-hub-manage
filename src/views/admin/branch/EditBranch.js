@@ -8,7 +8,7 @@ import {
   RollbackOutlined,
 } from "@ant-design/icons";
 import { FormProvider, useForm } from "react-hook-form";
-import Input from "../../../components/input/Input";
+import InputCustom from "../../../components/input/Input";
 import {
   name_validation,
   address_branch_validation,
@@ -94,17 +94,26 @@ function EditBranch() {
             >
               <div className="userUpdateLeft">
                 <div className="userUpdateItem">
-                  <Input {...name_validation} className="userUpdateInput" />
+                  <InputCustom
+                    {...name_validation}
+                    className="userUpdateInput"
+                  />
                 </div>
 
                 <div className="userUpdateItem">
-                  <Input {...email_validation} className="userUpdateInput" />
+                  <InputCustom
+                    {...email_validation}
+                    className="userUpdateInput"
+                  />
                 </div>
                 <div className="userUpdateItem">
-                  <Input {...phone_validation} className="userUpdateInput" />
+                  <InputCustom
+                    {...phone_validation}
+                    className="userUpdateInput"
+                  />
                 </div>
                 <div className="userUpdateItem">
-                  <Input
+                  <InputCustom
                     {...address_branch_validation}
                     className="userUpdateInput"
                   />

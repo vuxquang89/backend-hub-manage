@@ -1,14 +1,15 @@
 import "./Branch.css";
 import { useEffect, useState } from "react";
-import { Typography, Space, Table, Flex } from "antd";
+import { Typography, Space, Table, Flex, Input } from "antd";
 import { Link } from "react-router-dom";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
 import { listBranch } from "../../../API/dummyData";
 import { toast } from "react-toastify";
 
 function Branch() {
   const [loading, setLoading] = useState(false);
   const [dataSource, setDataSource] = useState([]);
+  const [searchedText, setSearchText] = useState("");
 
   useEffect(() => {
     setLoading(true);
@@ -36,12 +37,38 @@ function Branch() {
           <button className="btnAddUser">Thêm mới</button>
         </Link>
       </Flex>
+      <Space>
+        <Input
+          placeholder="Search..."
+          onSearch={(value) => {
+            setSearchText(value);
+          }}
+          onChange={(e) => {
+            setSearchText(e.target.value);
+          }}
+          prefix={<SearchOutlined />}
+        />
+      </Space>
       <Table
         loading={loading}
         columns={[
           {
             title: "Tên chi nhánh",
             dataIndex: "branchName",
+            filteredValue: [searchedText],
+            onFilter: (value, record) => {
+              return (
+                String(record.branchName)
+                  .toLowerCase()
+                  .includes(value.toLowerCase()) ||
+                String(record.deputyTechnicalDirector)
+                  .toLowerCase()
+                  .includes(value.toLowerCase()) ||
+                String(record.emailDeputyTechnicalDirector)
+                  .toLowerCase()
+                  .includes(value.toLowerCase())
+              );
+            },
           },
           {
             title: "Giám Đốc KT",

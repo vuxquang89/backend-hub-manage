@@ -3,7 +3,7 @@ import "./AddUser.css";
 import { FormProvider, useForm } from "react-hook-form";
 import { RollbackOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import Input from "../../../components/input/Input";
+import InputCustom from "../../../components/input/Input";
 import {
   username_validation,
   fullname_validation,
@@ -41,19 +41,19 @@ function AddUser() {
       <FormProvider {...methods}>
         <form className="newUserForm">
           <div className="newUserItem">
-            <Input {...username_validation} className="inputAdd" />
+            <InputCustom {...username_validation} className="inputAdd" />
           </div>
           <div className="newUserItem">
-            <Input {...fullname_validation} className="inputAdd" />
+            <InputCustom {...fullname_validation} className="inputAdd" />
           </div>
           <div className="newUserItem">
-            <Input {...email_validation} className="inputAdd" />
+            <InputCustom {...email_validation} className="inputAdd" />
           </div>
           <div className="newUserItem">
-            <Input {...password_validation} className="inputAdd" />
+            <InputCustom {...password_validation} className="inputAdd" />
           </div>
           <div className="newUserItem">
-            <Input {...phone_validation} className="inputAdd" />
+            <InputCustom {...phone_validation} className="inputAdd" />
           </div>
 
           <button onClick={onSubmit} className="newUserButton">

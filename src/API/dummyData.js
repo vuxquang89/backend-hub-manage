@@ -1,7 +1,7 @@
 export const userRows = [
   {
     id: 1,
-    username: "duy",
+    username: "duy1",
     email: "jon@gmail.com",
     fullname: "Duy",
     phone: "0901992993",
@@ -13,7 +13,7 @@ export const userRows = [
     avatar:
       "https://images.pexels.com/photos/1152994/pexels-photo-1152994.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
     email: "jon@gmail.com",
-    fullname: "Duy",
+    fullname: "Duy 2",
     phone: "0901992993",
     role: "MANGER",
   },
@@ -23,7 +23,7 @@ export const userRows = [
     avatar:
       "https://images.pexels.com/photos/1152994/pexels-photo-1152994.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
     email: "jon@gmail.com",
-    fullname: "Duy",
+    fullname: "Duy 3",
     phone: "0901992993",
     role: "MANGER",
   },
@@ -33,7 +33,7 @@ export const userRows = [
     avatar:
       "https://images.pexels.com/photos/1152994/pexels-photo-1152994.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
     email: "jon@gmail.com",
-    fullname: "Duy",
+    fullname: "Duy 4",
     phone: "0901992993",
     role: "MANGER",
   },
@@ -110,9 +110,9 @@ export const listBranch = [
   {
     branchId: "cn_2",
     branchName: "Chi nhánh 2",
-    deputyTechnicalDirector: "Mr Oanh",
-    emailDeputyTechnicalDirector: "oanh@gmail.com",
-    phoneDeputyTechnicalDirector: "0901810223",
+    deputyTechnicalDirector: "Mr Oanh2",
+    emailDeputyTechnicalDirector: "oanh2@gmail.com",
+    phoneDeputyTechnicalDirector: "0901810213",
   },
   {
     branchId: "cn_3",
@@ -200,5 +200,36 @@ export const listHub = [
     hubCity: "Hồ Chí Minh",
     hubManagerName: "Minh",
     hubManagerPhone: "0901993448",
+  },
+];
+
+export const listDevice = [
+  {
+    id: "1",
+    deviceName: "Điều hòa 1",
+  },
+  {
+    id: "2",
+    deviceName: "Điều hòa 2",
+  },
+  {
+    id: "3",
+    deviceName: "Điều hòa 3",
+  },
+  {
+    id: "4",
+    deviceName: "Điều hòa 4",
+  },
+  {
+    id: "5",
+    deviceName: "Điều hòa 5",
+  },
+  {
+    id: "6",
+    deviceName: "Điều hòa 6",
+  },
+  {
+    id: "7",
+    deviceName: "Điều hòa 7",
   },
 ];

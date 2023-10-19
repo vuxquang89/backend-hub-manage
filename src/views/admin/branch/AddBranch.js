@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Input from "../../../components/input/Input";
+import InputCustom from "../../../components/input/Input";
 import {
   name_validation,
   name_branch_validation,
@@ -59,14 +59,14 @@ function AddBranch() {
       <FormProvider {...methods}>
         <form className="newUserForm">
           <div className="newUserItem">
-            <Input
+            <InputCustom
               {...name_branch_validation}
               className="inputAdd"
               onChange={(e) => handleNameBranchOnChange(e)}
             />
           </div>
           <div className="newUserItem">
-            <Input
+            <InputCustom
               {...code_branch_validation}
               className="inputAdd"
               onChange={(e) => handleCodeBranchOnChange(e)}
@@ -74,17 +74,17 @@ function AddBranch() {
             />
           </div>
           <div className="newUserItem">
-            <Input {...address_branch_validation} className="inputAdd" />
+            <InputCustom {...address_branch_validation} className="inputAdd" />
           </div>
           <div className="newUserItem">
-            <Input {...name_validation} className="inputAdd" />
+            <InputCustom {...name_validation} className="inputAdd" />
           </div>
           <div className="newUserItem">
-            <Input {...email_validation} className="inputAdd" />
+            <InputCustom {...email_validation} className="inputAdd" />
           </div>
 
           <div className="newUserItem">
-            <Input {...phone_validation} className="inputAdd" />
+            <InputCustom {...phone_validation} className="inputAdd" />
           </div>
 
           <button onClick={onSubmit} className="newUserButton">
