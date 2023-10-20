@@ -233,3 +233,30 @@ export const listDevice = [
     deviceName: "Điều hòa 7",
   },
 ];
+
+export const listHubDevice = [
+  {
+    id: "1",
+    branch: [
+      {
+        branchId: "cn_1",
+        branchName: "Chi nhanh 1",
+        hub: [
+          {
+            hubId: "BTE_BTE",
+            hubName: "Ben tre",
+            hubManagerName: "Minh Luan",
+            hubManagerPhone: "0903882883",
+            hubManager: "DUY",
+            device: [
+              {
+                id: "1",
+                deviceName: "UPS",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+];
