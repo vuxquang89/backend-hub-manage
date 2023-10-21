@@ -12,6 +12,7 @@ import EditBranch from "../../views/admin/branch/EditBranch";
 import ListHub from "../../views/admin/hub/ListHub";
 import DetailHub from "../../views/admin/hub/DetailHub";
 import ListDevice from "../../views/admin/device/ListDevice";
+import Home from "../../views/user/Home";
 
 class AppRouters extends React.Component {
   render() {
@@ -34,6 +35,8 @@ class AppRouters extends React.Component {
         <Route path="/admin/hub/:id" element={<DetailHub />} />
 
         <Route path="/admin/device" element={<ListDevice />} />
+
+        <Route path="/" element={<Home />} />
       </Routes>
     );
   }

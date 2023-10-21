@@ -5,12 +5,13 @@ import SideMenu from "./components/admin/SideMenu";
 import PageContent from "./components/admin/PageContent";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import UserHeader from "./views/components/Header";
 
 function App() {
   return (
     <div className="App">
-      <Header />
-      <div className="SideMenuAndPageContent">
+      {/* <Header /> */}
+      {/* <div className="SideMenuAndPageContent">
         <SideMenu />
         <PageContent />
         <ToastContainer
@@ -26,8 +27,11 @@ function App() {
           theme="light"
         >
           {/* Same as */}
-        </ToastContainer>
-      </div>
+      {/* </ToastContainer> */}
+      {/* </div> */}
+
+      <UserHeader />
+      <PageContent />
     </div>
   );
 }
