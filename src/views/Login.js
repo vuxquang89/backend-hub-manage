@@ -8,7 +8,7 @@ function Login() {
   };
   return (
     <div className="appBg">
-      <Form className="loginForm">
+      <Form className="loginForm" onFinish={login}>
         <Typography.Title>Đăng nhập</Typography.Title>
         <Form.Item
           rules={[
@@ -17,7 +17,6 @@ function Login() {
               message: "Cần nhập tên đăng nhập",
             },
           ]}
-          onFinish={login}
           label="Tên đăng nhập"
           name={"username"}
         >
@@ -33,7 +32,7 @@ function Login() {
           label="Mật khẩu"
           name={"password"}
         >
-          <Input placeholder="Mật khểu" />
+          <Input.Password placeholder="Mật khểu" />
         </Form.Item>
         <Button type="primary" htmlType="submit">
           Đăng nhập

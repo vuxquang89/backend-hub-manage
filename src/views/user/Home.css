@@ -1,0 +1,98 @@
+.headerMenu {
+  width: 100%;
+  position: fixed;
+}
+
+.container {
+  margin-top: 40px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+table {
+  text-align: left;
+  position: relative;
+  border-collapse: collapse;
+  z-index: -1;
+}
+th,
+td {
+  padding: 0.25rem;
+}
+tr.red th {
+  background: red;
+  color: white;
+}
+tr.green th {
+  background: green;
+  color: white;
+}
+tr.purple th {
+  background: purple;
+  color: white;
+}
+thead th {
+  background: white;
+  position: sticky;
+  top: 40px; /* Don't forget this, required for the stickiness */
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
+
+tbody th {
+  text-align: center;
+  background: white;
+  position: sticky;
+  top: 128px; /* Don't forget this, required for the stickiness */
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
+
+.tableDevice,
+td,
+th {
+  border: 1px solid #333;
+  font-size: 12px;
+}
+
+.tableDevice thead th {
+  background-color: rgb(3, 150, 22);
+}
+
+.UPS {
+  background-color: #b4c6e7;
+}
+
+.B-UPS {
+  background-color: #dbdbdb;
+}
+
+.MPD {
+  background-color: #bdd7ee;
+}
+
+.TD {
+  background-color: #ffe699;
+}
+
+.ML {
+  background-color: #c6e0b4;
+}
+
+.deviceTitle {
+  background-color: #f22a2a;
+}
+
+.buttonIconDelete {
+  margin-left: 5px;
+  margin-right: 5px;
+  color: red;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.buttonIconEdit {
+  margin-left: 5px;
+  margin-right: 5px;
+  color: #ffcc04;
+  font-size: 15px;
+  cursor: pointer;
+}

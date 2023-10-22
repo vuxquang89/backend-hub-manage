@@ -7,7 +7,7 @@ function HeaderMenu({ isInLine = false }) {
       style={{
         backgroundColor: "darkorange",
         color: "white",
-        fontSize: 24,
+        fontSize: 18,
         border: "none",
       }}
       mode={isInLine ? "inline" : "horizontal"}
@@ -19,6 +19,10 @@ function HeaderMenu({ isInLine = false }) {
         {
           label: "Quản lý thiết bị",
           key: "device",
+        },
+        {
+          label: "Contact US",
+          key: "contact",
         },
       ]}
     ></Menu>

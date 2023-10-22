@@ -13,6 +13,7 @@ import ListHub from "../../views/admin/hub/ListHub";
 import DetailHub from "../../views/admin/hub/DetailHub";
 import ListDevice from "../../views/admin/device/ListDevice";
 import Home from "../../views/user/Home";
+import Login from "../../views/Login";
 
 class AppRouters extends React.Component {
   render() {
@@ -37,6 +38,7 @@ class AppRouters extends React.Component {
         <Route path="/admin/device" element={<ListDevice />} />
 
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     );
   }
