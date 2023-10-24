@@ -2,12 +2,18 @@ import { useRef, useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthProvider";
 import "./Login.css";
 import { Button, Form, Input, Typography, message } from "antd";
+import useAuth from "../hooks/useAuth";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import axios from "../API/axios";
 const LOGIN_URL = "/api/auth/login";
 
 function Login() {
-  const { setAuth } = useContext(AuthContext);
+  const { setAuth } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
+
   const errRef = useRef();
 
   const [username, setUsername] = useState("");
@@ -27,9 +33,13 @@ function Login() {
 
       const accessToken = response?.data?.accessToken;
       const roles = response?.data?.roles;
-      //const username = e.username;
+
+      console.log(roles);
 
       setAuth({ username, roles, accessToken });
+      setUsername("");
+      setPassword("");
+      navigate(from, { replace: true });
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No server response");

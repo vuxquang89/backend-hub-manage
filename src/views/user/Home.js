@@ -4,8 +4,14 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Popconfirm, message } from "antd";
 import ModalEditCellDevice from "./ModalEditCellDevice";
 import { useForm } from "react-hook-form";
+import { useNavigate, Link } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthProvider";
 
 const Home = () => {
+  const { setAuth } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const methods = useForm();
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -52,10 +58,32 @@ const Home = () => {
     //message.error('Click on No');
   };
 
+  const logout = async () => {
+    // if used in more components, this should be in context
+    // axios to /logout endpoint
+    setAuth({});
+    navigate("/linkpage");
+  };
+
   return (
     <>
       <div className="container">
         <h4>Home page</h4>
+
+        <br />
+        <p>You are logged in!</p>
+        <br />
+        <Link to="/editor">Go to the Editor page</Link>
+        <br />
+        <Link to="/admin">Go to the Admin page</Link>
+        <br />
+        <Link to="/lounge">Go to the Lounge</Link>
+        <br />
+        <Link to="/linkpage">Go to the link page</Link>
+
+        <div className="flexGrow">
+          <button onClick={logout}>Sign Out</button>
+        </div>
 
         <table className="tableDevice">
           <thead>
