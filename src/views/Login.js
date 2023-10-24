@@ -1,13 +1,13 @@
 import { useRef, useState, useEffect, useContext } from "react";
-import AuthContext from "../context/AuthProvider";
+import { AuthContext } from "../context/AuthProvider";
 import "./Login.css";
 import { Button, Form, Input, Typography, message } from "antd";
 
 import axios from "../API/axios";
-const LOGIN_URL = "/auth";
+const LOGIN_URL = "/api/auth/login";
 
 function Login() {
-  const [setAuth] = useContext(AuthContext);
+  const { setAuth } = useContext(AuthContext);
   const errRef = useRef();
 
   const [username, setUsername] = useState("");
@@ -20,25 +20,22 @@ function Login() {
 
   const login = async (e) => {
     console.log(e);
-    try {
-      const response = await axios.post(LOGIN_URL, JSON.stringify(e), {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-      });
 
+    try {
+      const response = await axios.post(LOGIN_URL, { username, password });
       console.log(JSON.stringify(response?.data));
 
       const accessToken = response?.data?.accessToken;
       const roles = response?.data?.roles;
-      const username = e.username;
+      //const username = e.username;
 
       setAuth({ username, roles, accessToken });
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No server response");
-      } else if (err.response?.status == 400) {
+      } else if (err.response?.status === 400) {
         setErrMsg("Missing username or password");
-      } else if (err.response?.status == 401) {
+      } else if (err.response?.status === 401) {
         setErrMsg("Unauthorized");
       } else {
         setErrMsg("Login failed");
@@ -69,7 +66,10 @@ function Login() {
           label="Tên đăng nhập"
           name={"username"}
         >
-          <Input placeholder="Tên đăng nhập" />
+          <Input
+            placeholder="Tên đăng nhập"
+            onChange={(e) => setUsername(e.target.value)}
+          />
         </Form.Item>
         <Form.Item
           rules={[
@@ -81,7 +81,10 @@ function Login() {
           label="Mật khẩu"
           name={"password"}
         >
-          <Input.Password placeholder="Mật khểu" />
+          <Input.Password
+            placeholder="Mật khểu"
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </Form.Item>
         <Button type="primary" htmlType="submit">
           Đăng nhập
