@@ -5,7 +5,7 @@ import SideMenu from "./components/admin/SideMenu";
 import PageContent from "./components/admin/PageContent";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import UserHeader from "./views/components/Header";
+import UserHeader from "./components/user/Header";
 
 function App() {
   return (

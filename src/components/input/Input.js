@@ -13,6 +13,7 @@ const InputCustom = ({
   tickValidation,
   validation,
   multiline,
+  pattern,
   className,
   onChange,
   value,
@@ -83,6 +84,7 @@ const InputCustom = ({
           {...register(name, validation)}
           onChange={onChange}
           value={value}
+          pattern={pattern}
         />
       )}
     </div>

@@ -1,0 +1,112 @@
+.main-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.title-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.space-align-start {
+  align-items: flex-start;
+}
+
+.main-content h5 {
+  margin-top: 0;
+}
+
+.updateItem {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.updateItem > label {
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.updateInput {
+  border: none;
+  width: 250px;
+  height: 30px;
+  border-bottom: 1px solid gray;
+}
+
+.bottomForm {
+  margin-top: 20px;
+}
+
+.pe-50 {
+  padding-right: 50px;
+}
+
+.f-e {
+  float: right;
+}
+/*-----card left---------------*/
+.cardShowTop {
+  display: flex;
+  align-items: center;
+}
+
+.cardShowTopTitle {
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+}
+
+.cardShowImg {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.cardShowName {
+  font-weight: 600;
+}
+
+.cardShowTitle {
+  font-weight: 300;
+}
+
+.cardShowBottom {
+  margin-top: 20px;
+}
+
+.cardShowInfo {
+  display: flex;
+  align-items: center;
+  margin: 20px 0px;
+  color: #444;
+}
+
+.cardShowTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgb(175, 170, 170);
+}
+
+.cardShowInfoTitle {
+  margin-left: 10px;
+}
+
+.cardShowIcon {
+  font-size: 16px !important;
+}
+
+/*-------------card right----------------*/
+.buttonView {
+  /* width: 80px; */
+  border: none;
+  padding: 5px;
+  background-color: teal;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
+  font-size: 16px;
+  margin-right: 10px;
+}

@@ -13,7 +13,6 @@ import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
 import { userRows } from "../../../API/dummyData";
 import { Link, useLocation } from "react-router-dom";
 import "./ListUser.css";
-import { toast } from "react-toastify";
 import avatar from "../../../assets/images/user.png";
 import SpanLoading from "../../../components/loading/SpanLoading";
 

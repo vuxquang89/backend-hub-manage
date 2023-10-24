@@ -14,6 +14,7 @@ import DetailHub from "../../views/admin/hub/DetailHub";
 import ListDevice from "../../views/admin/device/ListDevice";
 import Home from "../../views/user/Home";
 import Login from "../../views/Login";
+import DetailDevice from "../../views/user/DetailDevice";
 
 class AppRouters extends React.Component {
   render() {
@@ -39,6 +40,8 @@ class AppRouters extends React.Component {
 
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+
+        <Route path="/device/:id" element={<DetailDevice />} />
       </Routes>
     );
   }
