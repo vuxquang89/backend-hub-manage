@@ -18,6 +18,9 @@ import Lounge from "./components/Lounge";
 import Unauthorized from "./components/Unauthorized";
 import LinkPage from "./components/LinkPage";
 import ListDevice from "./views/admin/device/ListDevice";
+import Branch from "./views/admin/branch/Branch";
+import AddBranch from "./views/admin/branch/AddBranch";
+import EditBranch from "./views/admin/branch/EditBranch";
 
 const ROLES = {
   User: "ROLE_USER",
@@ -72,6 +75,9 @@ function App() {
         <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
           <Route path="admin" element={<DashBoard />} />
           <Route path="admin/device" element={<ListDevice />} />
+          <Route path="admin/branch" element={<Branch />} />
+          <Route path="admin/branch/add" element={<AddBranch />} />
+          <Route path="admin/branch/:id" element={<EditBranch />} />
         </Route>
 
         <Route

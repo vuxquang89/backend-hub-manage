@@ -1,8 +1,8 @@
 export const name_branch_validation = {
-  name: "nameBranch",
+  name: "branchName",
   label: "Tên Chi Nhánh",
   type: "text",
-  id: "nameBranch",
+  id: "branchName",
   placeholder: "Tên Chi Nhánh",
   tickValidation: "*",
   validation: {

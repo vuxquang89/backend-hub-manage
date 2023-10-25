@@ -3,7 +3,7 @@ import useAuth from "./useAuth";
 
 const useRefreshToken = () => {
   const { auth, setAuth } = useAuth();
-  console.log(">>>check refreshToken", auth.refreshToken);
+  // console.log(">>>check refreshToken", auth.refreshToken);
   const refresh = async () => {
     const response = await axios.post(
       "/api/token/refresh",
