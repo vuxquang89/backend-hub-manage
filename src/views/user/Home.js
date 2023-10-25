@@ -84,7 +84,7 @@ const Home = () => {
         <Link to="/admin/branch">Go to the Admin Branch page</Link>
         <br />
         <br />
-        <Link to="/admin/user">Go to the Admin Users page</Link>
+        <Link to="/admin/users">Go to the Admin Users page</Link>
         <br />
         <Link to="/lounge">Go to the Lounge</Link>
         <br />

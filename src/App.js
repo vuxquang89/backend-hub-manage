@@ -21,6 +21,9 @@ import ListDevice from "./views/admin/device/ListDevice";
 import Branch from "./views/admin/branch/Branch";
 import AddBranch from "./views/admin/branch/AddBranch";
 import EditBranch from "./views/admin/branch/EditBranch";
+import ListUser from "./views/admin/users/ListUser";
+import EditUser from "./views/admin/users/EditUser";
+import AddUser from "./views/admin/users/AddUser";
 
 const ROLES = {
   User: "ROLE_USER",
@@ -78,6 +81,9 @@ function App() {
           <Route path="admin/branch" element={<Branch />} />
           <Route path="admin/branch/add" element={<AddBranch />} />
           <Route path="admin/branch/:id" element={<EditBranch />} />
+          <Route path="admin/users" element={<ListUser />} />
+          <Route path="admin/users/:id" element={<EditUser />} />
+          <Route path="admin/users/add" element={<AddUser />} />
         </Route>
 
         <Route

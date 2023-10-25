@@ -11,49 +11,76 @@ import {
 } from "antd";
 import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
 import { userRows } from "../../../API/dummyData";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./ListUser.css";
+import { toast } from "react-toastify";
 import avatar from "../../../assets/images/user.png";
 import SpanLoading from "../../../components/loading/SpanLoading";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 
 function ListUser() {
+  const axiosPrivate = useAxiosPrivate();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [dataSource, setDataSource] = useState([]);
   const [searchedText, setSearchText] = useState("");
-  const [editingId, setEditingId] = useState("");
+  const [id, setId] = useState("");
   const [formLoading, setFormLoading] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
-    setDataSource(userRows);
-    setLoading(false);
-    // getInventory().then((res) => {
-    //   setDataSource(res.products);
-    //   setLoading(false);
-    // });
+    loadData();
   }, []);
 
-  const confirmDeleteUser = (e) => {
-    console.log(">>>comfirm delete", editingId);
-    setFormLoading(true);
-    let data = dataSource;
+  const loadData = async () => {
+    setLoading(true);
+    await axiosPrivate
+      .get("/api/users")
+      .then((res) => {
+        console.log(">>>>get list users", res.data);
+        setDataSource(res.data);
 
-    data = data.filter((item) => item.id !== editingId);
-    //toast.success("Xóa thành công");
-    setDataSource(data);
-
-    setTimeout(() => {
-      setFormLoading(false);
-      message.success("Xóa thành công");
-    }, 2000);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log("get list users error", err);
+        setLoading(false);
+        navigate("/login", { state: { from: location }, replace: true });
+      });
   };
+
+  const confirmDeleteUser = async () => {
+    setFormLoading(true);
+    await axiosPrivate
+      .delete(`/api/users/${id}`)
+      .then((res) => {
+        console.log(">>>>> delete user result", res.data);
+        let result = res.data;
+        if (result) {
+          let data = dataSource;
+
+          data = data.filter((item) => item.id !== id);
+          toast.success("Xóa thành công");
+          setDataSource(data);
+        } else {
+          toast.warning("Không thể xóa");
+        }
+        setFormLoading(false);
+      })
+      .catch((err) => {
+        console.log(">>>>>delete user error", err);
+        toast.error("Không thể xóa");
+        setFormLoading(false);
+      });
+  };
+
   const cancel = (e) => {
     console.log(e);
     //message.error('Click on No');
   };
 
   const handleDeleteOnClick = (record) => {
-    setEditingId(record.id);
+    setId(record.id);
   };
 
   return (
