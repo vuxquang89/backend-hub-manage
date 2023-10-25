@@ -32,11 +32,12 @@ function Login() {
       console.log(JSON.stringify(response?.data));
 
       const accessToken = response?.data?.accessToken;
+      const refreshToken = response?.data?.refreshToken;
       const roles = response?.data?.roles;
 
       console.log(roles);
 
-      setAuth({ username, roles, accessToken });
+      setAuth({ username, roles, accessToken, refreshToken });
       setUsername("");
       setPassword("");
       navigate(from, { replace: true });

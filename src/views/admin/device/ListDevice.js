@@ -19,7 +19,14 @@ import { deviceName_validation } from "../../../utils/inputDeviceValidations";
 import SpanLoading from "../../../components/loading/SpanLoading";
 import ModalAddDevice from "./ModalAddDevice";
 
-function ListDevice() {
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import { useNavigate, useLocation } from "react-router-dom";
+
+const ListDevice = () => {
+  const axiosPrivate = useAxiosPrivate();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const methods = useForm();
   const tableMethods = useForm();
   const [loading, setLoading] = useState(false);
@@ -29,21 +36,65 @@ function ListDevice() {
   const [isLoading, setIsLoading] = useState(false);
   const [editingId, setEditingId] = useState("");
   const [editing, setEditing] = useState(false);
+  const [valueDeviceName, setValueDeviceName] = useState("");
   const [searchedText, setSearchText] = useState("");
 
   useEffect(() => {
+    let isMounted = true;
+    const controller = new AbortController();
+
     setLoading(true);
     // getInventory().then((res) => {
     //   setDataSource(res.products);
     //   setLoading(false);
     // });
-    setDataSource(listDevice);
-    setLoading(false);
+
+    const getDevices = async () => {
+      try {
+        const response = await axiosPrivate.get("/api/device");
+        console.log(">>>>get device", response.data);
+        isMounted && setDataSource(response.data);
+
+        setLoading(false);
+      } catch (err) {
+        console.log("get device error", err);
+        setLoading(false);
+        navigate("/login", { state: { from: location }, replace: true });
+      }
+    };
+
+    getDevices();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
   }, []);
 
-  const confirmDeleteDevice = (e) => {
+  const confirmDeleteDevice = async () => {
     console.log(">>>comfirm delete", editingId);
     setFormLoading(true);
+
+    await axiosPrivate
+      .delete(`/api/device/${editingId}`)
+      .then((res) => {
+        let result = res.data;
+
+        let data = dataSource;
+        data = data.filter((item) => item.id !== editingId);
+        // toast.success("Xóa thành công");
+        setDataSource(data);
+
+        setFormLoading(false);
+        message.success("Xóa thành công");
+        console.log(">>>delete data response", result);
+      })
+      .catch((err) => {
+        console.log(">>>> delete error", err);
+        setFormLoading(false);
+        message.error("Xóa thất bại");
+      });
+
     let data = dataSource;
 
     data = data.filter((item) => item.id !== editingId);
@@ -63,23 +114,80 @@ function ListDevice() {
   const handleDeleteDeviceOnClick = (record) => {
     setEditingId(record.id);
     setEditing(false);
+    setValueDeviceName("");
   };
 
   const showModal = () => {
     setOpenModal(true);
   };
 
+  const save = async (data) => {
+    // console.log(">>>>>>>>", Object.values(data));
+    console.log(">>>>>>>>>>", data.deviceName);
+    const deviceName = data.deviceName;
+    setIsLoading(true);
+    const response = await axiosPrivate
+      .post("/api/device", { deviceName })
+      .then((res) => {
+        let result = res.data;
+        setDataSource([...dataSource, result]);
+        setIsLoading(false);
+        console.log(">>> data response", result);
+      })
+      .catch((e) => {
+        setIsLoading(false);
+        console.log(`get data error ${e}`);
+      });
+  };
+
   const handleOkOnClick = methods.handleSubmit((data) => {
     //setModalText('The modal will be closed after two seconds');
     console.log(data);
-    setIsLoading(true);
-    setTimeout(() => {
-      setOpenModal(false);
-      setIsLoading(false);
-      toast.success("Thêm mới thành công");
-      methods.reset();
-    }, 2000);
+
+    save(data);
+    // setTimeout(() => {
+    //   setOpenModal(false);
+    //   setIsLoading(false);
+    //   toast.success("Thêm mới thành công");
+    //   methods.reset();
+    // }, 2000);
   });
+
+  const updateDeviceArray = dataSource.map((device) => {
+    if (device.id === editingId) {
+      return { ...device, deviceName: valueDeviceName };
+    } else {
+      return device;
+    }
+  });
+
+  const saveEdit = async () => {
+    setFormLoading(true);
+    await axiosPrivate
+      .put(`/api/device/${editingId}`, { valueDeviceName })
+      .then((res) => {
+        let result = res.data;
+
+        updateDeviceArray();
+
+        setIsLoading(false);
+        setFormLoading(false);
+        setEditing(false);
+        setEditingId("");
+        tableMethods.reset();
+        console.log(">>> edit save data response", result);
+      })
+      .catch((e) => {
+        setIsLoading(false);
+        console.log(`get data error ${e}`);
+      });
+    // setTimeout(() => {
+    //   setFormLoading(false);
+    //   setEditing(false);
+    //   setEditingId("");
+    //   tableMethods.reset();
+    // }, 3000);
+  };
 
   const handleCancelOnClick = () => {
     console.log("Clicked cancel button");
@@ -89,6 +197,7 @@ function ListDevice() {
   const handleCancelEditCell = () => {
     setEditing(false);
     setEditingId("");
+    setValueDeviceName("");
     tableMethods.reset();
   };
 
@@ -139,6 +248,10 @@ function ListDevice() {
                         {...deviceName_validation}
                         className="inputEditCell"
                         placeholder={text + " *"}
+                        value={valueDeviceName}
+                        onChange={(e) => {
+                          setValueDeviceName(e.target.value);
+                        }}
                       />
                     ) : (
                       text
@@ -159,13 +272,7 @@ function ListDevice() {
                             onClick={tableMethods.handleSubmit((data) => {
                               console.log(">>>id edit ", record.id);
                               console.log(">>>data edit", data);
-                              setFormLoading(true);
-                              setTimeout(() => {
-                                setFormLoading(false);
-                                setEditing(false);
-                                setEditingId("");
-                                tableMethods.reset();
-                              }, 3000);
+                              saveEdit();
                             })}
                           >
                             Save
@@ -183,6 +290,7 @@ function ListDevice() {
                           onClick={() => {
                             console.log(record);
                             setEditingId(record.id);
+                            setValueDeviceName(record.deviceName);
                             setEditing(true);
                           }}
                         >
@@ -224,6 +332,6 @@ function ListDevice() {
       {formLoading && <SpanLoading />}
     </>
   );
-}
+};
 
 export default ListDevice;

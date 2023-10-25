@@ -77,6 +77,9 @@ const Home = () => {
         <br />
         <Link to="/admin">Go to the Admin page</Link>
         <br />
+        <br />
+        <Link to="/admin/device">Go to the Admin Device page</Link>
+        <br />
         <Link to="/lounge">Go to the Lounge</Link>
         <br />
         <Link to="/linkpage">Go to the link page</Link>

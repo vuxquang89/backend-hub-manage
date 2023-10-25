@@ -17,6 +17,7 @@ import DashBoard from "./views/admin/Dashboard";
 import Lounge from "./components/Lounge";
 import Unauthorized from "./components/Unauthorized";
 import LinkPage from "./components/LinkPage";
+import ListDevice from "./views/admin/device/ListDevice";
 
 const ROLES = {
   User: "ROLE_USER",
@@ -70,6 +71,7 @@ function App() {
 
         <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
           <Route path="admin" element={<DashBoard />} />
+          <Route path="admin/device" element={<ListDevice />} />
         </Route>
 
         <Route
