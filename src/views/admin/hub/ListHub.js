@@ -9,10 +9,9 @@ import {
   message,
   Select,
 } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FormProvider, useForm, useFormState } from "react-hook-form";
 import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
-import { listHub } from "../../../API/dummyData";
 import { toast } from "react-toastify";
 import ModalAddHub from "./ModalAddHub";
 import InputCustom from "../../../components/input/Input";
@@ -24,47 +23,97 @@ import {
   hubManager_validation,
 } from "../../../utils/inputHubValidations";
 import SpanLoading from "../../../components/loading/SpanLoading";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 
 function ListHub() {
+  const axiosPrivate = useAxiosPrivate();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const methods = useForm();
   const tableMethods = useForm();
   const [loading, setLoading] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [dataSource, setDataSource] = useState([]);
+  const [branchList, setBranchList] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [editingId, setEditingId] = useState("");
   const [editing, setEditing] = useState(false);
+  const [branchValue, setBranchValue] = useState("");
+  const [listUserManager, setListUserManager] = useState([]);
 
   const [hubName, setHubName] = useState("");
   const [hubAddress, setHubAddress] = useState("");
   const [hubCity, setHubCity] = useState("");
   const [hubManagerName, setHubManagerName] = useState("");
-  const [hubPhone, setHubPhone] = useState("");
+  const [hubManagerPhone, setHubManagerPhone] = useState("");
+  const [userId, setUserId] = useState("");
 
   useEffect(() => {
-    setLoading(true);
-    // getInventory().then((res) => {
-    //   setDataSource(res.products);
-    //   setLoading(false);
-    // });
-    setDataSource(listHub);
-    setLoading(false);
+    loadData();
+    getBranchList();
   }, []);
 
-  const confirmDeleteHub = (e) => {
+  const loadData = async () => {
+    setLoading(true);
+    await axiosPrivate
+      .get("/api/hub")
+      .then((res) => {
+        console.log(">>>>get list hub", res.data);
+        setDataSource(res.data);
+
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log("get list hub error", err);
+        setLoading(false);
+        navigate("/login", { state: { from: location }, replace: true });
+      });
+  };
+
+  const getBranchList = async () => {
+    await axiosPrivate
+      .get("/api/branch/list")
+      .then((res) => {
+        console.log(">>>>get list branch", res.data);
+        setBranchList(res.data);
+      })
+      .catch((err) => {
+        console.log("get list hub branch", err);
+
+        navigate("/login", { state: { from: location }, replace: true });
+      });
+  };
+
+  const confirmDeleteHub = async () => {
     console.log(">>>comfirm delete", editingId);
+
     setFormLoading(true);
-    let data = dataSource;
 
-    data = data.filter((item) => item.hubId !== editingId);
-    // toast.success("Xóa thành công");
-    setDataSource(data);
+    await axiosPrivate
+      .delete(`/api/hub/${editingId}`)
+      .then((res) => {
+        let result = res.data;
+        if (result) {
+          let data = dataSource;
 
-    setTimeout(() => {
-      setFormLoading(false);
-      message.success("Xóa thành công");
-    }, 2000);
+          data = data.filter((item) => item.hubId !== editingId);
+          // toast.success("Xóa thành công");
+          setDataSource(data);
+
+          message.success("Xóa thành công");
+        } else {
+          message.error("Không thể xóa");
+        }
+        setFormLoading(false);
+        console.log(">>>delete data response", result);
+      })
+      .catch((err) => {
+        console.log(">>>> delete error", err);
+        setFormLoading(false);
+        message.error("Xóa thất bại");
+      });
   };
   const cancel = (e) => {
     console.log(e);
@@ -77,23 +126,30 @@ function ListHub() {
   };
 
   const showModal = () => {
-    setOpenModal(true);
+    getUserManager();
   };
 
   const handleOkOnClick = methods.handleSubmit((data) => {
     //setModalText('The modal will be closed after two seconds');
+    console.log(">>>>>>get branch value", branchValue);
+    console.log(">>>>>>get user id value", userId);
     console.log(data);
-    setIsLoading(true);
-    setTimeout(() => {
-      setOpenModal(false);
-      setIsLoading(false);
-      toast.success("Thêm mới thành công");
-      methods.reset();
-    }, 2000);
+    if (branchValue.length === 0) {
+      toast.warning("Kiểm tra, chưa chọn chi nhánh");
+      return;
+    }
+
+    if (userId.length === 0) {
+      toast.warning("Kiểm tra chưa chọn người phụ trách");
+      return;
+    }
+
+    addNewHub(data);
   });
 
   const handleCancelOnClick = () => {
     console.log("Clicked cancel button");
+    methods.reset();
     setOpenModal(false);
   };
 
@@ -117,12 +173,113 @@ function ListHub() {
     setHubAddress(record.hubAddress);
     setHubCity(record.hubCity);
     setHubManagerName(record.hubManagerName);
-    setHubPhone(record.hubManagerPhone);
+    setHubManagerPhone(record.hubManagerPhone);
   };
 
-  const handleSaveEditCell = (data) => {
+  const handleSaveEditCell = async (record) => {
     console.log(">> Save input edit cell:  ", editingId);
-    console.log("data ", data);
+    setFormLoading(true);
+    await axiosPrivate
+      .post(`/api/hub/${editingId}`, {
+        hubName,
+        hubAddress,
+        hubCity,
+        hubManagerName,
+        hubManagerPhone,
+      })
+      .then((res) => {
+        console.log(">>>>>>>> save edit ", res.data);
+        updateHubArray();
+        setFormLoading(false);
+        tableMethods.reset();
+      })
+      .catch((err) => {
+        setFormLoading(false);
+      });
+  };
+
+  const updateHubArray = dataSource.map((hub) => {
+    if (hub.hubId === editingId) {
+      return {
+        ...hub,
+        hubName: hubName,
+        hubAddress: hubAddress,
+        hubCity: hubCity,
+        hubManagerName: hubManagerName,
+        hubManagerPhone: hubManagerPhone,
+      };
+    } else {
+      return hub;
+    }
+  });
+
+  const addNewHub = async (record) => {
+    setIsLoading(true);
+    await axiosPrivate
+      .post("/api/hub", {
+        hubId: record.hubId,
+        userId: userId,
+        branchId: branchValue,
+        hubName: record.hubName,
+        hubAddress: record.hubAddress,
+        hubCity: record.hubCity,
+        hubManagerName: record.hubManagerName,
+        hubManagerPhone: record.hubManagerPhone,
+      })
+      .then((res) => {
+        console.log(">>>>> add new hub", res.data);
+        setDataSource([...dataSource, res.data]);
+        setOpenModal(false);
+        setIsLoading(false);
+        methods.reset();
+        toast.success("Thêm mới thành công");
+      })
+      .catch((err) => {
+        console.log(">>>>> add new hub error", err);
+        toast.error("Lỗi. Không thể thêm mới");
+        setIsLoading(false);
+      });
+  };
+
+  /**
+   * get hub by branch
+   */
+  const getHubByBranch = async (branchId) => {
+    setLoading(true);
+    await axiosPrivate
+      .get(`/api/hub/branch/${branchId}`)
+      .then((res) => {
+        console.log(">>>>get list hub", res.data);
+        setDataSource(res.data);
+
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log("get list hub error", err);
+        setLoading(false);
+        navigate("/login", { state: { from: location }, replace: true });
+      });
+  };
+
+  /**
+   * get list user manager
+   */
+  const getUserManager = async () => {
+    setFormLoading(true);
+    methods.reset();
+    await axiosPrivate
+      .get(`/api/users/role/selectoption/2`)
+      .then((res) => {
+        console.log(">>>>get list user manager", res.data);
+        setListUserManager(res.data);
+        setOpenModal(true);
+        setFormLoading(false);
+      })
+      .catch((err) => {
+        console.log("get list user manager error", err);
+        setFormLoading(false);
+        navigate("/login", { state: { from: location }, replace: true });
+      });
   };
 
   return (
@@ -152,35 +309,12 @@ function ListHub() {
                 .toLowerCase()
                 .localeCompare((optionB?.label ?? "").toLowerCase())
             }
-            onChange={(value) => {
-              console.log(">>> check select onchange:", value);
+            onChange={(e, value) => {
+              console.log(">>> check select onchange:", e);
+              getHubByBranch(value.value);
+              setBranchValue(value.value);
             }}
-            options={[
-              {
-                value: "1",
-                label: "Not Identified",
-              },
-              {
-                value: "2",
-                label: "Closed",
-              },
-              {
-                value: "3",
-                label: "Communicated",
-              },
-              {
-                value: "4",
-                label: "Identified",
-              },
-              {
-                value: "5",
-                label: "Resolved",
-              },
-              {
-                value: "6",
-                label: "Cancelled",
-              },
-            ]}
+            options={branchList}
           />
         </Space>
         <FormProvider {...tableMethods}>
@@ -191,6 +325,7 @@ function ListHub() {
                 {
                   title: "Phòng máy",
                   dataIndex: "hubName",
+                  key: "hubName",
                   render: (text, record) => {
                     return record.hubId === editingId && editing ? (
                       <InputCustom
@@ -207,6 +342,7 @@ function ListHub() {
                 {
                   title: "Địa chỉ",
                   dataIndex: "hubAddress",
+                  key: "hubAddress",
                   render: (text, record) => {
                     return record.hubId === editingId && editing ? (
                       <InputCustom
@@ -225,6 +361,7 @@ function ListHub() {
                 {
                   title: "Tỉnh/Thành phố",
                   dataIndex: "hubCity",
+                  key: "hubCity",
                   render: (text, record) => {
                     return record.hubId === editingId && editing ? (
                       <InputCustom
@@ -243,6 +380,7 @@ function ListHub() {
                 {
                   title: "Quản lý PM",
                   dataIndex: "hubManagerName",
+                  key: "hubManagerName",
                   render: (text, record) => {
                     return record.hubId === editingId && editing ? (
                       <InputCustom
@@ -261,15 +399,16 @@ function ListHub() {
                 {
                   title: "SĐT quản lý PM",
                   dataIndex: "hubManagerPhone",
+                  key: "hubManagerPhone",
                   render: (text, record) => {
                     return record.hubId === editingId && editing ? (
                       <InputCustom
                         {...phone_validation}
                         className="inputEditCell"
                         onChange={(e) => {
-                          setHubPhone(e.target.value);
+                          setHubManagerPhone(e.target.value);
                         }}
-                        value={hubPhone}
+                        value={hubManagerPhone}
                       />
                     ) : (
                       text
@@ -287,9 +426,8 @@ function ListHub() {
                           <button
                             className="btnUserEdit"
                             onClick={tableMethods.handleSubmit((data) => {
-                              const hubId = record.hubId;
+                              // const hubId = record.hubId;
 
-                              setFormLoading(true);
                               handleSaveEditCell(data);
                               setTimeout(() => {
                                 setFormLoading(false);
@@ -355,6 +493,12 @@ function ListHub() {
         handleCancelOnClick={handleCancelOnClick}
         isLoading={isLoading}
         methods={methods}
+        branchValue={branchValue}
+        branchList={branchList}
+        listUserManager={listUserManager}
+        setBranchValue={setBranchValue}
+        userId={userId}
+        setUserId={setUserId}
       />
       {formLoading && <SpanLoading />}
     </>

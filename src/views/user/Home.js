@@ -86,6 +86,9 @@ const Home = () => {
         <br />
         <Link to="/admin/users">Go to the Admin Users page</Link>
         <br />
+        <br />
+        <Link to="/admin/hub">Go to the Admin Users page</Link>
+        <br />
         <Link to="/lounge">Go to the Lounge</Link>
         <br />
         <Link to="/linkpage">Go to the link page</Link>

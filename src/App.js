@@ -24,6 +24,8 @@ import EditBranch from "./views/admin/branch/EditBranch";
 import ListUser from "./views/admin/users/ListUser";
 import EditUser from "./views/admin/users/EditUser";
 import AddUser from "./views/admin/users/AddUser";
+import ListHub from "./views/admin/hub/ListHub";
+import DetailHub from "./views/admin/hub/DetailHub";
 
 const ROLES = {
   User: "ROLE_USER",
@@ -84,6 +86,9 @@ function App() {
           <Route path="admin/users" element={<ListUser />} />
           <Route path="admin/users/:id" element={<EditUser />} />
           <Route path="admin/users/add" element={<AddUser />} />
+
+          <Route path="admin/hub" element={<ListHub />} />
+          <Route path="admin/hub/:id" element={<DetailHub />} />
         </Route>
 
         <Route

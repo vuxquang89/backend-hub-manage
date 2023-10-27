@@ -1,17 +1,17 @@
-import React, { useState } from "react";
-import { Modal } from "antd";
+import React, { useEffect, useState } from "react";
+import { Form, Modal, Select } from "antd";
 import { FormProvider } from "react-hook-form";
 import { stringToCode } from "../../../utils/stringToCode";
 
 import Input from "../../../components/input/Input";
 import {
-  name_validation,
-  name_branch_validation,
-  email_validation,
+  hubName_validation,
+  hubAddress_validation,
+  hubManager_validation,
   phone_validation,
-  code_branch_validation,
-  address_branch_validation,
-} from "../../../utils/inputBranchValidations";
+  hubCode_validation,
+  hubCity_validation,
+} from "../../../utils/inputHubValidations";
 
 const ModalAddHub = ({
   open,
@@ -19,8 +19,16 @@ const ModalAddHub = ({
   handleOkOnClick,
   handleCancelOnClick,
   isLoading,
+  branchValue,
+  listUserManager,
+  setBranchValue,
+  userId,
+  setUserId,
+  branchList,
 }) => {
   const [code, setCode] = useState("");
+
+  useEffect(() => {}, []);
 
   const handleNameHubOnChange = (e) => {
     setCode(stringToCode(e.target.value));
@@ -40,36 +48,85 @@ const ModalAddHub = ({
         onCancel={handleCancelOnClick}
       >
         <FormProvider {...methods}>
-          <form className="newUserForm">
+          <Form className="newUserForm">
+            <div className="newUserForm">
+              <Select
+                showSearch
+                style={{
+                  width: 200,
+                }}
+                placeholder="Search to Select"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label ?? "").includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? "")
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? "").toLowerCase())
+                }
+                onChange={(e, value) => {
+                  console.log(">>> check select onchange:", e);
+                  setBranchValue(e);
+                }}
+                options={branchList}
+                value={branchValue}
+              />
+            </div>
+
+            <div className="newUserForm">
+              <Select
+                showSearch
+                style={{
+                  width: 200,
+                }}
+                placeholder="Search to Select"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label ?? "").includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? "")
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? "").toLowerCase())
+                }
+                onChange={(e, value) => {
+                  console.log(">>> check select onchange:", e);
+                  setUserId(e);
+                }}
+                options={listUserManager}
+                value={userId}
+              />
+            </div>
             <div className="newUserItem">
               <Input
-                {...name_branch_validation}
+                {...hubName_validation}
                 className="inputAdd"
                 onChange={(e) => handleNameHubOnChange(e)}
               />
             </div>
             <div className="newUserItem">
               <Input
-                {...code_branch_validation}
+                {...hubCode_validation}
                 className="inputAdd"
                 onChange={(e) => handleCodeHubOnChange(e)}
                 value={code}
               />
             </div>
             <div className="newUserItem">
-              <Input {...address_branch_validation} className="inputAdd" />
+              <Input {...hubAddress_validation} className="inputAdd" />
             </div>
             <div className="newUserItem">
-              <Input {...name_validation} className="inputAdd" />
+              <Input {...hubCity_validation} className="inputAdd" />
             </div>
             <div className="newUserItem">
-              <Input {...email_validation} className="inputAdd" />
+              <Input {...hubManager_validation} className="inputAdd" />
             </div>
 
             <div className="newUserItem">
               <Input {...phone_validation} className="inputAdd" />
             </div>
-          </form>
+          </Form>
         </FormProvider>
       </Modal>
     </>

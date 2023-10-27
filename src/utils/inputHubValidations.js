@@ -1,8 +1,10 @@
 export const hubName_validation = {
   name: "hubName",
+  label: "Tên phòng máy",
+  tickValidation: "*",
   type: "text",
   id: "hubName",
-  placeholder: "Tên phòng máy *",
+  placeholder: "Tên phòng máy",
   validation: {
     required: {
       value: true,
@@ -13,17 +15,42 @@ export const hubName_validation = {
       message: "Tối đa 20 ký tự",
     },
     minLength: {
-      value: 5,
-      message: "Tối thiểu 5 ký tự",
+      value: 3,
+      message: "Tối thiểu 3 ký tự",
+    },
+  },
+};
+
+export const hubCode_validation = {
+  name: "hubId",
+  label: "Mã Hub",
+  type: "text",
+  id: "hubId",
+  placeholder: "Mã Hub",
+  tickValidation: "*",
+  validation: {
+    required: {
+      value: true,
+      message: "Không được để trống",
+    },
+    maxLength: {
+      value: 30,
+      message: "Tối đa 30 ký tự",
+    },
+    minLength: {
+      value: 3,
+      message: "Tối thiểu 3 ký tự",
     },
   },
 };
 
 export const hubAddress_validation = {
   name: "hubAddress",
+  tickValidation: "*",
+  label: "Địa chỉ",
   type: "text",
   id: "hubAddress",
-  placeholder: "Đại chỉ *",
+  placeholder: "Địa chỉ *",
   validation: {
     required: {
       value: true,
@@ -42,9 +69,11 @@ export const hubAddress_validation = {
 
 export const hubCity_validation = {
   name: "hubCity",
+  tickValidation: "*",
+  label: "Tỉnh/Thành phố",
   type: "text",
   id: "hubCity",
-  placeholder: "Tỉnh/Thành phố *",
+  placeholder: "Tỉnh/Thành phố",
   validation: {
     required: {
       value: true,
@@ -64,8 +93,10 @@ export const hubCity_validation = {
 export const hubManager_validation = {
   name: "hubManagerName",
   type: "text",
+  tickValidation: "*",
+  label: "Quản lý PM",
   id: "hubManagerName",
-  placeholder: "Quản lý PM *",
+  placeholder: "Quản lý PM",
   validation: {
     required: {
       value: true,
@@ -85,6 +116,8 @@ export const hubManager_validation = {
 export const phone_validation = {
   name: "hubManagerPhone",
   type: "text",
+  tickValidation: "*",
+  label: "Số điện thoại",
   id: "hubManagerPhone",
   placeholder: "Số điện thoại",
   validation: {

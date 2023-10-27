@@ -94,17 +94,6 @@ const ListDevice = () => {
         setFormLoading(false);
         message.error("Xóa thất bại");
       });
-
-    let data = dataSource;
-
-    data = data.filter((item) => item.id !== editingId);
-    // toast.success("Xóa thành công");
-    setDataSource(data);
-
-    setTimeout(() => {
-      setFormLoading(false);
-      message.success("Xóa thành công");
-    }, 2000);
   };
   const cancel = (e) => {
     console.log(e);
