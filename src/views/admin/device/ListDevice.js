@@ -142,13 +142,17 @@ const ListDevice = () => {
     // }, 2000);
   });
 
-  const updateDeviceArray = dataSource.map((device) => {
-    if (device.id === editingId) {
-      return { ...device, deviceName: valueDeviceName };
-    } else {
-      return device;
-    }
-  });
+  const updateData = async () => {
+    const updateDeviceArray = dataSource.map((device) => {
+      if (device.id === editingId) {
+        return { ...device, deviceName: valueDeviceName };
+      } else {
+        return device;
+      }
+    });
+
+    setDataSource(updateDeviceArray);
+  };
 
   const saveEdit = async () => {
     setFormLoading(true);
@@ -157,7 +161,7 @@ const ListDevice = () => {
       .then((res) => {
         let result = res.data;
 
-        updateDeviceArray();
+        updateData();
 
         setIsLoading(false);
         setFormLoading(false);

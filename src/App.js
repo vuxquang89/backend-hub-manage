@@ -26,6 +26,7 @@ import EditUser from "./views/admin/users/EditUser";
 import AddUser from "./views/admin/users/AddUser";
 import ListHub from "./views/admin/hub/ListHub";
 import DetailHub from "./views/admin/hub/DetailHub";
+import ManageHub from "./views/user/ManageHub";
 
 const ROLES = {
   User: "ROLE_USER",
@@ -74,7 +75,11 @@ function App() {
         </Route>
 
         <Route element={<RequireAuth allowedRoles={[ROLES.Manager]} />}>
-          <Route path="editor" element={<DetailDevice />} />
+          <Route path="manager" element={<ManageHub />} />
+          <Route
+            path="manager/hub/device/:hubDetailId"
+            element={<DetailDevice />}
+          />
         </Route>
 
         <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
