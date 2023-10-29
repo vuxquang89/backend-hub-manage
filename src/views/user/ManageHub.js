@@ -35,18 +35,6 @@ function ManageHub() {
   const [titleForm, setTitleForm] = useState("");
   const [deviceId, setDeviceId] = useState("");
   const [hubId, setHubId] = useState("");
-  const [ratedPower, setRatePower] = useState("");
-  const [loadDuringPowerOutage, setLoadDuringPowerOutage] = useState("");
-  const [batteryQuantity, setBatteryQuantity] = useState("");
-  const [batteryNumber, setBatteryNumber] = useState("");
-  const [batteryCapacity, setBatteryCapacity] = useState("");
-  const [productionTime, setProductionTime] = useState("");
-  const [conductorType, setConductorType] = useState("");
-  const [cbPower, setCBPower] = useState("");
-  const [schneider, setSchneider] = useState("");
-  const [yearInstall, setYearInstall] = useState("");
-  const [currentStatus, setCurrentStatus] = useState("");
-  const [number, setNumber] = useState("");
 
   useEffect(() => {
     loadData();
@@ -69,18 +57,6 @@ function ManageHub() {
   };
 
   const showModal = (dataForm) => {
-    // setRatePower(dataForm.ratedPower);
-    // setLoadDuringPowerOutage(dataForm.loadDuringPowerOutage);
-    // setBatteryQuantity(dataForm.batteryQuantity);
-    // setBatteryNumber(dataForm.batteryNumber);
-    // setBatteryCapacity(dataForm.batteryCapacity);
-    // setProductionTime(dataForm.productionTime);
-    // setConductorType(dataForm.conductorType);
-    // setCBPower(dataForm.cbPower);
-    // setSchneider(dataForm.schneider);
-    // setYearInstall(dataForm.yearInstall);
-    // setCurrentStatus(dataForm.currentStatus);
-    // setNumber(dataForm.number);
     setFormLoading(true);
     setTitleForm(`Thêm mới ${dataForm.deviceName} cho Hub ${dataForm.hubName}`);
     setDeviceId(dataForm.deviceId);
@@ -936,30 +912,6 @@ function ManageHub() {
         handleCancelOnClick={handleCancelOnClick}
         isLoading={isLoading}
         title={titleForm}
-        ratedPower={ratedPower}
-        setRatePower={setRatePower}
-        loadDuringPowerOutage={loadDuringPowerOutage}
-        setLoadDuringPowerOutage={setLoadDuringPowerOutage}
-        batteryQuantity={batteryQuantity}
-        setBatteryQuantity={setBatteryQuantity}
-        batteryNumber={batteryNumber}
-        setBatteryNumber={setBatteryNumber}
-        batteryCapacity={batteryCapacity}
-        setBatteryCapacity={setBatteryCapacity}
-        productionTime={productionTime}
-        setProductionTime={setProductionTime}
-        conductorType={conductorType}
-        setConductorType={setConductorType}
-        cbPower={cbPower}
-        setCBPower={setCBPower}
-        schneider={schneider}
-        setSchneider={setSchneider}
-        yearInstall={yearInstall}
-        setYearInstall={setYearInstall}
-        currentStatus={currentStatus}
-        setCurrentStatus={setCurrentStatus}
-        number={number}
-        setNumber={setNumber}
       />
       <ModalViewHistory
         open={openHistory}

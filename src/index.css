@@ -19,6 +19,13 @@ code {
 .m-0 {
   margin: 0;
 }
+.mb-10 {
+  margin-bottom: 10px;
+}
+
+.text-align-center {
+  text-align: center;
+}
 .ps-12 {
   padding-left: 12px;
 }
