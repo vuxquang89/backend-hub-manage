@@ -1,6 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
-import { Space, Typography, Card, Row, Col, Form, Input, message } from "antd";
+import {
+  Space,
+  Typography,
+  Card,
+  Row,
+  Col,
+  Form,
+  Input,
+  message,
+  Tabs,
+  Table,
+  Popconfirm,
+  // DatePicker,
+  Button,
+} from "antd";
+// import DatePicker from "react-multi-date-picker";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 import {
   MailOutlined,
   PhoneOutlined,
@@ -15,15 +33,21 @@ import {
   device_trademark_validation,
   device_ratedPower_validation,
 } from "../../utils/inputDetailDeviceValidations";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { FormProvider, useForm } from "react-hook-form";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import SpanLoading from "../../components/loading/SpanLoading";
-import TextArea from "antd/es/input/TextArea";
+
+import ModalMaintenanceHistory from "./ModalMaintenanceHistory";
+import moment from "moment";
+import ModalSwitchDevice from "./ModalSwitchDevice";
 
 function DetailDevice() {
   const axiosPrivate = useAxiosPrivate();
   let { hubDetailId } = useParams();
   const [form] = Form.useForm();
+  // const [formHistory] = Form.useForm();
+  const { TextArea } = Input;
 
   let navigate = useNavigate();
   const location = useLocation();
@@ -32,6 +56,8 @@ function DetailDevice() {
   const [mes, setMes] = useState("");
   const [formLoading, setFormLoading] = useState(false);
   const [getData, setGetData] = useState(false);
+
+  const [dataHistory, setDataHistory] = useState([]);
 
   const [branchId, setBranchId] = useState("");
   const [branchName, setBranchName] = useState("");
@@ -68,9 +94,25 @@ function DetailDevice() {
   const [yearInstall, setYearInstall] = useState("");
   const [currentStatus, setCurrentStatus] = useState("");
   const [number, setNumber] = useState("");
+  const [newDate, setNewDate] = useState("");
+
+  //-----------
+
+  const [openHistory, setOpenHistory] = useState(false);
+  const [dateMaintenance, setDateMaintenance] = useState(new Date());
+  const [dateSelect, setDateSelect] = useState("");
+  const [note, setNote] = useState("");
+  const [maintenanceId, setMaintenanceId] = useState("");
+  const [isEditTable, setIsEditTable] = useState(false);
+
+  //--------------
+  const [openModalSwitch, setOpenModalSwitch] = useState(false);
+  const [branchList, setBranchList] = useState([]);
+  const [hubList, setHubList] = useState([]);
 
   useEffect(() => {
     loadData();
+    // getNewDate();
   }, []);
 
   const loadData = async () => {
@@ -171,6 +213,587 @@ function DetailDevice() {
         // navigate("/login", { state: { from: location }, replace: true });
       });
   };
+
+  //-----------------
+  const handleOpenHistory = async () => {
+    setFormLoading(true);
+    await axiosPrivate
+      .get(`/api/hub/device/maintenancehistory/${hubDetailId}`)
+      .then((res) => {
+        const result = res.data;
+        console.log(">>>>>data history", result);
+        setDataHistory(result);
+        //setOpenHistory(true);
+        setFormLoading(false);
+      })
+      .catch((err) => {
+        setFormLoading(false);
+        console.log(">>>>get history error", err);
+      });
+  };
+
+  const handleAddNewHistory = async () => {
+    setFormLoading(true);
+    await axiosPrivate
+      .post("/api/hub/device/maintenancehistory", {
+        hubDetailId: hubDetailId,
+        maintenanceTime: dateMaintenance.toLocaleDateString(),
+        maintenanceNote: note,
+      })
+      .then((res) => {
+        console.log(">>>>add new history", res.data);
+
+        //update table
+        setDataHistory([...dataHistory, res.data]);
+        message.success("Thêm mới thành công");
+        form.resetFields();
+        resetFormHistory();
+        setFormLoading(false);
+      })
+      .catch((err) => {
+        console.log("add new history error", err);
+        setFormLoading(false);
+        message.error("Không thể thêm mới");
+        // navigate("/login", { state: { from: location }, replace: true });
+      });
+  };
+
+  /*---------------------------------*/
+  const dateFormat = "YYYY-MM-DD";
+
+  const confirmDeleteHistory = async (record) => {
+    setFormLoading(true);
+
+    await axiosPrivate
+      .delete(`/api/hub/device/maintenancehistory/${maintenanceId}`)
+      .then((res) => {
+        console.log(">>>>delete history", res.data);
+
+        //update dataSource
+
+        if (res.data) {
+          let data = dataHistory;
+
+          data = data.filter((item) => item.id !== maintenanceId);
+          setDataHistory(data);
+
+          message.success("Xóa thành công");
+        } else {
+          message.warning("Không thể xóa");
+        }
+
+        setFormLoading(false);
+      })
+      .catch((err) => {
+        console.log("delete history error", err);
+        message.error("Không thể xóa");
+
+        setFormLoading(false);
+        // navigate("/login", { state: { from: location }, replace: true });
+      });
+  };
+  const handleEditOnClick = (e) => {
+    console.log("edit click", e);
+    setDateMaintenance(new Date(e.maintenanceTime));
+    setNote(e.maintenanceNote);
+    setMaintenanceId(e.id);
+    setIsEditTable(true);
+    console.log("datepick", note);
+  };
+
+  const handleSaveEditHistory = async () => {
+    setFormLoading(true);
+    await axiosPrivate
+      .put(`/api/hub/device/maintenancehistory/${maintenanceId}`, {
+        maintenanceTime: dateMaintenance.toLocaleDateString(),
+        maintenanceNote: note,
+      })
+      .then((res) => {
+        const result = res.data;
+        console.log(">>>>>get hub detail result", res.data);
+        if (result.status === 100) {
+          const response = result.response;
+          updateDataHistory(response);
+          form.resetFields();
+          resetFormHistory();
+          setIsEditTable(false);
+          message.success("Cập nhật thành công");
+        } else {
+          console.log(">>>> khong tim thay ", hubDetailId);
+          message.warning("Không thể cập nhật");
+          setIsEditTable(false);
+        }
+        console.log(">>>>response save edit history", result.response);
+        setFormLoading(false);
+      })
+      .catch((err) => {
+        console.log(">>>>save edit history error", err);
+        setFormLoading(false);
+        setIsEditTable(false);
+        // navigate("/login", { state: { from: location }, replace: true });
+      });
+  };
+
+  const updateDataHistory = (response) => {
+    const updateHistoryArray = dataHistory.map((maintenance) => {
+      if (maintenance.id === maintenanceId) {
+        return {
+          ...maintenance,
+          maintenanceNote: response.maintenanceNote,
+          maintenanceTime: response.maintenanceTime,
+        };
+      } else {
+        return maintenance;
+      }
+    });
+    setDataHistory(updateHistoryArray);
+  };
+
+  const handleCancelEditHistory = () => {
+    resetFormHistory();
+    setIsEditTable(false);
+  };
+
+  function resetFormHistory() {
+    console.log(">>>>reset form hítory");
+    setNote("");
+    setDateMaintenance(new Date());
+  }
+
+  //--------------------
+  const handleOpenModalSwitch = () => {
+    setFormLoading(true);
+    getBranchList();
+  };
+
+  const getBranchList = async () => {
+    await axiosPrivate
+      .get("/api/branch/list")
+      .then((res) => {
+        console.log(">>>>get list branch", res.data);
+        let result = res.data;
+        setBranchList(result);
+
+        getHubList(branchId);
+
+        setFormLoading(false);
+        setOpenModalSwitch(true);
+      })
+      .catch((err) => {
+        console.log("get list hub branch", err);
+
+        // navigate("/login", { state: { from: location }, replace: true });
+      });
+  };
+
+  const getHubList = async (branchId) => {
+    await axiosPrivate
+      .get(`/api/hub/list/branch/${branchId}`)
+      .then((res) => {
+        console.log(">>>>get list hub select", res.data);
+        setHubList(res.data);
+
+        setFormLoading(false);
+      })
+      .catch((err) => {
+        console.log("get list hub select error", err);
+        setFormLoading(false);
+        // navigate("/login", { state: { from: location }, replace: true });
+      });
+  };
+
+  const handleSwitchSubmit = async () => {
+    console.log(">>>>>send hubId", hubId);
+    setFormLoading(true);
+    await axiosPrivate
+      .put(`/api/hub/detail/switch/${hubDetailId}`, { hubId: hubId })
+      .then((res) => {
+        console.log(">>>>save switch hub select", res.data);
+        // setHubList(res.data);
+        message.success(`Chuyển thiết bị thành công`);
+        openModalSwitch(false);
+        loadData();
+        setFormLoading(false);
+      })
+      .catch((err) => {
+        console.log("save switch hub error", err);
+        openModalSwitch(false);
+        setFormLoading(false);
+        message.error(`Chuyển thiết bị thành công`);
+        // navigate("/login", { state: { from: location }, replace: true });
+      });
+  };
+
+  const handleOnChangeBranch = (branchId) => {
+    setFormLoading(true);
+    setHubId("");
+    getHubList(branchId);
+  };
+
+  const handleCancelOnClick = () => {
+    setOpenModalSwitch(false);
+  };
+
+  const onChangeTabs = (key) => {
+    console.log(key);
+    if (key === "2") {
+      console.log(">>>get history");
+      handleOpenHistory();
+    }
+  };
+
+  const items = [
+    {
+      key: "1",
+      label: "Thông tin thiết bị",
+      children: (
+        <>
+          <Row>
+            <Col span={12}>
+              <Typography.Title level={5}>Thông tin thiết bị</Typography.Title>
+            </Col>
+          </Row>
+          <div className="mt-5">
+            {success && (
+              <p className="flex items-center gap-1 mb-5 font-semibold text-red-500">
+                {mes}
+              </p>
+            )}
+          </div>
+          {/* <FormProvider {...methods}> */}
+          <Form name="formHubDetail" form={form} onFinish={handleUpdateSubmit}>
+            <Row>
+              <Col span={24}>
+                <Row>
+                  <Col span={8} className="pe-50">
+                    <div className="updateItem">
+                      <label>Thương hiệu</label>
+                      <Form.Item name="trademark">
+                        <Input
+                          defaultValue={trademark}
+                          onChange={(e) => {
+                            setTrademark(e.target.value);
+                          }}
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="updateItem">
+                      <label>CS định mức (KVA)</label>
+                      <Form.Item name="ratedPower">
+                        <Input
+                          defaultValue={ratedPower}
+                          onChange={(e) => {
+                            setRatePower(e.target.value);
+                          }}
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="updateItem">
+                      <label>%Tải khi mất điện</label>
+                      <Form.Item name="loadDuringPowerOutage">
+                        <Input
+                          defaultValue={loadDuringPowerOutage}
+                          onChange={(e) => {
+                            setLoadDuringPowerOutage(e.target.value);
+                          }}
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="updateItem">
+                      <label>Số bình/ Chuỗi hiện tại</label>
+                      <Form.Item name="batteryQuantity">
+                        <Input
+                          defaultValue={batteryQuantity}
+                          onChange={(e) => {
+                            setBatteryQuantity(e.target.value);
+                          }}
+                        />
+                      </Form.Item>
+                    </div>
+                  </Col>
+                  <Col span={8} className="pe-50">
+                    <div className="updateItem">
+                      <label>Số chuỗi Battery hiện tại</label>
+                      <Form.Item name="batteryNumber">
+                        <Input
+                          defaultValue={batteryNumber}
+                          onChange={(e) => {
+                            setBatteryNumber(e.target.value);
+                          }}
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="updateItem">
+                      <label>Model (dung lượng AH)</label>
+                      <Form.Item name="batteryCapacity">
+                        <Input
+                          defaultValue={batteryCapacity}
+                          onChange={(e) => {
+                            setBatteryCapacity(e.target.value);
+                          }}
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="updateItem">
+                      <label>Ngày sản xuất</label>
+                      <Form.Item name="productionTime">
+                        <Input
+                          defaultValue={productionTime}
+                          onChange={(e) => {
+                            setProductionTime(e.target.value);
+                          }}
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="updateItem">
+                      <label>Dây dẫn</label>
+                      <Form.Item name="conductorType">
+                        <Input
+                          defaultValue={conductorType}
+                          onChange={(e) => {
+                            setConductorType(e.target.value);
+                          }}
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="updateItem">
+                      <label>CB nguồn</label>
+                      <Form.Item name="cbPower">
+                        <Input
+                          defaultValue={cbPower}
+                          onChange={(e) => {
+                            setCBPower(e.target.value);
+                          }}
+                        />
+                      </Form.Item>
+                    </div>
+                  </Col>
+                  <Col span={8} className="pe-50">
+                    <div className="updateItem">
+                      <label>Cắt lọc sét</label>
+                      <Form.Item name="schneider">
+                        <Input
+                          defaultValue={schneider}
+                          onChange={(e) => {
+                            setSchneider(e.target.value);
+                          }}
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="updateItem">
+                      <label>Năm lắp đặt HTĐ</label>
+                      <Form.Item name="yearInstall">
+                        <Input
+                          defaultValue={yearInstall}
+                          onChange={(e) => {
+                            setYearInstall(e.target.value);
+                          }}
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="updateItem">
+                      <label>Hiện trạng</label>
+                      <Form.Item name="currentStatus">
+                        <Input
+                          defaultValue={currentStatus}
+                          onChange={(e) => {
+                            setCurrentStatus(e.target.value);
+                          }}
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="updateItem">
+                      <label>Số lượng</label>
+                      <Form.Item name="number">
+                        <TextArea
+                          defaultValue={number}
+                          onChange={(e) => {
+                            setNumber(e.target.value);
+                          }}
+                        />
+                      </Form.Item>
+                    </div>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+
+            <div className="bottomForm text-align-center">
+              <button className="userUpdateButton">Cập nhật</button>
+            </div>
+          </Form>
+          {/* </FormProvider> */}
+        </>
+      ),
+    },
+    {
+      key: "2",
+      label: "Lịch sử bảo dưỡng",
+      children: (
+        <>
+          <Form
+            //   layout="horizontal"
+            form={form}
+            onFinish={(values) => handleAddNewHistory(values)}
+          >
+            <Row className="cardBody mb-10">
+              <Col span={8}>
+                <div className="borderItem">
+                  <label>Chọn ngày</label>
+                  <Form.Item
+                    name="dateMaintenance"
+                    // rules={[
+                    //   {
+                    //     required: true,
+                    //     message: "Please input the title of collection!",
+                    //   },
+                    //   // {
+                    //   //   pattern: "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+                    //   // },
+                    // ]}
+                  >
+                    <DatePicker
+                      // defaultValue={
+                      //   dateMaintenance
+                      //     ? moment(dateMaintenance, dateFormat)
+                      //     : null
+                      // }
+                      // onChange={handleDatePickerOnChange}
+                      // // value={dateMaintenance}
+                      // format={dateFormat}
+                      // value={dateMaintenance}
+                      // format={dateFormat}
+                      // onChange={handleDatePickerOnChange}
+                      //filterDate={(dateMaintenance) => new Date() < dateMaintenance}
+                      className="datePicker"
+                      selected={dateMaintenance}
+                      dateFormat="yyyy-MM-dd"
+                      onChange={(date) => {
+                        console.log(">>>>>date", date.toLocaleDateString());
+                        setDateMaintenance(date);
+                      }}
+                    />
+
+                    {/* <input
+                      type="date"
+                      data-date-format="DD MMMM YYYY"
+                      className="datePicker"
+                      min="1997-01-01"
+                      max="2030-12-31"
+                      value="10/20/2023"
+                      onChange={(e) => {
+                        setDateMaintenance(e.target.value);
+                      }}
+                    /> */}
+                  </Form.Item>
+                </div>
+              </Col>
+              <Col span={12}>
+                <div className="borderItem">
+                  <label>Nội dung</label>
+                  <Form.Item
+                    name="maintenanceNote"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please input the title of collection!",
+                      },
+                    ]}
+                  >
+                    <textarea
+                      defaultValue={note}
+                      onChange={(e) => {
+                        setNote(e.target.value);
+                      }}
+                      rows={4}
+                      cols={40}
+                    />
+                  </Form.Item>
+                </div>
+              </Col>
+              <Col span={4}>
+                <div className="borderItem ">
+                  {isEditTable ? (
+                    <>
+                      <button
+                        className="buttonSave mb-10"
+                        onClick={() => {
+                          handleSaveEditHistory();
+                        }}
+                      >
+                        Lưu
+                      </button>
+                      <Button
+                        onClick={() => {
+                          handleCancelEditHistory();
+                        }}
+                      >
+                        Hủy
+                      </Button>
+                    </>
+                  ) : (
+                    <button className="buttonAdd mb-10">Thêm</button>
+                  )}
+                </div>
+              </Col>
+            </Row>
+          </Form>
+
+          <Table
+            // loading={loading}
+            columns={[
+              {
+                title: "Ngày bảo dưỡng",
+                dataIndex: "maintenanceTime",
+                key: "maintenanceTime",
+              },
+              {
+                title: "Nội dung bảo dưỡng",
+                dataIndex: "maintenanceNote",
+                key: "maintenanceNote",
+              },
+
+              {
+                title: "Action",
+                key: "hubId",
+                dataIndex: "hubId",
+                render: (text, record) => (
+                  <>
+                    <EditOutlined
+                      className="buttonIconEdit"
+                      onClick={() => {
+                        handleEditOnClick(record);
+                      }}
+                    />
+                    <Popconfirm
+                      title="Alarm"
+                      description="Bạn có chắc muốn xóa?"
+                      onConfirm={confirmDeleteHistory}
+                      onCancel={() => {}}
+                      okText="Yes"
+                      cancelText="No"
+                    >
+                      <DeleteOutlined
+                        className="btnUserDelete"
+                        onClick={() => {
+                          setMaintenanceId(record.id);
+                          console.log("Delete click", record);
+                        }}
+                      />
+                    </Popconfirm>
+                  </>
+                ),
+              },
+            ]}
+            dataSource={dataHistory}
+            pagination={{
+              pageSize: 5,
+            }}
+          ></Table>
+        </>
+      ),
+    },
+  ];
 
   return (
     <>
@@ -300,15 +923,21 @@ function DetailDevice() {
                       <Col className="mb-10" span={24}>
                         <Space direction="vertical">
                           <div className="buttonContainer f-e">
-                            <button className="buttonSwitch">
+                            <button
+                              className="buttonSwitch"
+                              onClick={() => {
+                                handleOpenModalSwitch();
+                              }}
+                            >
                               Chuyển thiết bị
                             </button>
-                            <button
+                            {/* <button
                               title="Xem lịch sử bảo dưỡng"
                               className="buttonView"
+                              onClick={handleOpenHistory}
                             >
                               Lịch sử bảo dưỡng
-                            </button>
+                            </button> */}
 
                             <RollbackOutlined
                               onClick={() => navigate(-1)}
@@ -322,191 +951,11 @@ function DetailDevice() {
                     <Row>
                       <Col span={24}>
                         <Card>
-                          <Row>
-                            <Col span={12}>
-                              <Typography.Title level={5}>
-                                Thông tin thiết bị
-                              </Typography.Title>
-                            </Col>
-                          </Row>
-                          <div className="mt-5">
-                            {success && (
-                              <p className="flex items-center gap-1 mb-5 font-semibold text-red-500">
-                                {mes}
-                              </p>
-                            )}
-                          </div>
-                          {/* <FormProvider {...methods}> */}
-                          <Form
-                            name="formHubDetail"
-                            form={form}
-                            onFinish={handleUpdateSubmit}
-                          >
-                            <Row>
-                              <Col span={24}>
-                                <Row>
-                                  <Col span={8} className="pe-50">
-                                    <div className="updateItem">
-                                      <label>Thương hiệu</label>
-                                      <Form.Item name="trademark">
-                                        <Input
-                                          defaultValue={trademark}
-                                          onChange={(e) => {
-                                            setTrademark(e.target.value);
-                                          }}
-                                        />
-                                      </Form.Item>
-                                    </div>
-                                    <div className="updateItem">
-                                      <label>CS định mức (KVA)</label>
-                                      <Form.Item name="ratedPower">
-                                        <Input
-                                          defaultValue={ratedPower}
-                                          onChange={(e) => {
-                                            setRatePower(e.target.value);
-                                          }}
-                                        />
-                                      </Form.Item>
-                                    </div>
-                                    <div className="updateItem">
-                                      <label>%Tải khi mất điện</label>
-                                      <Form.Item name="loadDuringPowerOutage">
-                                        <Input
-                                          defaultValue={loadDuringPowerOutage}
-                                          onChange={(e) => {
-                                            setLoadDuringPowerOutage(
-                                              e.target.value
-                                            );
-                                          }}
-                                        />
-                                      </Form.Item>
-                                    </div>
-                                    <div className="updateItem">
-                                      <label>Số bình/ Chuỗi hiện tại</label>
-                                      <Form.Item name="batteryQuantity">
-                                        <Input
-                                          defaultValue={batteryQuantity}
-                                          onChange={(e) => {
-                                            setBatteryQuantity(e.target.value);
-                                          }}
-                                        />
-                                      </Form.Item>
-                                    </div>
-                                  </Col>
-                                  <Col span={8} className="pe-50">
-                                    <div className="updateItem">
-                                      <label>Số chuỗi Battery hiện tại</label>
-                                      <Form.Item name="batteryNumber">
-                                        <Input
-                                          defaultValue={batteryNumber}
-                                          onChange={(e) => {
-                                            setBatteryNumber(e.target.value);
-                                          }}
-                                        />
-                                      </Form.Item>
-                                    </div>
-                                    <div className="updateItem">
-                                      <label>Model (dung lượng AH)</label>
-                                      <Form.Item name="batteryCapacity">
-                                        <Input
-                                          defaultValue={batteryCapacity}
-                                          onChange={(e) => {
-                                            setBatteryCapacity(e.target.value);
-                                          }}
-                                        />
-                                      </Form.Item>
-                                    </div>
-                                    <div className="updateItem">
-                                      <label>Ngày sản xuất</label>
-                                      <Form.Item name="productionTime">
-                                        <Input
-                                          defaultValue={productionTime}
-                                          onChange={(e) => {
-                                            setProductionTime(e.target.value);
-                                          }}
-                                        />
-                                      </Form.Item>
-                                    </div>
-                                    <div className="updateItem">
-                                      <label>Dây dẫn</label>
-                                      <Form.Item name="conductorType">
-                                        <Input
-                                          defaultValue={conductorType}
-                                          onChange={(e) => {
-                                            setConductorType(e.target.value);
-                                          }}
-                                        />
-                                      </Form.Item>
-                                    </div>
-                                    <div className="updateItem">
-                                      <label>CB nguồn</label>
-                                      <Form.Item name="cbPower">
-                                        <Input
-                                          defaultValue={cbPower}
-                                          onChange={(e) => {
-                                            setCBPower(e.target.value);
-                                          }}
-                                        />
-                                      </Form.Item>
-                                    </div>
-                                  </Col>
-                                  <Col span={8} className="pe-50">
-                                    <div className="updateItem">
-                                      <label>Cắt lọc sét</label>
-                                      <Form.Item name="schneider">
-                                        <Input
-                                          defaultValue={schneider}
-                                          onChange={(e) => {
-                                            setSchneider(e.target.value);
-                                          }}
-                                        />
-                                      </Form.Item>
-                                    </div>
-                                    <div className="updateItem">
-                                      <label>Năm lắp đặt HTĐ</label>
-                                      <Form.Item name="yearInstall">
-                                        <Input
-                                          defaultValue={yearInstall}
-                                          onChange={(e) => {
-                                            setYearInstall(e.target.value);
-                                          }}
-                                        />
-                                      </Form.Item>
-                                    </div>
-                                    <div className="updateItem">
-                                      <label>Hiện trạng</label>
-                                      <Form.Item name="currentStatus">
-                                        <Input
-                                          defaultValue={currentStatus}
-                                          onChange={(e) => {
-                                            setCurrentStatus(e.target.value);
-                                          }}
-                                        />
-                                      </Form.Item>
-                                    </div>
-                                    <div className="updateItem">
-                                      <label>Số lượng</label>
-                                      <Form.Item name="number">
-                                        <TextArea
-                                          defaultValue={number}
-                                          onChange={(e) => {
-                                            setNumber(e.target.value);
-                                          }}
-                                        />
-                                      </Form.Item>
-                                    </div>
-                                  </Col>
-                                </Row>
-                              </Col>
-                            </Row>
-
-                            <div className="bottomForm text-align-center">
-                              <button className="userUpdateButton">
-                                Cập nhật
-                              </button>
-                            </div>
-                          </Form>
-                          {/* </FormProvider> */}
+                          <Tabs
+                            defaultActiveKey="1"
+                            items={items}
+                            onChange={onChangeTabs}
+                          />
                         </Card>
                       </Col>
                     </Row>
@@ -521,6 +970,24 @@ function DetailDevice() {
           )}
         </div>
       </div>
+      {/* <ModalMaintenanceHistory
+        open={openHistory}
+        cancelOnClick={cancelOnClick}
+        dataHistory={dataHistory}
+      /> */}
+      <ModalSwitchDevice
+        open={openModalSwitch}
+        handleCancelOnClick={handleCancelOnClick}
+        branchList={branchList}
+        branchValue={branchId}
+        setBranchValue={setBranchId}
+        handleOnChangeBranch={handleOnChangeBranch}
+        hubList={hubList}
+        hubId={hubId}
+        setHubId={setHubId}
+        handleSubmit={handleSwitchSubmit}
+        title="Chuyển thiết bị đến Hub khác"
+      />
       {formLoading && <SpanLoading />}
     </>
   );

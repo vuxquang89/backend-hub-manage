@@ -9,7 +9,7 @@
   margin-left: 20px;
   margin-right: 20px;
 }
-
+/* 
 table {
   text-align: left;
   position: relative;
@@ -35,7 +35,7 @@ tr.purple th {
 thead th {
   background: white;
   position: sticky;
-  top: 40px; /* Don't forget this, required for the stickiness */
+  top: 40px; 
   box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 }
 
@@ -43,10 +43,10 @@ tbody th {
   text-align: center;
   background: white;
   position: sticky;
-  top: 128px; /* Don't forget this, required for the stickiness */
+  top: 128px; 
   box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-}
-
+} */
+/* 
 .tableDevice,
 td,
 th {
@@ -56,7 +56,7 @@ th {
 
 .tableDevice thead th {
   background-color: rgb(3, 150, 22);
-}
+} */
 
 .UPS {
   background-color: #b4c6e7;

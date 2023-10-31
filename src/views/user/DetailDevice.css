@@ -125,3 +125,68 @@
   font-size: 16px;
   margin-right: 10px;
 }
+
+.cardBody {
+  border: 1px solid #e5e4e4;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.buttonAdd {
+  font-size: 14px;
+  border: 1px solid transparent;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #217aab;
+  color: white;
+}
+
+.buttonSave {
+  font-size: 14px;
+  border: 1px solid transparent;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #b1a053;
+  color: white;
+}
+
+/**********************/
+.tableHistory {
+  width: 100%;
+}
+.tableHistory thead {
+  background-color: #333;
+  color: white;
+}
+
+.tableHistory tbody tr:nth-child(odd) {
+  background-color: #fff;
+}
+
+.tableHistory tbody tr:nth-child(even) {
+  background-color: #eee;
+}
+
+[type="date"] {
+  background: #fff
+    url(https://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/calendar_2.png)
+    97% 50% no-repeat;
+}
+[type="date"]::-webkit-inner-spin-button {
+  display: none;
+}
+[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+}
+
+.datePicker {
+  border: 1px solid #c4c4c4;
+  border-radius: 5px;
+  background-color: #fff;
+  padding: 5px 5px;
+  color: #636161;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.1);
+  width: 120px;
+}
