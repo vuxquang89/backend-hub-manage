@@ -35,6 +35,8 @@ function Login() {
       const refreshToken = response?.data?.refreshToken;
       const roles = response?.data?.roles;
 
+      localStorage.setItem("refreshToken", refreshToken);
+
       console.log(roles);
 
       setAuth({ username, roles, accessToken, refreshToken });

@@ -27,6 +27,7 @@ import AddUser from "./views/admin/users/AddUser";
 import ListHub from "./views/admin/hub/ListHub";
 import DetailHub from "./views/admin/hub/DetailHub";
 import ManageHub from "./views/user/ManageHub";
+import PersistentLogin from "./components/PersistentLogin";
 
 const ROLES = {
   User: "ROLE_USER",
@@ -67,39 +68,44 @@ function App() {
         <Route path="login" element={<Login />} />
         <Route path="linkpage" element={<LinkPage />} />
         <Route path="unauthorized" element={<Unauthorized />} />
+
         {/* we want to protect these routes */}
-        <Route
-          element={<RequireAuth allowedRoles={[ROLES.User, ROLES.Admin]} />}
-        >
-          <Route path="/" element={<Home />} />
-        </Route>
-
-        <Route element={<RequireAuth allowedRoles={[ROLES.Manager]} />}>
-          <Route path="manager" element={<ManageHub />} />
+        <Route element={<PersistentLogin />}>
           <Route
-            path="manager/hub/device/:hubDetailId"
-            element={<DetailDevice />}
-          />
-        </Route>
+            element={<RequireAuth allowedRoles={[ROLES.User, ROLES.Admin]} />}
+          >
+            <Route path="/" element={<Home />} />
+          </Route>
 
-        <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
-          <Route path="admin" element={<DashBoard />} />
-          <Route path="admin/device" element={<ListDevice />} />
-          <Route path="admin/branch" element={<Branch />} />
-          <Route path="admin/branch/add" element={<AddBranch />} />
-          <Route path="admin/branch/:id" element={<EditBranch />} />
-          <Route path="admin/users" element={<ListUser />} />
-          <Route path="admin/users/:id" element={<EditUser />} />
-          <Route path="admin/users/add" element={<AddUser />} />
+          <Route element={<RequireAuth allowedRoles={[ROLES.Manager]} />}>
+            <Route path="manager" element={<ManageHub />} />
+            <Route
+              path="manager/hub/device/:hubDetailId"
+              element={<DetailDevice />}
+            />
+          </Route>
 
-          <Route path="admin/hub" element={<ListHub />} />
-          <Route path="admin/hub/:id" element={<DetailHub />} />
-        </Route>
+          <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
+            <Route path="admin" element={<DashBoard />} />
+            <Route path="admin/device" element={<ListDevice />} />
+            <Route path="admin/branch" element={<Branch />} />
+            <Route path="admin/branch/add" element={<AddBranch />} />
+            <Route path="admin/branch/:id" element={<EditBranch />} />
+            <Route path="admin/users" element={<ListUser />} />
+            <Route path="admin/users/:id" element={<EditUser />} />
+            <Route path="admin/users/add" element={<AddUser />} />
 
-        <Route
-          element={<RequireAuth allowedRoles={[ROLES.Manager, ROLES.Admin]} />}
-        >
-          <Route path="lounge" element={<Lounge />} />
+            <Route path="admin/hub" element={<ListHub />} />
+            <Route path="admin/hub/:id" element={<DetailHub />} />
+          </Route>
+
+          <Route
+            element={
+              <RequireAuth allowedRoles={[ROLES.Manager, ROLES.Admin]} />
+            }
+          >
+            <Route path="lounge" element={<Lounge />} />
+          </Route>
         </Route>
 
         {/* catch all */}
