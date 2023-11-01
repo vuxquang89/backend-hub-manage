@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Fragment } from "react";
 import "./Home.css";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Popconfirm, message } from "antd";
+import { Popconfirm, Space, message } from "antd";
 import ModalEditCellDevice from "./ModalEditCellDevice";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation, Link } from "react-router-dom";
@@ -10,9 +10,13 @@ import { Button, Modal, Form, Input } from "antd";
 import { AuthContext } from "../../context/AuthProvider";
 import SpanLoading from "../../components/loading/SpanLoading";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import ModalViewHistory from "./ModalViewHistory";
+import ModalAddHistory from "./ModalAddHistory";
+import useLogout from "../../hooks/useLogout";
+import { toast } from "react-toastify";
 
 function ManageHub() {
+  const logout = useLogout();
+  const { Search } = Input;
   const { setAuth } = useContext(AuthContext);
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
@@ -103,10 +107,12 @@ function ManageHub() {
         form.resetFields();
         setOpen(false);
         setFormLoading(false);
+        toast.success("Thêm mới thành công");
       })
       .catch((err) => {
         console.log("get list hub detail error", err);
         setFormLoading(false);
+        toast.success("Thêm mới thất bại");
         // navigate("/login", { state: { from: location }, replace: true });
       });
   };
@@ -241,11 +247,24 @@ function ManageHub() {
     //message.error('Click on No');
   };
 
-  const logout = async () => {
-    // if used in more components, this should be in context
-    // axios to /logout endpoint
-    setAuth({});
-    navigate("/linkpage");
+  const onSearch = (value, _e, info) => {
+    console.log(info?.source, value);
+    getDataSearch(value);
+  };
+  const getDataSearch = async (value) => {
+    setFormLoading(true);
+    await axiosPrivate
+      .get("/api/hub/detail/search/" + value)
+      .then((res) => {
+        console.log(">>>>get list hub detail search", res.data);
+        setDataSource(res.data);
+        setFormLoading(false);
+      })
+      .catch((err) => {
+        console.log("get list hub detail search error", err);
+        setFormLoading(false);
+        // navigate("/login", { state: { from: location }, replace: true });
+      });
   };
 
   let namesArr = {};
@@ -305,40 +324,47 @@ function ManageHub() {
   return (
     <>
       <div className="container">
-        <h4>Home page</h4>
+        <h4>Quản lý thiết bị</h4>
 
-        <br />
-        <p>You are logged in!</p>
-
-        <div className="flexGrow">
-          <button onClick={logout}>Sign Out</button>
-        </div>
-        <table className="tableDevice">
+        <Space className="mb-10">
+          <label>Tìm kiếm</label>
+          <Search
+            placeholder="Nhập chi nhánh / phòng hub..."
+            onSearch={onSearch}
+            enterButton
+          />
+          <button
+            onClick={() => {
+              loadData();
+            }}
+          >
+            xoa
+          </button>
+        </Space>
+        <table id="tableDevice">
           <thead>
             <tr>
-              <th style={{ width: "45px" }}>Mã Hub</th>
-              <th style={{ width: "45px" }}>Phòng máy</th>
-              <th style={{ width: "45px" }}>Quản lý PM</th>
-              <th style={{ width: "50px" }}>SĐT quản lý PM</th>
-              <th style={{ width: "45px" }}>Nhân sự chuyên trách </th>
-              <th style={{ width: "45px" }}>Tên TB</th>
-              <th style={{ width: "50px" }}>Thương hiệu</th>
-              <th style={{ width: "40px" }}>CS định mức (KVA)</th>
-              <th style={{ width: "40px" }}>%Tải khi mất điện</th>
-              <th style={{ width: "40px" }}>Số bình/ Chuỗi hiện tại</th>
-              <th style={{ width: "40px" }}>Số chuỗi Battery hiện tại</th>
-              <th style={{ width: "60px" }}>Model (dung lượng AH)</th>
-              <th style={{ width: "70px" }}>Ngày sản xuất</th>
-              <th style={{ width: "50px" }}>Dây dẫn</th>
-              <th style={{ width: "45px" }}>CB nguồn</th>
-              <th style={{ width: "40px" }}>Cắt lọc sét</th>
-              <th style={{ width: "70px" }}>Năm lắp đặt HTĐ</th>
-              <th style={{ width: "70px" }}>Số lượng</th>
-              <th style={{ width: "50px" }}>Hiện trạng</th>
-              <th style={{ width: "70px" }}>
-                Ngày bảo dưỡng, bảo trì gần nhất
-              </th>
-              <th>Action</th>
+              <th style={{ width: "5%" }}>Mã Hub</th>
+              <th style={{ width: "4%" }}>Phòng máy</th>
+              <th style={{ width: "5%" }}>Quản lý PM</th>
+              <th style={{ width: "5%" }}>SĐT quản lý PM</th>
+              <th style={{ width: "5%" }}>Nhân sự chuyên trách </th>
+              <th style={{ width: "6%" }}>Tên TB</th>
+              <th style={{ width: "5%" }}>Thương hiệu</th>
+              <th style={{ width: "3%" }}>CS định mức (KVA)</th>
+              <th style={{ width: "3%" }}>%Tải khi mất điện</th>
+              <th style={{ width: "3%" }}>Số bình/ Chuỗi hiện tại</th>
+              <th style={{ width: "3%" }}>Số chuỗi Battery hiện tại</th>
+              <th style={{ width: "5%" }}>Model (dung lượng AH)</th>
+              <th style={{ width: "5%" }}>Ngày sản xuất</th>
+              <th style={{ width: "5%" }}>Dây dẫn</th>
+              <th style={{ width: "4%" }}>CB nguồn</th>
+              <th style={{ width: "5%" }}>Cắt lọc sét</th>
+              <th style={{ width: "5%" }}>Năm lắp đặt HTĐ</th>
+              <th style={{ width: "7%" }}>Số lượng</th>
+              <th style={{ width: "5%" }}>Hiện trạng</th>
+              <th style={{ width: "6%" }}>Ngày bảo dưỡng, bảo trì gần nhất</th>
+              <th style={{ width: "7%" }}>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -913,7 +939,7 @@ function ManageHub() {
         isLoading={isLoading}
         title={titleForm}
       />
-      <ModalViewHistory
+      <ModalAddHistory
         open={openHistory}
         form={form}
         handleSubmit={handleHistorySubmit}

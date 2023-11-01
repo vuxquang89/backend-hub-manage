@@ -4,13 +4,15 @@ import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import { getOrders } from "../../API";
+import useAuth from "../../hooks/useAuth";
 
-class DashBoard extends React.Component {
-  render() {
-    return (
-      <Space size={20} direction="vertical" className="ps-12">
-        <Typography.Title level={4}>DashBoard</Typography.Title>
-        <Space direction="horizontal">
+const DashBoard = () => {
+  const { auth } = useAuth();
+
+  return (
+    <Space size={20} direction="vertical" className="ps-12">
+      <Typography.Title level={4}>Xin chào {auth.username}</Typography.Title>
+      {/* <Space direction="horizontal">
           <DashBoardCard title={"Orders"} value={1234} />
           <DashBoardCard title={"Orders"} value={1234} />
           <DashBoardCard title={"Orders"} value={1234} />
@@ -18,11 +20,10 @@ class DashBoard extends React.Component {
         </Space>
         <Space>
           <RecentOrders />
-        </Space>
-      </Space>
-    );
-  }
-}
+        </Space> */}
+    </Space>
+  );
+};
 
 function DashBoardCard({ title, value }) {
   return (

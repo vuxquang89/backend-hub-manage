@@ -178,6 +178,7 @@ function ListHub() {
 
   const handleSaveEditCell = async (record) => {
     console.log(">> Save input edit cell:  ", editingId);
+
     setFormLoading(true);
     await axiosPrivate
       .post(`/api/hub/${editingId}`, {
@@ -189,29 +190,37 @@ function ListHub() {
       })
       .then((res) => {
         console.log(">>>>>>>> save edit ", res.data);
-        updateHubArray();
+        updateData();
+
         setFormLoading(false);
+        toast.success("Cập nhật thành công");
         tableMethods.reset();
+        setEditing(false);
+        setEditingId("");
       })
       .catch((err) => {
         setFormLoading(false);
+        toast.success("Cập nhật thất bại");
       });
   };
 
-  const updateHubArray = dataSource.map((hub) => {
-    if (hub.hubId === editingId) {
-      return {
-        ...hub,
-        hubName: hubName,
-        hubAddress: hubAddress,
-        hubCity: hubCity,
-        hubManagerName: hubManagerName,
-        hubManagerPhone: hubManagerPhone,
-      };
-    } else {
-      return hub;
-    }
-  });
+  const updateData = async () => {
+    const updateHubArray = dataSource.map((hub) => {
+      if (hub.hubId === editingId) {
+        return {
+          ...hub,
+          hubName: hubName,
+          hubAddress: hubAddress,
+          hubCity: hubCity,
+          hubManagerName: hubManagerName,
+          hubManagerPhone: hubManagerPhone,
+        };
+      } else {
+        return hub;
+      }
+    });
+    setDataSource(updateHubArray);
+  };
 
   const addNewHub = async (record) => {
     setIsLoading(true);
@@ -429,12 +438,6 @@ function ListHub() {
                               // const hubId = record.hubId;
 
                               handleSaveEditCell(data);
-                              setTimeout(() => {
-                                setFormLoading(false);
-                                setEditing(false);
-                                setEditingId("");
-                                tableMethods.reset();
-                              }, 3000);
                             })}
                           >
                             Save

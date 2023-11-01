@@ -1,23 +1,50 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Home.css";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Popconfirm, message } from "antd";
+import { Popconfirm, Space, message, Input } from "antd";
 import ModalEditCellDevice from "./ModalEditCellDevice";
 import { useForm } from "react-hook-form";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import useLogout from "../../hooks/useLogout";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import ModalViewHistory from "./ModalViewHistory";
+import SpanLoading from "../../components/loading/SpanLoading";
 
 const Home = () => {
+  const { Search } = Input;
   const logout = useLogout();
   const navigate = useNavigate();
 
+  const location = useLocation();
+  const axiosPrivate = useAxiosPrivate();
+
   const methods = useForm();
+  const [dataSource, setDataSource] = useState([]);
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isExist, setIsExist] = useState(true);
   const [formLoading, setFormLoading] = useState(false);
+  const [dataViewHistory, setDataViewHistory] = useState([]);
+  const [dateMaintenance, setDateMaintenance] = useState("");
 
-  const showModal = () => {
-    setOpen(true);
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    setFormLoading(true);
+    await axiosPrivate
+      .get("/api/user/hub/detail")
+      .then((res) => {
+        console.log(">>>>get list hub detail", res.data);
+        setDataSource(res.data);
+        setFormLoading(false);
+      })
+      .catch((err) => {
+        console.log("get list hub detail error", err);
+        setFormLoading(false);
+        navigate("/login", { state: { from: location }, replace: true });
+      });
   };
 
   const handleOkOnClick = methods.handleSubmit((data) => {
@@ -38,1173 +65,229 @@ const Home = () => {
     console.log(">>>check open", open);
   };
 
-  const popConfirmDeleteDevice = (e) => {
-    console.log(">>>comfirm delete");
+  const showModalHistory = (record) => {
+    console.log(record);
+    setIsLoading(true);
+    setDateMaintenance(record.dateMaintenance);
+    setDataViewHistory(record.maintenanceHistories);
+    setIsLoading(false);
+    setOpen(true);
+  };
+
+  const onSearch = (value, _e, info) => {
+    console.log(info?.source, value);
+    getDataSearch(value);
+  };
+  const getDataSearch = async (value) => {
     setFormLoading(true);
-    // let data = dataSource;
-
-    // data = data.filter((item) => item.id !== editingId);
-    // // toast.success("Xóa thành công");
-    // setDataSource(data);
-
-    setTimeout(() => {
-      setFormLoading(false);
-      // message.success("Xóa thành công");
-    }, 2000);
-  };
-  const cancel = (e) => {
-    console.log(e);
-    //message.error('Click on No');
+    await axiosPrivate
+      .get("/api/hub/detail/search/" + value)
+      .then((res) => {
+        console.log(">>>>get list hub detail search", res.data);
+        setDataSource(res.data);
+        setFormLoading(false);
+      })
+      .catch((err) => {
+        console.log("get list hub detail search error", err);
+        setFormLoading(false);
+        // navigate("/login", { state: { from: location }, replace: true });
+      });
   };
 
-  const signOut = async () => {
-    await logout();
-    localStorage.removeItem("refreshToken");
-    navigate("/linkpage");
-  };
+  let namesArr = {};
+  let names = {};
+  let clos = {};
+  let nameTableTitle = {};
+  let cellTableTitle = {};
+
+  const rowSpan = dataSource.reduce((result, item, key) => {
+    if (namesArr[item.hubId] === undefined) {
+      namesArr[item.hubId] = key;
+      result[key] = 1;
+      names[item.deviceName] = key;
+      clos[key] = 1;
+      nameTableTitle[item.branchId] = key;
+      cellTableTitle[key] = 1;
+    } else {
+      const firstIndex = namesArr[item.hubId];
+      const idex = names[item.deviceName];
+      const iCell = nameTableTitle[item.branchId];
+
+      if (item.branchId === dataSource[key - 1].branchId) {
+        cellTableTitle[iCell]++;
+        cellTableTitle[key] = 0;
+      } else {
+        cellTableTitle[key] = 1;
+        nameTableTitle[item.branchId] = key;
+      }
+
+      if (
+        firstIndex === key - 1 ||
+        (item.hubId === dataSource[key - 1].hubId && result[key - 1] === 0)
+      ) {
+        result[firstIndex]++;
+        result[key] = 0;
+      } else {
+        result[key] = 1;
+        namesArr[item.hubId] = key;
+      }
+
+      if (
+        idex === key - 1 ||
+        (item.deviceName === dataSource[key - 1].deviceName &&
+          clos[key - 1] === 0)
+      ) {
+        clos[idex]++;
+        clos[key] = 0;
+      } else {
+        clos[key] = 1;
+        names[item.deviceName] = key;
+      }
+    }
+
+    return result;
+  }, []);
 
   return (
     <>
       <div className="container">
-        <h4>Home page</h4>
-
-        <br />
-        <p>You are logged in!</p>
-        <br />
-        <Link to="/manager">Go to the Editor page</Link>
-        <br />
-        <Link to="/admin">Go to the Admin page</Link>
-        <br />
-        <br />
-        <Link to="/admin/device">Go to the Admin Device page</Link>
-        <br />
-        <br />
-        <Link to="/admin/branch">Go to the Admin Branch page</Link>
-        <br />
-        <br />
-        <Link to="/admin/users">Go to the Admin Users page</Link>
-        <br />
-        <br />
-        <Link to="/admin/hub">Go to the Admin Users page</Link>
-        <br />
-        <Link to="/lounge">Go to the Lounge</Link>
-        <br />
-        <Link to="/linkpage">Go to the link page</Link>
-
-        <div className="flexGrow">
-          <button onClick={signOut}>Sign Out</button>
-        </div>
-
-        <table className="tableDevice">
+        <h4>Trang chủ</h4>
+        <Space className="mb-10">
+          <label>Tìm kiếm</label>
+          <Search
+            placeholder="Nhập chi nhánh / phòng hub..."
+            onSearch={onSearch}
+            enterButton
+          />
+          <button
+            onClick={() => {
+              loadData();
+            }}
+          >
+            xoa
+          </button>
+        </Space>
+        <table id="tableDevice">
           <thead>
             <tr>
-              <th style={{ width: "45px" }}>Mã Hub</th>
-              <th style={{ width: "45px" }}>Phòng máy</th>
-              <th style={{ width: "45px" }}>Quản lý PM</th>
-              <th style={{ width: "50px" }}>SĐT quản lý PM</th>
-              <th style={{ width: "45px" }}>Nhân sự chuyên trách </th>
-              <th style={{ width: "45px" }}>Tên TB</th>
-              <th style={{ width: "50px" }}>Thương hiệu</th>
-              <th style={{ width: "40px" }}>CS định mức (KVA)</th>
-              <th style={{ width: "40px" }}>%Tải khi mất điện</th>
-              <th style={{ width: "40px" }}>Số bình/ Chuỗi hiện tại</th>
-              <th style={{ width: "40px" }}>Số chuỗi Battery hiện tại</th>
-              <th style={{ width: "60px" }}>Model (dung lượng AH)</th>
-              <th style={{ width: "70px" }}>Ngày sản xuất</th>
-              <th style={{ width: "50px" }}>Dây dẫn</th>
-              <th style={{ width: "45px" }}>CB nguồn</th>
-              <th style={{ width: "40px" }}>Cắt lọc sét</th>
-              <th style={{ width: "70px" }}>Năm lắp đặt HTĐ</th>
-              <th style={{ width: "70px" }}>Số lượng</th>
-              <th style={{ width: "50px" }}>Hiện trạng</th>
-              <th style={{ width: "70px" }}>
-                Ngày bảo dưỡng, bảo trì gần nhất
-              </th>
-              <th>Action</th>
+              <th style={{ width: "5%" }}>Mã Hub</th>
+              <th style={{ width: "4%" }}>Phòng máy</th>
+              <th style={{ width: "5%" }}>Quản lý PM</th>
+              <th style={{ width: "5%" }}>SĐT quản lý PM</th>
+              <th style={{ width: "5%" }}>Nhân sự chuyên trách </th>
+              <th style={{ width: "6%" }}>Tên TB</th>
+              <th style={{ width: "5%" }}>Thương hiệu</th>
+              <th style={{ width: "3%" }}>CS định mức (KVA)</th>
+              <th style={{ width: "3%" }}>%Tải khi mất điện</th>
+              <th style={{ width: "3%" }}>Số bình/ Chuỗi hiện tại</th>
+              <th style={{ width: "3%" }}>Số chuỗi Battery hiện tại</th>
+              <th style={{ width: "5%" }}>Model (dung lượng AH)</th>
+              <th style={{ width: "5%" }}>Ngày sản xuất</th>
+              <th style={{ width: "5%" }}>Dây dẫn</th>
+              <th style={{ width: "4%" }}>CB nguồn</th>
+              <th style={{ width: "5%" }}>Cắt lọc sét</th>
+              <th style={{ width: "5%" }}>Năm lắp đặt HTĐ</th>
+              <th style={{ width: "7%" }}>Số lượng</th>
+              <th style={{ width: "5%" }}>Hiện trạng</th>
+              <th style={{ width: "6%" }}>Ngày bảo dưỡng, bảo trì gần nhất</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <th className="deviceTitle" colSpan={21}>
-                CHI NHÁNH 1 (MR. OANH 0901810072)
-              </th>
-            </tr>
-            <tr>
-              <td rowSpan={7}>BTE_BTE</td>
-              <td rowSpan={7}>Bến tre</td>
-              <td rowSpan={7}>Nguyễn Minh Luân</td>
-              <td rowSpan={7}>0901811307</td>
-              <td rowSpan={7}>DUY</td>
-              <td className="UPS" rowSpan={2}>
-                UPS
-              </td>
-              <td className="UPS">Dale</td>
-              <td className="UPS">3</td>
-              <td className="UPS">64%</td>
-              <td className="UPS">18</td>
-              <td className="UPS">1</td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS">
-                <EditOutlined
-                  className="buttonIconEdit"
-                  onClick={() => {
-                    alert("Edit click");
-                    showModal();
-                  }}
-                />
-                <Popconfirm
-                  title="Alarm"
-                  description="Bạn có chắc muốn xóa?"
-                  placement="topLeft"
-                  onConfirm={popConfirmDeleteDevice}
-                  onCancel={cancel}
-                  okText="Yes"
-                  cancelText="No"
-                >
-                  <DeleteOutlined
-                    className="buttonIconDelete"
-                    onClick={() => {
-                      alert("Delete click");
-                    }}
-                  />
-                </Popconfirm>
-              </td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              {/* <td rowSpan={2}>UPS</td> */}
-              <td className="UPS">Socomec</td>
-              <td className="UPS">6</td>
-              <td className="UPS">12%</td>
-              <td className="UPS">20</td>
-              <td className="UPS">1</td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="B-UPS" rowSpan={2}>
-                Battery_UPS
-              </td>
-              <td className="B-UPS">LONG</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">WP26-12N</td>
-              <td className="B-UPS">2019</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              {/* <td rowSpan={2}>Battery_UPS</td> */}
-              <td className="B-UPS">Saite/Vietname</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">26AH</td>
-              <td className="B-UPS">2021</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="MPD" rowSpan={1}>
-                Máy phát điện
-              </td>
-              <td className="MPD">Sử dụng chung với đài truyền hình</td>
+            {dataSource.map((el, index) => (
+              <>
+                {cellTableTitle[index] > 0 && (
+                  <tr>
+                    <th className="deviceTitle" colSpan={21}>
+                      {el.branchName} ( {el.deputyTechnicalDirector}{" "}
+                      {el.phoneDeputyTechnicalDirector})
+                    </th>
+                  </tr>
+                )}
 
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="TD" rowSpan={1}>
-                Tủ điện
-              </td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD">4,0mm2</td>
-              <td className="TD">32A</td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="ML" rowSpan={1}>
-                Máy lạnh
-              </td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML">2 máy 1,5HP</td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML">Sửa Xóa</td>
-            </tr>
+                <tr>
+                  {rowSpan[index] > 0 && (
+                    <>
+                      <td rowSpan={rowSpan[index]}>{el.hubId}</td>
 
-            <tr>
-              <td rowSpan={7}>BTE_BTE</td>
-              <td rowSpan={7}>Bến tre</td>
-              <td rowSpan={7}>Nguyễn Minh Luân</td>
-              <td rowSpan={7}>0901811307</td>
-              <td rowSpan={7}>DUY</td>
-              <td className="UPS" rowSpan={2}>
-                UPS
-              </td>
-              <td className="UPS">Dale</td>
-              <td className="UPS">3</td>
-              <td className="UPS">64%</td>
-              <td className="UPS">18</td>
-              <td className="UPS">1</td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              {/* <td rowSpan={2}>UPS</td> */}
-              <td className="UPS">Socomec</td>
-              <td className="UPS">6</td>
-              <td className="UPS">12%</td>
-              <td className="UPS">20</td>
-              <td className="UPS">1</td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="B-UPS" rowSpan={2}>
-                Battery_UPS
-              </td>
-              <td className="B-UPS">LONG</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">WP26-12N</td>
-              <td className="B-UPS">2019</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              {/* <td rowSpan={2}>Battery_UPS</td> */}
-              <td className="B-UPS">Saite/Vietname</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">26AH</td>
-              <td className="B-UPS">2021</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="MPD" rowSpan={1}>
-                Máy phát điện
-              </td>
-              <td className="MPD">Sử dụng chung với đài truyền hình</td>
+                      <td rowSpan={rowSpan[index]}>{el.hubAddress}</td>
+                      <td rowSpan={rowSpan[index]}>{el.hubManagerName}</td>
+                      <td rowSpan={rowSpan[index]}>{el.hubManagerPhone}</td>
+                      <td rowSpan={rowSpan[index]}>{el.fullname}</td>
+                    </>
+                  )}
+                  {clos[index] > 0 && (
+                    <td
+                      style={{ background: "#" + el.backgroundColor }}
+                      rowSpan={clos[index]}
+                    >
+                      {el.deviceName}
+                    </td>
+                  )}
 
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="TD" rowSpan={1}>
-                Tủ điện
-              </td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD">4,0mm2</td>
-              <td className="TD">32A</td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="ML" rowSpan={1}>
-                Máy lạnh
-              </td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML">2 máy 1,5HP</td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML">Sửa Xóa</td>
-            </tr>
-
-            <tr>
-              <td rowSpan={7}>BTE_BTE</td>
-              <td rowSpan={7}>Bến tre</td>
-              <td rowSpan={7}>Nguyễn Minh Luân</td>
-              <td rowSpan={7}>0901811307</td>
-              <td rowSpan={7}>DUY</td>
-              <td className="UPS" rowSpan={2}>
-                UPS
-              </td>
-              <td className="UPS">Dale</td>
-              <td className="UPS">3</td>
-              <td className="UPS">64%</td>
-              <td className="UPS">18</td>
-              <td className="UPS">1</td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              {/* <td rowSpan={2}>UPS</td> */}
-              <td className="UPS">Socomec</td>
-              <td className="UPS">6</td>
-              <td className="UPS">12%</td>
-              <td className="UPS">20</td>
-              <td className="UPS">1</td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="B-UPS" rowSpan={2}>
-                Battery_UPS
-              </td>
-              <td className="B-UPS">LONG</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">WP26-12N</td>
-              <td className="B-UPS">2019</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              {/* <td rowSpan={2}>Battery_UPS</td> */}
-              <td className="B-UPS">Saite/Vietname</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">26AH</td>
-              <td className="B-UPS">2021</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="MPD" rowSpan={1}>
-                Máy phát điện
-              </td>
-              <td className="MPD">Sử dụng chung với đài truyền hình</td>
-
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="TD" rowSpan={1}>
-                Tủ điện
-              </td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD">4,0mm2</td>
-              <td className="TD">32A</td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="ML" rowSpan={1}>
-                Máy lạnh
-              </td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML">2 máy 1,5HP</td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML">Sửa Xóa</td>
-            </tr>
-
-            <tr>
-              <th className="deviceTitle" colSpan={21}>
-                CHI NHÁNH 2 (MR. NĂNG 0901810072)
-              </th>
-            </tr>
-            <tr>
-              <td rowSpan={7}>BTE_BTE</td>
-              <td rowSpan={7}>Bến tre</td>
-              <td rowSpan={7}>Nguyễn Minh Luân</td>
-              <td rowSpan={7}>0901811307</td>
-              <td rowSpan={7}>DUY</td>
-              <td className="UPS" rowSpan={2}>
-                UPS
-              </td>
-              <td className="UPS">Dale</td>
-              <td className="UPS">3</td>
-              <td className="UPS">64%</td>
-              <td className="UPS">18</td>
-              <td className="UPS">1</td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              {/* <td rowSpan={2}>UPS</td> */}
-              <td className="UPS">Socomec</td>
-              <td className="UPS">6</td>
-              <td className="UPS">12%</td>
-              <td className="UPS">20</td>
-              <td className="UPS">1</td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="B-UPS" rowSpan={2}>
-                Battery_UPS
-              </td>
-              <td className="B-UPS">LONG</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">WP26-12N</td>
-              <td className="B-UPS">2019</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              {/* <td rowSpan={2}>Battery_UPS</td> */}
-              <td className="B-UPS">Saite/Vietname</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">26AH</td>
-              <td className="B-UPS">2021</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="MPD" rowSpan={1}>
-                Máy phát điện
-              </td>
-              <td className="MPD">Sử dụng chung với đài truyền hình</td>
-
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="TD" rowSpan={1}>
-                Tủ điện
-              </td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD">4,0mm2</td>
-              <td className="TD">32A</td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="ML" rowSpan={1}>
-                Máy lạnh
-              </td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML">2 máy 1,5HP</td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML">Sửa Xóa</td>
-            </tr>
-
-            <tr>
-              <td rowSpan={7}>BTE_BTE</td>
-              <td rowSpan={7}>Bến tre</td>
-              <td rowSpan={7}>Nguyễn Minh Luân</td>
-              <td rowSpan={7}>0901811307</td>
-              <td rowSpan={7}>DUY</td>
-              <td className="UPS" rowSpan={2}>
-                UPS
-              </td>
-              <td className="UPS">Dale</td>
-              <td className="UPS">3</td>
-              <td className="UPS">64%</td>
-              <td className="UPS">18</td>
-              <td className="UPS">1</td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              {/* <td rowSpan={2}>UPS</td> */}
-              <td className="UPS">Socomec</td>
-              <td className="UPS">6</td>
-              <td className="UPS">12%</td>
-              <td className="UPS">20</td>
-              <td className="UPS">1</td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="B-UPS" rowSpan={2}>
-                Battery_UPS
-              </td>
-              <td className="B-UPS">LONG</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">WP26-12N</td>
-              <td className="B-UPS">2019</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              {/* <td rowSpan={2}>Battery_UPS</td> */}
-              <td className="B-UPS">Saite/Vietname</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">26AH</td>
-              <td className="B-UPS">2021</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="MPD" rowSpan={1}>
-                Máy phát điện
-              </td>
-              <td className="MPD">Sử dụng chung với đài truyền hình</td>
-
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="TD" rowSpan={1}>
-                Tủ điện
-              </td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD">4,0mm2</td>
-              <td className="TD">32A</td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="ML" rowSpan={1}>
-                Máy lạnh
-              </td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML">2 máy 1,5HP</td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML">Sửa Xóa</td>
-            </tr>
-
-            <tr>
-              <td rowSpan={7}>BTE_BTE</td>
-              <td rowSpan={7}>Bến tre</td>
-              <td rowSpan={7}>Nguyễn Minh Luân</td>
-              <td rowSpan={7}>0901811307</td>
-              <td rowSpan={7}>DUY</td>
-              <td className="UPS" rowSpan={2}>
-                UPS
-              </td>
-              <td className="UPS">Dale</td>
-              <td className="UPS">3</td>
-              <td className="UPS">64%</td>
-              <td className="UPS">18</td>
-              <td className="UPS">1</td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              {/* <td rowSpan={2}>UPS</td> */}
-              <td className="UPS">Socomec</td>
-              <td className="UPS">6</td>
-              <td className="UPS">12%</td>
-              <td className="UPS">20</td>
-              <td className="UPS">1</td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS"></td>
-              <td className="UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="B-UPS" rowSpan={2}>
-                Battery_UPS
-              </td>
-              <td className="B-UPS">LONG</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">WP26-12N</td>
-              <td className="B-UPS">2019</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              {/* <td rowSpan={2}>Battery_UPS</td> */}
-              <td className="B-UPS">Saite/Vietname</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">26AH</td>
-              <td className="B-UPS">2021</td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS"></td>
-              <td className="B-UPS">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="MPD" rowSpan={1}>
-                Máy phát điện
-              </td>
-              <td className="MPD">Sử dụng chung với đài truyền hình</td>
-
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD"></td>
-              <td className="MPD">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="TD" rowSpan={1}>
-                Tủ điện
-              </td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD">4,0mm2</td>
-              <td className="TD">32A</td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD"></td>
-              <td className="TD">Sửa Xóa</td>
-            </tr>
-            <tr>
-              {/* <td>BTE_BTE</td> */}
-              {/* <td>Bến tre</td> */}
-              {/* <td>Nguyễn Minh Luân</td> */}
-              {/* <td>0901811307</td> */}
-              {/* <td>DUY</td> */}
-              <td className="ML" rowSpan={1}>
-                Máy lạnh
-              </td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML">2 máy 1,5HP</td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML"></td>
-              <td className="ML">Sửa Xóa</td>
-            </tr>
+                  <td style={{ background: "#" + el.backgroundColor }}>
+                    {el.trademark}
+                  </td>
+                  <td style={{ background: "#" + el.backgroundColor }}>
+                    {el.ratedPower}
+                  </td>
+                  <td style={{ background: "#" + el.backgroundColor }}>
+                    {el.loadDuringPowerOutage}
+                  </td>
+                  <td style={{ background: "#" + el.backgroundColor }}>
+                    {el.batteryQuantity}
+                  </td>
+                  <td style={{ background: "#" + el.backgroundColor }}>
+                    {el.batteryNumber}
+                  </td>
+                  <td style={{ background: "#" + el.backgroundColor }}>
+                    {el.batteryCapacity}
+                  </td>
+                  <td style={{ background: "#" + el.backgroundColor }}>
+                    {el.productionTime}
+                  </td>
+                  <td style={{ background: "#" + el.backgroundColor }}>
+                    {el.conductorType}
+                  </td>
+                  <td style={{ background: "#" + el.backgroundColor }}>
+                    {el.cbPower}
+                  </td>
+                  <td style={{ background: "#" + el.backgroundColor }}>
+                    {el.schneider}
+                  </td>
+                  <td style={{ background: "#" + el.backgroundColor }}>
+                    {el.yearInstall}
+                  </td>
+                  <td style={{ background: "#" + el.backgroundColor }}>
+                    {el.number}
+                  </td>
+                  <td style={{ background: "#" + el.backgroundColor }}>
+                    {el.currentStatus}
+                  </td>
+                  <td style={{ background: "#" + el.backgroundColor }}>
+                    <span
+                      className="spanButton"
+                      onClick={() => {
+                        showModalHistory(el);
+                      }}
+                    >
+                      {el.latestMaintenanceTime}
+                    </span>
+                  </td>
+                </tr>
+              </>
+            ))}
           </tbody>
         </table>
       </div>
-      <ModalEditCellDevice
+      <ModalViewHistory
         open={open}
-        handleOkOnClick={handleOkOnClick}
-        handleCancelOnClick={handleCancelOnClick}
         isLoading={isLoading}
-        methods={methods}
+        // handleOkOnClick={handleOkOnClick}
+        handleCancelOnClick={handleCancelOnClick}
+        dataHistory={dataViewHistory}
+        dateMaintenance={dateMaintenance}
       />
+      {formLoading && <SpanLoading />}
     </>
   );
 };

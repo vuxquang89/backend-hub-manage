@@ -9,14 +9,14 @@
   margin-left: 20px;
   margin-right: 20px;
 }
-/* 
-table {
+
+#tableDevice table {
   text-align: left;
   position: relative;
   border-collapse: collapse;
   z-index: 0;
 }
-th,
+#tableDevice th,
 td {
   padding: 0.25rem;
 }
@@ -24,39 +24,51 @@ tr.red th {
   background: red;
   color: white;
 }
-tr.green th {
+#tableDevice tr.green th {
   background: green;
   color: white;
 }
-tr.purple th {
+#tableDevice tr.purple th {
   background: purple;
   color: white;
 }
-thead th {
+#tableDevice thead th {
   background: white;
   position: sticky;
-  top: 40px; 
+  top: 40px;
   box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 }
 
-tbody th {
+#tableDevice tbody th {
   text-align: center;
-  background: white;
+  /* background: white; */
   position: sticky;
-  top: 128px; 
+  top: 128px;
   box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-} */
-/* 
-.tableDevice,
-td,
-th {
+}
+
+#tableDevice {
   border: 1px solid #333;
   font-size: 12px;
+  border-collapse: collapse;
+  width: 100%;
 }
 
-.tableDevice thead th {
+#tableDevice td {
+  border: 1px solid #333;
+  font-size: 12px;
+  border-collapse: collapse;
+}
+
+#tableDevice th {
+  border: 1px solid #333;
+  font-size: 12px;
+  border-collapse: collapse;
+}
+
+#tableDevice thead th {
   background-color: rgb(3, 150, 22);
-} */
+}
 
 .UPS {
   background-color: #b4c6e7;

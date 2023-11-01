@@ -19,34 +19,53 @@ import {
 } from "antd";
 import { getOrders } from "../../API";
 import { useState } from "react";
+import useLogout from "../../hooks/useLogout";
+import { useNavigate } from "react-router-dom";
 
-const items = [
-  {
-    key: "1",
-    label: (
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://www.antgroup.com"
-      >
-        Logout
-      </a>
-    ),
-    icon: <LogoutOutlined />,
-  },
-];
+// const items = [
+//   {
+//     key: "1",
+//     label: "Logout",
+//     icon: <LogoutOutlined />,
+//   },
+// ];
 
 function Header() {
+  const logout = useLogout();
+  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [notificationOpen, setNotificationOpen] = useState(false);
+
+  const items = [
+    {
+      key: "1",
+      label: (
+        <a
+          onClick={() => {
+            signOut();
+          }}
+        >
+          "Logout"
+        </a>
+      ),
+      icon: <LogoutOutlined />,
+    },
+  ];
+
+  const signOut = async (e) => {
+    await logout();
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("isLogin");
+    navigate("/login");
+  };
 
   return (
     <div className="header">
       <Image width={40} src=""></Image>
-      <Typography.Title>Admin Dashboard</Typography.Title>
+      <Typography.Title>Admin Page</Typography.Title>
       <Space>
         <>
-          <Badge
+          {/* <Badge
             // count={orders.length}
             count={5}
           >
@@ -56,7 +75,7 @@ function Header() {
                 setNotificationOpen(true);
               }}
             />
-          </Badge>
+          </Badge> */}
 
           <Dropdown
             menu={{
@@ -64,7 +83,11 @@ function Header() {
             }}
             className="m-10"
           >
-            <a onClick={(e) => e.preventDefault()}>
+            <a
+              onClick={() => {
+                signOut();
+              }}
+            >
               <Space>
                 <Avatar icon={<UserOutlined />} />
                 <DownOutlined />
@@ -73,7 +96,7 @@ function Header() {
           </Dropdown>
         </>
       </Space>
-      <Drawer
+      {/* <Drawer
         title="Notifications"
         open={notificationOpen}
         onClose={() => {
@@ -87,12 +110,12 @@ function Header() {
             return (
               <List.Item>
                 <Typography.Paragraph strong>{item.title}</Typography.Paragraph>{" "}
-                has been ordered
+                
               </List.Item>
             );
           }}
         ></List>
-      </Drawer>
+      </Drawer> */}
     </div>
   );
 }

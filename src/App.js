@@ -28,6 +28,7 @@ import ListHub from "./views/admin/hub/ListHub";
 import DetailHub from "./views/admin/hub/DetailHub";
 import ManageHub from "./views/user/ManageHub";
 import PersistentLogin from "./components/PersistentLogin";
+import HubDetail from "./views/user/HubDetail";
 
 const ROLES = {
   User: "ROLE_USER",
@@ -62,8 +63,15 @@ function App() {
     //   <PageContent />
     // </div>
 
+    //<Layout allowedRoles={[ROLES.User, ROLES.Admin, ROLES.Manager]} />
+
     <Routes>
-      <Route path="/" element={<Layout />}>
+      <Route
+        path="/"
+        element={
+          <Layout allowedRoles={[ROLES.User, ROLES.Admin, ROLES.Manager]} />
+        }
+      >
         {/* public routes */}
         <Route path="login" element={<Login />} />
         <Route path="linkpage" element={<LinkPage />} />
@@ -72,13 +80,18 @@ function App() {
         {/* we want to protect these routes */}
         <Route element={<PersistentLogin />}>
           <Route
-            element={<RequireAuth allowedRoles={[ROLES.User, ROLES.Admin]} />}
+            element={
+              <RequireAuth
+                allowedRoles={[ROLES.User, ROLES.Admin, ROLES.Manager]}
+              />
+            }
           >
             <Route path="/" element={<Home />} />
           </Route>
 
           <Route element={<RequireAuth allowedRoles={[ROLES.Manager]} />}>
             <Route path="manager" element={<ManageHub />} />
+            <Route path="manager/hub" element={<HubDetail />} />
             <Route
               path="manager/hub/device/:hubDetailId"
               element={<DetailDevice />}

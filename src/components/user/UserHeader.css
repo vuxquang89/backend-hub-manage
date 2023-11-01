@@ -9,3 +9,14 @@
     display: none;
   }
 }
+
+.notiRight {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 20px 4px 12px;
+
+  position: absolute;
+  top: 0px;
+  right: 0;
+}

@@ -86,6 +86,7 @@ function EditBranch() {
     setFormLoading(true);
     await axiosPrivate
       .put(`/api/branch/${id}`, {
+        branchName,
         branchAddress,
         deputyTechnicalDirector,
         phoneDeputyTechnicalDirector,

@@ -44,6 +44,7 @@ const ListDevice = () => {
     const controller = new AbortController();
 
     setLoading(true);
+    setFormLoading(true);
     // getInventory().then((res) => {
     //   setDataSource(res.products);
     //   setLoading(false);
@@ -56,9 +57,11 @@ const ListDevice = () => {
         isMounted && setDataSource(response.data);
 
         setLoading(false);
+        setFormLoading(false);
       } catch (err) {
         console.log("get device error", err);
         setLoading(false);
+        setFormLoading(false);
         navigate("/login", { state: { from: location }, replace: true });
       }
     };
@@ -121,11 +124,16 @@ const ListDevice = () => {
         let result = res.data;
         setDataSource([...dataSource, result]);
         setIsLoading(false);
+        setOpenModal(false);
+        toast.success("Thêm mới thành công");
+        methods.reset();
         console.log(">>> data response", result);
       })
       .catch((e) => {
         setIsLoading(false);
         console.log(`get data error ${e}`);
+        setOpenModal(false);
+        toast.success("Thêm mới thất bại");
       });
   };
 
@@ -157,7 +165,7 @@ const ListDevice = () => {
   const saveEdit = async () => {
     setFormLoading(true);
     await axiosPrivate
-      .put(`/api/device/${editingId}`, { valueDeviceName })
+      .put(`/api/device/${editingId}`, { deviceName: valueDeviceName })
       .then((res) => {
         let result = res.data;
 
@@ -168,11 +176,14 @@ const ListDevice = () => {
         setEditing(false);
         setEditingId("");
         tableMethods.reset();
+        toast.success("Cập nhật thành công");
         console.log(">>> edit save data response", result);
       })
       .catch((e) => {
         setIsLoading(false);
         console.log(`get data error ${e}`);
+        setFormLoading(false);
+        toast.success("Cập nhật thất bại");
       });
     // setTimeout(() => {
     //   setFormLoading(false);

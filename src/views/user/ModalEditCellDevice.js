@@ -5,11 +5,9 @@ import { FormProvider } from "react-hook-form";
 const ModalEditCellDevice = ({
   open,
   form,
-
   handleSubmit,
   handleCancelOnClick,
   isLoading,
-
   title,
 }) => {
   return (
@@ -21,6 +19,7 @@ const ModalEditCellDevice = ({
         // onOk={form.submit}
         confirmLoading={isLoading}
         onCancel={handleCancelOnClick}
+        footer={null}
         // style={{ width: "450px" }}
       >
         {/* <FormProvider {...methods}> */}
@@ -127,6 +126,9 @@ const ModalEditCellDevice = ({
                   >
                     <Input type="number" />
                   </Form.Item>
+                </div>
+                <div className="borderItem">
+                  <button className="buttonSave mt-20">OK</button>
                 </div>
               </Col>
             </Row>

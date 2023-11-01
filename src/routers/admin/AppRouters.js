@@ -15,14 +15,74 @@ import ListDevice from "../../views/admin/device/ListDevice";
 import Home from "../../views/user/Home";
 import Login from "../../views/Login";
 import DetailDevice from "../../views/user/DetailDevice";
+import LinkPage from "../../components/LinkPage";
+import Unauthorized from "../../components/Unauthorized";
+import PersistentLogin from "../../components/PersistentLogin";
+import RequireAuth from "../../components/RequireAuth";
+import ManageHub from "../../views/user/ManageHub";
+import Lounge from "../../components/Lounge";
+import Missing from "../../components/Missing";
 
+const ROLES = {
+  User: "ROLE_USER",
+  Manager: "ROLE_MANAGER",
+  Admin: "ROLE_ADMIN",
+};
 class AppRouters extends React.Component {
   render() {
     return (
       <Routes>
-        <Route path="/admin" element={<DashBoard />} />
+        <Route>
+          {/* public routes */}
+          <Route path="login" element={<Login />} />
+          <Route path="linkpage" element={<LinkPage />} />
+          <Route path="unauthorized" element={<Unauthorized />} />
+
+          {/* we want to protect these routes */}
+          <Route element={<PersistentLogin />}>
+            <Route
+              element={<RequireAuth allowedRoles={[ROLES.User, ROLES.Admin]} />}
+            >
+              <Route path="/" element={<Home />} />
+            </Route>
+
+            <Route element={<RequireAuth allowedRoles={[ROLES.Manager]} />}>
+              <Route path="manager" element={<ManageHub />} />
+              <Route
+                path="manager/hub/device/:hubDetailId"
+                element={<DetailDevice />}
+              />
+            </Route>
+
+            <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
+              <Route path="admin" element={<DashBoard />} />
+              <Route path="admin/device" element={<ListDevice />} />
+              <Route path="admin/branch" element={<Branch />} />
+              <Route path="admin/branch/add" element={<AddBranch />} />
+              <Route path="admin/branch/:id" element={<EditBranch />} />
+              <Route path="admin/users" element={<ListUser />} />
+              <Route path="admin/users/:id" element={<EditUser />} />
+              <Route path="admin/users/add" element={<AddUser />} />
+
+              <Route path="admin/hub" element={<ListHub />} />
+              <Route path="admin/hub/:id" element={<DetailHub />} />
+            </Route>
+
+            <Route
+              element={
+                <RequireAuth allowedRoles={[ROLES.Manager, ROLES.Admin]} />
+              }
+            >
+              <Route path="lounge" element={<Lounge />} />
+            </Route>
+          </Route>
+
+          {/* catch all */}
+          <Route path="*" element={<Missing />} />
+        </Route>
+        {/* <Route path="/admin" element={<DashBoard />} />
         {/* <Route path="/admin/inventory" element={<Inventory />} /> */}
-        <Route path="/admin/orders" element={<Orders />} />
+        {/* <Route path="/admin/orders" element={<Orders />} />
         <Route path="/admin/customers" element={<Customers />} />
 
         <Route path="/admin/users" element={<ListUser />}></Route>
@@ -41,7 +101,7 @@ class AppRouters extends React.Component {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
 
-        <Route path="/device/:id" element={<DetailDevice />} />
+        <Route path="/device/:id" element={<DetailDevice />} />  */}
       </Routes>
     );
   }

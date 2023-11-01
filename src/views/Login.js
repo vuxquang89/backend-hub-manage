@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthProvider";
 import "./Login.css";
-import { Button, Form, Input, Typography, message } from "antd";
+import { Button, Col, Form, Input, Row, Typography, message } from "antd";
 import useAuth from "../hooks/useAuth";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
@@ -36,13 +36,18 @@ function Login() {
       const roles = response?.data?.roles;
 
       localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("isLogin", true);
 
       console.log(roles);
 
       setAuth({ username, roles, accessToken, refreshToken });
       setUsername("");
       setPassword("");
-      navigate(from, { replace: true });
+      if (roles[0] === "ROLE_ADMIN") {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No server response");
@@ -59,51 +64,55 @@ function Login() {
     message.success("Đăng nhập thành công");
   };
   return (
-    <div className="appBg">
-      <Form className="loginForm" onFinish={login}>
-        <Typography.Title>Đăng nhập</Typography.Title>
-        <p
-          ref={errRef}
-          className={errMsg ? "errmsg" : "offscreen"}
-          aria-live="assertive"
-        >
-          {errMsg}
-        </p>
-        <Form.Item
-          rules={[
-            {
-              required: true,
-              message: "Cần nhập tên đăng nhập",
-            },
-          ]}
-          label="Tên đăng nhập"
-          name={"username"}
-        >
-          <Input
-            placeholder="Tên đăng nhập"
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </Form.Item>
-        <Form.Item
-          rules={[
-            {
-              required: true,
-              message: "Cần nhập mật khẩu",
-            },
-          ]}
-          label="Mật khẩu"
-          name={"password"}
-        >
-          <Input.Password
-            placeholder="Mật khểu"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </Form.Item>
-        <Button type="primary" htmlType="submit">
-          Đăng nhập
-        </Button>
-      </Form>
-    </div>
+    <>
+      <div className="appBg">
+        <Form className="loginForm text-align-center" onFinish={login}>
+          <Typography.Title>Đăng nhập</Typography.Title>
+          <p
+            ref={errRef}
+            className={errMsg ? "errmsg" : "offscreen"}
+            aria-live="assertive"
+          >
+            {errMsg}
+          </p>
+
+          <Form.Item
+            rules={[
+              {
+                required: true,
+                message: "Cần nhập tên đăng nhập",
+              },
+            ]}
+            label="Tên đăng nhập"
+            name={"username"}
+          >
+            <Input
+              placeholder="Tên đăng nhập"
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item
+            rules={[
+              {
+                required: true,
+                message: "Cần nhập mật khẩu",
+              },
+            ]}
+            label="Mật khẩu"
+            name={"password"}
+          >
+            <Input.Password
+              placeholder="Mật khểu"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Form.Item>
+          <Button type="primary" htmlType="submit">
+            Đăng nhập
+          </Button>
+        </Form>
+      </div>
+      <div className="bg"></div>
+    </>
   );
 }
 
