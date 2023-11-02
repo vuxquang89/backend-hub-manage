@@ -102,6 +102,13 @@ tr.red th {
   cursor: pointer;
 }
 
+.buttonIconRefresh {
+  color: #f3f3f3;
+  padding: 8px;
+  background-color: #e47015;
+  border-radius: 5px;
+}
+
 .buttonIconEdit {
   margin-left: 5px;
   margin-right: 5px;

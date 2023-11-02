@@ -1,6 +1,10 @@
 import React, { useEffect, useState, Fragment } from "react";
 import "./Home.css";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  RetweetOutlined,
+} from "@ant-design/icons";
 import { Popconfirm, Space, message } from "antd";
 import ModalEditCellDevice from "./ModalEditCellDevice";
 import { useForm } from "react-hook-form";
@@ -39,6 +43,8 @@ function ManageHub() {
   const [titleForm, setTitleForm] = useState("");
   const [deviceId, setDeviceId] = useState("");
   const [hubId, setHubId] = useState("");
+
+  const [inputSearch, setInputSearch] = useState("");
 
   useEffect(() => {
     loadData();
@@ -331,15 +337,18 @@ function ManageHub() {
           <Search
             placeholder="Nhập chi nhánh / phòng hub..."
             onSearch={onSearch}
+            onChange={(e) => setInputSearch(e.target.value)}
+            value={inputSearch}
             enterButton
           />
-          <button
+          <RetweetOutlined
+            className="buttonIconRefresh"
             onClick={() => {
+              setInputSearch("");
               loadData();
             }}
-          >
-            xoa
-          </button>
+            title="Làm mới"
+          />
         </Space>
         <table id="tableDevice">
           <thead>

@@ -12,7 +12,7 @@ import {
   Typography,
 } from "antd";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
 
 function HubDetail() {
@@ -178,11 +178,12 @@ function HubDetail() {
                                   dataIndex: "hubId",
                                   render: (text, record) => (
                                     <>
-                                      <DeleteOutlined
+                                      <PlusOutlined
                                         className="btnUserDelete"
                                         onClick={() =>
                                           handleViewFormHubOnClick(record)
                                         }
+                                        title="Thêm thiết bị cho phòng hub"
                                       />
                                     </>
                                   ),

@@ -14,9 +14,25 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 4px 20px 4px 12px;
+  padding: 0px 0px 4px 12px;
 
   position: absolute;
   top: 0px;
   right: 0;
+}
+
+.bellFill {
+  margin-right: 10px;
+}
+
+.bellFill .anticon {
+  color: white;
+  font-size: 18px;
+}
+
+.bellFill .ant-badge-count {
+  min-width: 16px;
+  height: 16px;
+  line-height: 16px;
+  font-size: 10px;
 }

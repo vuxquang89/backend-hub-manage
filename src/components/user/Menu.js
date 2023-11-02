@@ -1,5 +1,5 @@
 import React from "react";
-import { Menu } from "antd";
+import { Image, Menu } from "antd";
 import useAuth from "../../hooks/useAuth";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";

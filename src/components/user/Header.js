@@ -95,21 +95,51 @@ function UserHeader() {
 
         <div className="notiRight">
           {auth.roles[0] === "ROLE_MANAGER" ? (
-            <Badge
-              count={alarm.length}
-              // count={5}
-            >
-              <BellFilled
-                style={{ fontSize: 18 }}
-                onClick={() => {
-                  setNotificationOpen(true);
+            <>
+              <Badge
+                count={alarm.length}
+                // count={5}
+                className="bellFill"
+              >
+                <BellFilled
+                  style={{ fontSize: 18 }}
+                  onClick={() => {
+                    setNotificationOpen(true);
+                  }}
+                />
+              </Badge>
+
+              <Drawer
+                title="Notifications"
+                open={notificationOpen}
+                onClose={() => {
+                  setNotificationOpen(false);
                 }}
-              />
-            </Badge>
+                maskCloseable
+              >
+                <List
+                  dataSource={alarm}
+                  renderItem={(item) => {
+                    return (
+                      <Link to={`/manager/hub/device/${item.hubDetailId}`}>
+                        <List.Item>
+                          Thiết bị{" "}
+                          <strong>
+                            {item.deviceName}({item.hubDetailId})
+                          </strong>{" "}
+                          tại Hub <strong>{item.hubName}</strong> của chi nhánh{" "}
+                          <strong>{item.branchName}</strong> đã đến hạn bảo
+                          dưỡng
+                        </List.Item>
+                      </Link>
+                    );
+                  }}
+                ></List>
+              </Drawer>
+            </>
           ) : (
             <></>
           )}
-
           <Dropdown
             menu={{
               items,
@@ -123,32 +153,6 @@ function UserHeader() {
               </Space>
             </div>
           </Dropdown>
-          <Drawer
-            title="Notifications"
-            open={notificationOpen}
-            onClose={() => {
-              setNotificationOpen(false);
-            }}
-            maskCloseable
-          >
-            <List
-              dataSource={alarm}
-              renderItem={(item) => {
-                return (
-                  <Link to={`/manager/hub/device/${item.hubDetailId}`}>
-                    <List.Item>
-                      Thiết bị{" "}
-                      <strong>
-                        {item.deviceName}({item.hubDetailId})
-                      </strong>{" "}
-                      tại Hub <strong>{item.hubName}</strong> của chi nhánh{" "}
-                      <strong>{item.branchName}</strong> đã đến hạn bảo dưỡng
-                    </List.Item>
-                  </Link>
-                );
-              }}
-            ></List>
-          </Drawer>
         </div>
       </span>
       <Drawer
@@ -162,17 +166,20 @@ function UserHeader() {
       >
         <HeaderMenu isInLine />
         {auth.roles[0] === "ROLE_MANAGER" ? (
-          <Badge
-            count={alarm.length}
-            // count={5}
-          >
-            <BellFilled
-              style={{ fontSize: 18 }}
-              onClick={() => {
-                setNotificationOpen(true);
-              }}
-            />
-          </Badge>
+          <>
+            <Badge
+              count={alarm.length}
+              // count={5}
+              className="bellFill"
+            >
+              <BellFilled
+                style={{ fontSize: 18 }}
+                onClick={() => {
+                  setNotificationOpen(true);
+                }}
+              />
+            </Badge>
+          </>
         ) : (
           <></>
         )}

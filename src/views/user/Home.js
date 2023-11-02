@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "./Home.css";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  RetweetOutlined,
+} from "@ant-design/icons";
 import { Popconfirm, Space, message, Input } from "antd";
 import ModalEditCellDevice from "./ModalEditCellDevice";
 import { useForm } from "react-hook-form";
@@ -26,6 +30,7 @@ const Home = () => {
   const [formLoading, setFormLoading] = useState(false);
   const [dataViewHistory, setDataViewHistory] = useState([]);
   const [dateMaintenance, setDateMaintenance] = useState("");
+  const [inputSearch, setInputSearch] = useState("");
 
   useEffect(() => {
     loadData();
@@ -46,18 +51,6 @@ const Home = () => {
         navigate("/login", { state: { from: location }, replace: true });
       });
   };
-
-  const handleOkOnClick = methods.handleSubmit((data) => {
-    //setModalText('The modal will be closed after two seconds');
-    console.log(data);
-    setIsLoading(true);
-    setTimeout(() => {
-      setOpen(false);
-      setIsLoading(false);
-      // toast.success("Thêm mới thành công");
-      methods.reset();
-    }, 2000);
-  });
 
   const handleCancelOnClick = () => {
     console.log("Clicked cancel button");
@@ -157,15 +150,18 @@ const Home = () => {
           <Search
             placeholder="Nhập chi nhánh / phòng hub..."
             onSearch={onSearch}
+            onChange={(e) => setInputSearch(e.target.value)}
+            value={inputSearch}
             enterButton
           />
-          <button
+          <RetweetOutlined
+            className="buttonIconRefresh"
             onClick={() => {
+              setInputSearch("");
               loadData();
             }}
-          >
-            xoa
-          </button>
+            title="Làm mới"
+          />
         </Space>
         <table id="tableDevice">
           <thead>
