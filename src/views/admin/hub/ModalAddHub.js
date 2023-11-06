@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, Modal, Select } from "antd";
+import { Col, Form, Modal, Row, Select } from "antd";
 import { FormProvider } from "react-hook-form";
 import { stringToCode } from "../../../utils/stringToCode";
 
@@ -48,84 +48,106 @@ const ModalAddHub = ({
         onCancel={handleCancelOnClick}
       >
         <FormProvider {...methods}>
-          <Form className="newUserForm">
-            <div className="newUserForm">
-              <Select
-                showSearch
-                style={{
-                  width: 200,
-                }}
-                placeholder="Search to Select"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label ?? "").includes(input)
-                }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? "")
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? "").toLowerCase())
-                }
-                onChange={(e, value) => {
-                  console.log(">>> check select onchange:", e);
-                  setBranchValue(e);
-                }}
-                options={branchList}
-                value={branchValue}
-              />
-            </div>
+          <Form>
+            <Row>
+              <Col span={24}>
+                <Row>
+                  <Col span={12}>
+                    <div className="addBranchItem">
+                      <label>Chọn chi nhánh</label>
+                      <Select
+                        showSearch
+                        style={{
+                          width: 200,
+                        }}
+                        placeholder="Search to Select"
+                        optionFilterProp="children"
+                        filterOption={(input, option) =>
+                          (option?.label ?? "").includes(input)
+                        }
+                        filterSort={(optionA, optionB) =>
+                          (optionA?.label ?? "")
+                            .toLowerCase()
+                            .localeCompare((optionB?.label ?? "").toLowerCase())
+                        }
+                        onChange={(e, value) => {
+                          console.log(">>> check select onchange:", e);
+                          setBranchValue(e);
+                        }}
+                        options={branchList}
+                        value={branchValue}
+                      />
+                    </div>
+                  </Col>
+                  <Col span={12}>
+                    <div className="addBranchItem">
+                      <label>Chọn phụ người trách</label>
+                      <Select
+                        showSearch
+                        style={{
+                          width: 200,
+                        }}
+                        placeholder="Search to Select"
+                        optionFilterProp="children"
+                        filterOption={(input, option) =>
+                          (option?.label ?? "").includes(input)
+                        }
+                        filterSort={(optionA, optionB) =>
+                          (optionA?.label ?? "")
+                            .toLowerCase()
+                            .localeCompare((optionB?.label ?? "").toLowerCase())
+                        }
+                        onChange={(e, value) => {
+                          console.log(">>> check select onchange:", e);
+                          setUserId(e);
+                        }}
+                        options={listUserManager}
+                        value={userId}
+                      />
+                    </div>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
 
-            <div className="newUserForm">
-              <Select
-                showSearch
-                style={{
-                  width: 200,
-                }}
-                placeholder="Search to Select"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label ?? "").includes(input)
-                }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? "")
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? "").toLowerCase())
-                }
-                onChange={(e, value) => {
-                  console.log(">>> check select onchange:", e);
-                  setUserId(e);
-                }}
-                options={listUserManager}
-                value={userId}
-              />
-            </div>
-            <div className="newUserItem">
-              <Input
-                {...hubName_validation}
-                className="inputAdd"
-                onChange={(e) => handleNameHubOnChange(e)}
-              />
-            </div>
-            <div className="newUserItem">
-              <Input
-                {...hubCode_validation}
-                className="inputAdd"
-                onChange={(e) => handleCodeHubOnChange(e)}
-                value={code}
-              />
-            </div>
-            <div className="newUserItem">
-              <Input {...hubAddress_validation} className="inputAdd" />
-            </div>
-            <div className="newUserItem">
-              <Input {...hubCity_validation} className="inputAdd" />
-            </div>
-            <div className="newUserItem">
-              <Input {...hubManager_validation} className="inputAdd" />
-            </div>
+            <Row>
+              <Col span={24}>
+                <Row>
+                  <Col span={12}>
+                    <div className="addHubItem">
+                      <Input
+                        {...hubName_validation}
+                        className="inputAdd"
+                        onChange={(e) => handleNameHubOnChange(e)}
+                      />
+                    </div>
+                    <div className="addHubItem">
+                      <Input
+                        {...hubCode_validation}
+                        className="inputAdd"
+                        onChange={(e) => handleCodeHubOnChange(e)}
+                        value={code}
+                      />
+                    </div>
+                    <div className="addHubItem">
+                      <Input {...hubAddress_validation} className="inputAdd" />
+                    </div>
+                  </Col>
+                  <Col span={12}>
+                    <div className="addHubItem">
+                      <Input {...hubCity_validation} className="inputAdd" />
+                    </div>
+                    <div className="addHubItem">
+                      <Input {...hubManager_validation} className="inputAdd" />
+                    </div>
 
-            <div className="newUserItem">
-              <Input {...phone_validation} className="inputAdd" />
-            </div>
+                    <div className="addHubItem">
+                      <Input {...phone_validation} className="inputAdd" />
+                    </div>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
           </Form>
         </FormProvider>
       </Modal>

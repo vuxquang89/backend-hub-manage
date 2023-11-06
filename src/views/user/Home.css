@@ -160,6 +160,8 @@ tr.red th {
 
 .spanButton {
   cursor: pointer;
+  background: #fefecf;
+  color: #504f4f;
 }
 
 .spanButton:hover {
@@ -168,4 +170,9 @@ tr.red th {
   padding-bottom: 5px;
   border-radius: 5px;
   color: white;
+}
+
+.noData {
+  text-align: center;
+  font-size: 24px;
 }

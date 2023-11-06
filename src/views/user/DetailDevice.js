@@ -42,7 +42,10 @@ import ModalMaintenanceHistory from "./ModalMaintenanceHistory";
 import moment from "moment";
 import ModalSwitchDevice from "./ModalSwitchDevice";
 
-function DetailDevice() {
+import { over } from "stompjs";
+import SockJS from "socketjs-client";
+
+const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
   const axiosPrivate = useAxiosPrivate();
   let { hubDetailId } = useParams();
   const [form] = Form.useForm();
@@ -110,10 +113,208 @@ function DetailDevice() {
   const [branchList, setBranchList] = useState([]);
   const [hubList, setHubList] = useState([]);
 
+  //--------------------
+  const [inputText, setInputText] = useState("");
+
   useEffect(() => {
-    loadData();
+    localStorage.getItem("isLogin") && loadData();
     // getNewDate();
-  }, []);
+
+    receive(stompClient, userData.receiverName);
+  }, [hubDetailId]);
+
+  //-------------
+  // const [userData, setUserData] = useState({
+  //   username: localStorage.getItem("username"),
+  //   receivername: "admin",
+  //   connected: false,
+  //   message: "",
+  // });
+
+  // const [stompClient, setStompClient] = useState();
+  const [privateStompClient, setPirvateStompClient] = useState();
+  const [isConnect, setIsConnect] = useState(false);
+  const [messages, setMessages] = useState([]);
+
+  // useEffect(() => {
+  //   if (userData.message && stompClient) {
+  //     stompClient?.send("/app/message", {}, JSON.stringify(userData.message));
+  //   }
+  // }, [userData.message]);
+
+  // const onMessageReceive = (payload) => {
+  //   console.log(
+  //     "receive message---------------------",
+  //     JSON.parse(payload.body)
+  //   );
+  // };
+
+  // useEffect(() => {
+  //   if (isConnect && stompClient) {
+  //     const subScription = stompClient.subscribe(
+  //       "/group/" + userData.receivername,
+  //       onMessageReceive
+  //     );
+  //     console.log(">>>>>>>>>>>hello....");
+  //     return () => {
+  //       subScription.unsubscribe();
+  //     };
+  //   }
+  // });
+
+  // const onConnect = () => {
+  //   setIsConnect(true);
+  // };
+
+  // const connect = () => {
+  //   const access_token = localStorage.getItem("accessToken");
+  //   const sock = new SockJS("http://localhost:8080/ws", {
+  //     headers: {
+  //       Authorization: `Bearer ${access_token}`,
+  //     },
+  //   });
+  //   const temp = over(sock);
+  //   setStompClient(temp);
+  //   temp.connect({ headers: sock.headers }, { onConnect }, onError);
+  // };
+
+  // const connect = () => {
+  //   var socket = new SockJS("http://localhost:8080/ws");
+  //   const tempClient = over(socket);
+  //   setStompClient(tempClient);
+  //   tempClient.connect({}, function (frame) {
+  //     console.log(frame);
+  //     tempClient.subscribe("/user/specific", function (result) {
+  //       console.log(">>>>>>> result", JSON.parse(result.body));
+  //     });
+  //   });
+
+  //   socket = new SockJS("http://localhost:8080/ws");
+  //   const privateTempClient = over(socket);
+  //   privateTempClient.connect({}, function (frame) {
+  //     console.log("frame");
+  //     privateTempClient.subscribe("/user/specific", function (result) {
+  //       console.log(">>>>>>private result", result.body);
+  //     });
+  //   });
+  // };
+  // const sendMessage = () => {
+  //   stompClient?.send(
+  //     "/app/application",
+  //     {},
+  //     JSON.stringify({ text: inputText })
+  //   );
+  // };
+
+  // const sendMessagePrivate = () => {
+  //   stompClient?.send(
+  //     "/app/private",
+  //     {},
+  //     JSON.stringify({ text: inputText, to: "vu" })
+  //   );
+  // };
+
+  // const connect = () => {
+  //   const access_token = localStorage.getItem("accessToken");
+
+  //   const Sock = new SockJS("http://localhost:8080/ws", {
+  //     /*
+  //     transportOptions: {
+  //       "xhr-streaming": {
+  //         headers: {
+  //           Authorization: `Bearer ${access_token}`,
+  //         },
+  //       },
+  //     },
+  //     */
+  //     headers: {
+  //       Authorization: `Bearer ${access_token}`,
+  //     },
+  //   });
+
+  //   stompClient = over(Sock);
+  //   stompClient.connect({ headers: Sock.headers }, onConnected, onError);
+  //   console.log(">>>>>connect stomp", stompClient);
+  //   localStorage.setItem("stompClient", stompClient);
+  // };
+
+  // const onConnected = () => {
+  //   let user_name = localStorage.getItem("username");
+
+  //   setUserData({ ...userData, connected: true });
+  //   stompClient.subscribe("/all/public", onMessageReceived);
+  //   stompClient.subscribe(
+  //     "/user/" + userData.username + "/private",
+  //     onPrivateMessage
+  //   );
+  //   userJoin();
+  //   // loadMessage();
+  // };
+
+  // const onMessageReceived = (payload) => {
+  //   var payloadData = JSON.parse(payload.body);
+  //   console.log(">>>>>payLoad data", payloadData);
+  //   // switch (payloadData.status) {
+  //   //   case "JOIN":
+  //   //     if (!privateChats.get(payloadData.senderName)) {
+  //   //       privateChats.set(payloadData.senderName, []);
+  //   //       setPrivateChats(new Map(privateChats));
+  //   //     }
+  //   //     break;
+  //   //   case "MESSAGE":
+  //   //     publicChats.push(payloadData);
+  //   //     setPublicChats([...publicChats]);
+  //   //     break;
+  //   // }
+  // };
+
+  // const userJoin = () => {
+  //   var chatMessage = {
+  //     senderName: userData.username,
+  //     status: "JOIN",
+  //   };
+  //   stompClient.send("/app/application", {}, JSON.stringify(chatMessage));
+
+  //   // privateChats.set(tab, []);
+  //   // setPrivateChats(new Map(privateChats));
+  // };
+
+  // const onPrivateMessage = (payload) => {
+  //   console.log(">>>>>>>>payload", payload);
+  //   var payloadData = JSON.parse(payload.body);
+  //   // if (privateChats.get(payloadData.senderName)) {
+  //   //   privateChats.get(payloadData.senderName).push(payloadData);
+  //   //   // setPrivateChats(new Map(privateChats));
+  //   // } else {
+  //   //   let list = [];
+  //   //   list.push(payloadData);
+  //   //   // privateChats.set(payloadData.senderName, list);
+  //   //   // setPrivateChats(new Map(privateChats));
+  //   // }
+  // };
+
+  // const onError = (err) => {
+  //   console.log(">>>>>>sokcet erorerr", err);
+  // };
+
+  // const sendPrivateValue = () => {
+  //   if (stompClient) {
+  //     var chatMessage = {
+  //       senderName: userData.username,
+  //       receiverName: "admin",
+  //       message: userData.message,
+  //       status: "MESSAGE",
+  //     };
+  //     console.log(">>>>>send message", chatMessage);
+  //     // if (userData.username !== tab) {
+  //     //   privateChats.get(tab).push(chatMessage);
+  //     //   setPrivateChats(new Map(privateChats));
+  //     // }
+  //     stompClient.send("/app/private", {}, JSON.stringify(chatMessage));
+  //     // setUserData({ ...userData, message: "" });
+  //   }
+  //   console.log(">>>>>stomp null");
+  // };
 
   const loadData = async () => {
     setFormLoading(true);
@@ -246,6 +447,7 @@ function DetailDevice() {
         //update table
         setDataHistory([...dataHistory, res.data]);
         message.success("Thêm mới thành công");
+        send();
         form.resetFields();
         resetFormHistory();
         setFormLoading(false);
@@ -276,7 +478,7 @@ function DetailDevice() {
 
           data = data.filter((item) => item.id !== maintenanceId);
           setDataHistory(data);
-
+          handleCancelEditHistory();
           message.success("Xóa thành công");
         } else {
           message.warning("Không thể xóa");
@@ -411,13 +613,18 @@ function DetailDevice() {
         console.log(">>>>save switch hub select", res.data);
         // setHubList(res.data);
         message.success(`Chuyển thiết bị thành công`);
-        openModalSwitch(false);
-        loadData();
+        setOpenModalSwitch(false);
+        // loadData();
+        send();
         setFormLoading(false);
+        navigate("/manager", {
+          state: { from: location },
+          replace: true,
+        });
       })
       .catch((err) => {
         console.log("save switch hub error", err);
-        openModalSwitch(false);
+        setOpenModalSwitch(false);
         setFormLoading(false);
         message.error(`Chuyển thiết bị thành công`);
         // navigate("/login", { state: { from: location }, replace: true });
@@ -668,6 +875,7 @@ function DetailDevice() {
                       className="datePicker"
                       selected={dateMaintenance}
                       dateFormat="yyyy-MM-dd"
+                      disabled={isEditTable}
                       onChange={(date) => {
                         console.log(">>>>>date", date.toLocaleDateString());
                         setDateMaintenance(date);
@@ -795,7 +1003,18 @@ function DetailDevice() {
     },
   ];
 
-  return (
+  const send = () => {
+    var sendMessage = {
+      senderName: userData.username,
+      receiverName: userData.receiverName,
+      message: "",
+      status: "MESSAGE",
+      action: "EDIT_MAINTENANCE",
+    };
+    sendPrivateValue(stompClient, sendMessage);
+  };
+
+  return localStorage.getItem("isLogin") ? (
     <>
       <div className="container">
         <div className="main-container">
@@ -928,6 +1147,7 @@ function DetailDevice() {
                               onClick={() => {
                                 handleOpenModalSwitch();
                               }}
+                              title="Chuyển thiết bị đến phòng Hub khác"
                             >
                               Chuyển thiết bị
                             </button>
@@ -940,7 +1160,12 @@ function DetailDevice() {
                             </button> */}
 
                             <RollbackOutlined
-                              onClick={() => navigate(-1)}
+                              onClick={() =>
+                                navigate("/manager", {
+                                  state: { from: location },
+                                  replace: true,
+                                })
+                              }
                               className="buttonRollBack"
                               title="Quay lại"
                             />
@@ -990,7 +1215,11 @@ function DetailDevice() {
       />
       {formLoading && <SpanLoading />}
     </>
+  ) : (
+    <div>
+      Bạn cần <a href="/login"> đăng nhập</a>
+    </div>
   );
-}
+};
 
 export default DetailDevice;

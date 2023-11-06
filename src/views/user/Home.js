@@ -33,7 +33,7 @@ const Home = () => {
   const [inputSearch, setInputSearch] = useState("");
 
   useEffect(() => {
-    loadData();
+    localStorage.getItem("isLogin") && loadData();
   }, []);
 
   const loadData = async () => {
@@ -141,7 +141,7 @@ const Home = () => {
     return result;
   }, []);
 
-  return (
+  return localStorage.getItem("isLogin") ? (
     <>
       <div className="container">
         <h4>Trang chủ</h4>
@@ -189,89 +189,97 @@ const Home = () => {
             </tr>
           </thead>
           <tbody>
-            {dataSource.map((el, index) => (
-              <>
-                {cellTableTitle[index] > 0 && (
+            {dataSource && dataSource.length > 0 ? (
+              dataSource.map((el, index) => (
+                <>
+                  {cellTableTitle[index] > 0 && (
+                    <tr>
+                      <th className="deviceTitle" colSpan={21}>
+                        {el.branchName} ( {el.deputyTechnicalDirector}{" "}
+                        {el.phoneDeputyTechnicalDirector})
+                      </th>
+                    </tr>
+                  )}
+
                   <tr>
-                    <th className="deviceTitle" colSpan={21}>
-                      {el.branchName} ( {el.deputyTechnicalDirector}{" "}
-                      {el.phoneDeputyTechnicalDirector})
-                    </th>
-                  </tr>
-                )}
+                    {rowSpan[index] > 0 && (
+                      <>
+                        <td rowSpan={rowSpan[index]}>{el.hubId}</td>
 
-                <tr>
-                  {rowSpan[index] > 0 && (
-                    <>
-                      <td rowSpan={rowSpan[index]}>{el.hubId}</td>
+                        <td rowSpan={rowSpan[index]}>{el.hubAddress}</td>
+                        <td rowSpan={rowSpan[index]}>{el.hubManagerName}</td>
+                        <td rowSpan={rowSpan[index]}>{el.hubManagerPhone}</td>
+                        <td rowSpan={rowSpan[index]}>{el.fullname}</td>
+                      </>
+                    )}
+                    {clos[index] > 0 && (
+                      <td
+                        style={{ background: "#" + el.backgroundColor }}
+                        rowSpan={clos[index]}
+                      >
+                        {el.deviceName}
+                      </td>
+                    )}
 
-                      <td rowSpan={rowSpan[index]}>{el.hubAddress}</td>
-                      <td rowSpan={rowSpan[index]}>{el.hubManagerName}</td>
-                      <td rowSpan={rowSpan[index]}>{el.hubManagerPhone}</td>
-                      <td rowSpan={rowSpan[index]}>{el.fullname}</td>
-                    </>
-                  )}
-                  {clos[index] > 0 && (
-                    <td
-                      style={{ background: "#" + el.backgroundColor }}
-                      rowSpan={clos[index]}
-                    >
-                      {el.deviceName}
+                    <td style={{ background: "#" + el.backgroundColor }}>
+                      {el.trademark}
                     </td>
-                  )}
-
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.trademark}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.ratedPower}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.loadDuringPowerOutage}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.batteryQuantity}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.batteryNumber}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.batteryCapacity}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.productionTime}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.conductorType}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.cbPower}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.schneider}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.yearInstall}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.number}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.currentStatus}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    <span
-                      className="spanButton"
-                      onClick={() => {
-                        showModalHistory(el);
-                      }}
-                    >
-                      {el.latestMaintenanceTime}
-                    </span>
-                  </td>
-                </tr>
-              </>
-            ))}
+                    <td style={{ background: "#" + el.backgroundColor }}>
+                      {el.ratedPower}
+                    </td>
+                    <td style={{ background: "#" + el.backgroundColor }}>
+                      {el.loadDuringPowerOutage}
+                    </td>
+                    <td style={{ background: "#" + el.backgroundColor }}>
+                      {el.batteryQuantity}
+                    </td>
+                    <td style={{ background: "#" + el.backgroundColor }}>
+                      {el.batteryNumber}
+                    </td>
+                    <td style={{ background: "#" + el.backgroundColor }}>
+                      {el.batteryCapacity}
+                    </td>
+                    <td style={{ background: "#" + el.backgroundColor }}>
+                      {el.productionTime}
+                    </td>
+                    <td style={{ background: "#" + el.backgroundColor }}>
+                      {el.conductorType}
+                    </td>
+                    <td style={{ background: "#" + el.backgroundColor }}>
+                      {el.cbPower}
+                    </td>
+                    <td style={{ background: "#" + el.backgroundColor }}>
+                      {el.schneider}
+                    </td>
+                    <td style={{ background: "#" + el.backgroundColor }}>
+                      {el.yearInstall}
+                    </td>
+                    <td style={{ background: "#" + el.backgroundColor }}>
+                      {el.number}
+                    </td>
+                    <td style={{ background: "#" + el.backgroundColor }}>
+                      {el.currentStatus}
+                    </td>
+                    <td style={{ background: "#" + el.backgroundColor }}>
+                      <span
+                        className="spanButton"
+                        onClick={() => {
+                          showModalHistory(el);
+                        }}
+                      >
+                        {el.latestMaintenanceTime}
+                      </span>
+                    </td>
+                  </tr>
+                </>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={21} className="noData" style={{ fontSize: 24 }}>
+                  No data
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -285,6 +293,10 @@ const Home = () => {
       />
       {formLoading && <SpanLoading />}
     </>
+  ) : (
+    <div>
+      Bạn cần <a href="/login"> đăng nhập</a>
+    </div>
   );
 };
 

@@ -93,9 +93,12 @@ code {
 }
 
 .buttonRollBack {
-  margin-left: 5px;
+  margin-left: 10px;
   cursor: pointer;
-  color: #ff4800;
+  color: #f5f4f3;
+  background-color: #ff4800;
+  padding: 5px;
+  border-radius: 5px;
 }
 
 .buttonEditCell {

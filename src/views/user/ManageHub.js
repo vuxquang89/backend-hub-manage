@@ -18,7 +18,7 @@ import ModalAddHistory from "./ModalAddHistory";
 import useLogout from "../../hooks/useLogout";
 import { toast } from "react-toastify";
 
-function ManageHub() {
+const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
   const logout = useLogout();
   const { Search } = Input;
   const { setAuth } = useContext(AuthContext);
@@ -47,13 +47,26 @@ function ManageHub() {
   const [inputSearch, setInputSearch] = useState("");
 
   useEffect(() => {
-    loadData();
+    localStorage.getItem("isLogin") && loadData();
+
+    //receive(stompClient, userData.receiverName);
   }, []);
+
+  const sendSocket = () => {
+    var sendMessage = {
+      senderName: userData.username,
+      receiverName: userData.receiverName,
+      message: "",
+      status: "MESSAGE",
+      action: "EDIT_MAINTENANCE",
+    };
+    sendPrivateValue(stompClient, sendMessage);
+  };
 
   const loadData = async () => {
     setFormLoading(true);
     await axiosPrivate
-      .get("/api/hub/detail")
+      .get("/api/hub/manager/detail")
       .then((res) => {
         console.log(">>>>get list hub detail", res.data);
         setDataSource(res.data);
@@ -175,14 +188,16 @@ function ManageHub() {
         maintenanceNote: record.maintenanceNote,
       })
       .then((res) => {
+        const result = res.data;
         console.log(">>>>add new history", res.data);
 
         //update table
-        updateData();
+        updateData(result.hubDetailResponse);
 
         console.log(">>>update data source", dataSource);
         message.success("Thêm mới thành công");
         form.resetFields();
+        sendSocket();
         setOpenHistory(false);
         setDatePickerHistory("");
         setIsLoading(false);
@@ -197,10 +212,16 @@ function ManageHub() {
   };
 
   //update dataSource after addNew history
-  const updateData = async () => {
+  const updateData = async (res) => {
+    let alarmMaintenanceStatus = res.alarmMaintenanceStatus;
+    console.log(">>>>>>>>>result data", alarmMaintenanceStatus);
     const updateHubDetailArray = dataSource.map((hubDetail) => {
       if (hubDetail.hubDetailId === hubDetailId) {
-        return { ...hubDetail, latestMaintenanceTime: datePickerHistory };
+        return {
+          ...hubDetail,
+          latestMaintenanceTime: datePickerHistory,
+          alarmMaintenanceStatus: alarmMaintenanceStatus,
+        };
       } else {
         return hubDetail;
       }
@@ -260,7 +281,7 @@ function ManageHub() {
   const getDataSearch = async (value) => {
     setFormLoading(true);
     await axiosPrivate
-      .get("/api/hub/detail/search/" + value)
+      .get("/api/hub/manager/detail/search/" + value)
       .then((res) => {
         console.log(">>>>get list hub detail search", res.data);
         setDataSource(res.data);
@@ -279,55 +300,57 @@ function ManageHub() {
   let nameTableTitle = {};
   let cellTableTitle = {};
 
-  const rowSpan = dataSource.reduce((result, item, key) => {
-    if (namesArr[item.hubId] === undefined) {
-      namesArr[item.hubId] = key;
-      result[key] = 1;
-      names[item.deviceName] = key;
-      clos[key] = 1;
-      nameTableTitle[item.branchId] = key;
-      cellTableTitle[key] = 1;
-    } else {
-      const firstIndex = namesArr[item.hubId];
-      const idex = names[item.deviceName];
-      const iCell = nameTableTitle[item.branchId];
-
-      if (item.branchId === dataSource[key - 1].branchId) {
-        cellTableTitle[iCell]++;
-        cellTableTitle[key] = 0;
-      } else {
-        cellTableTitle[key] = 1;
-        nameTableTitle[item.branchId] = key;
-      }
-
-      if (
-        firstIndex === key - 1 ||
-        (item.hubId === dataSource[key - 1].hubId && result[key - 1] === 0)
-      ) {
-        result[firstIndex]++;
-        result[key] = 0;
-      } else {
-        result[key] = 1;
+  const rowSpan =
+    dataSource &&
+    dataSource.reduce((result, item, key) => {
+      if (namesArr[item.hubId] === undefined) {
         namesArr[item.hubId] = key;
-      }
-
-      if (
-        idex === key - 1 ||
-        (item.deviceName === dataSource[key - 1].deviceName &&
-          clos[key - 1] === 0)
-      ) {
-        clos[idex]++;
-        clos[key] = 0;
-      } else {
-        clos[key] = 1;
+        result[key] = 1;
         names[item.deviceName] = key;
+        clos[key] = 1;
+        nameTableTitle[item.branchId] = key;
+        cellTableTitle[key] = 1;
+      } else {
+        const firstIndex = namesArr[item.hubId];
+        const idex = names[item.deviceName];
+        const iCell = nameTableTitle[item.branchId];
+
+        if (item.branchId === dataSource[key - 1].branchId) {
+          cellTableTitle[iCell]++;
+          cellTableTitle[key] = 0;
+        } else {
+          cellTableTitle[key] = 1;
+          nameTableTitle[item.branchId] = key;
+        }
+
+        if (
+          firstIndex === key - 1 ||
+          (item.hubId === dataSource[key - 1].hubId && result[key - 1] === 0)
+        ) {
+          result[firstIndex]++;
+          result[key] = 0;
+        } else {
+          result[key] = 1;
+          namesArr[item.hubId] = key;
+        }
+
+        if (
+          idex === key - 1 ||
+          (item.deviceName === dataSource[key - 1].deviceName &&
+            clos[key - 1] === 0)
+        ) {
+          clos[idex]++;
+          clos[key] = 0;
+        } else {
+          clos[key] = 1;
+          names[item.deviceName] = key;
+        }
       }
-    }
 
-    return result;
-  }, []);
+      return result;
+    }, []);
 
-  return (
+  return localStorage.getItem("isLogin") ? (
     <>
       <div className="container">
         <h4>Quản lý thiết bị</h4>
@@ -377,116 +400,222 @@ function ManageHub() {
             </tr>
           </thead>
           <tbody>
-            {dataSource.map((el, index) => (
-              <>
-                {cellTableTitle[index] > 0 && (
-                  <tr>
-                    <th className="deviceTitle" colSpan={21}>
-                      {el.branchName} ( {el.deputyTechnicalDirector}{" "}
-                      {el.phoneDeputyTechnicalDirector})
-                    </th>
-                  </tr>
-                )}
-
-                <tr>
-                  {rowSpan[index] > 0 && (
-                    <>
-                      <td rowSpan={rowSpan[index]}>{el.hubId}</td>
-
-                      <td rowSpan={rowSpan[index]}>{el.hubAddress}</td>
-                      <td rowSpan={rowSpan[index]}>{el.hubManagerName}</td>
-                      <td rowSpan={rowSpan[index]}>{el.hubManagerPhone}</td>
-                      <td rowSpan={rowSpan[index]}>{el.fullname}</td>
-                    </>
+            {dataSource && dataSource.length > 0 ? (
+              dataSource.map((el, index) => (
+                <>
+                  {cellTableTitle[index] > 0 && (
+                    <tr>
+                      <th className="deviceTitle" colSpan={21}>
+                        {el.branchName} ( {el.deputyTechnicalDirector}{" "}
+                        {el.phoneDeputyTechnicalDirector})
+                      </th>
+                    </tr>
                   )}
-                  {clos[index] > 0 && (
+
+                  <tr>
+                    {rowSpan[index] > 0 && (
+                      <>
+                        <td rowSpan={rowSpan[index]}>{el.hubId}</td>
+
+                        <td rowSpan={rowSpan[index]}>{el.hubAddress}</td>
+                        <td rowSpan={rowSpan[index]}>{el.hubManagerName}</td>
+                        <td rowSpan={rowSpan[index]}>{el.hubManagerPhone}</td>
+                        <td rowSpan={rowSpan[index]}>{el.fullname}</td>
+                      </>
+                    )}
+                    {clos[index] > 0 && (
+                      <td
+                        style={{ background: "#" + el.backgroundColor }}
+                        rowSpan={clos[index]}
+                      >
+                        <span
+                          className="spanButton"
+                          onClick={() => showModal(el)}
+                        >
+                          {el.deviceName}
+                        </span>
+                      </td>
+                    )}
+
                     <td
-                      style={{ background: "#" + el.backgroundColor }}
-                      rowSpan={clos[index]}
+                      style={{
+                        background:
+                          el.alarmMaintenanceStatus === 0
+                            ? "#" + el.backgroundColor
+                            : "red",
+                      }}
+                    >
+                      {el.trademark}
+                    </td>
+                    <td
+                      style={{
+                        background:
+                          el.alarmMaintenanceStatus === 0
+                            ? "#" + el.backgroundColor
+                            : "red",
+                      }}
+                    >
+                      {el.ratedPower}
+                    </td>
+                    <td
+                      style={{
+                        background:
+                          el.alarmMaintenanceStatus === 0
+                            ? "#" + el.backgroundColor
+                            : "red",
+                      }}
+                    >
+                      {el.loadDuringPowerOutage}
+                    </td>
+                    <td
+                      style={{
+                        background:
+                          el.alarmMaintenanceStatus === 0
+                            ? "#" + el.backgroundColor
+                            : "red",
+                      }}
+                    >
+                      {el.batteryQuantity}
+                    </td>
+                    <td
+                      style={{
+                        background:
+                          el.alarmMaintenanceStatus === 0
+                            ? "#" + el.backgroundColor
+                            : "red",
+                      }}
+                    >
+                      {el.batteryNumber}
+                    </td>
+                    <td
+                      style={{
+                        background:
+                          el.alarmMaintenanceStatus === 0
+                            ? "#" + el.backgroundColor
+                            : "red",
+                      }}
+                    >
+                      {el.batteryCapacity}
+                    </td>
+                    <td
+                      style={{
+                        background:
+                          el.alarmMaintenanceStatus === 0
+                            ? "#" + el.backgroundColor
+                            : "red",
+                      }}
+                    >
+                      {el.productionTime}
+                    </td>
+                    <td
+                      style={{
+                        background:
+                          el.alarmMaintenanceStatus === 0
+                            ? "#" + el.backgroundColor
+                            : "red",
+                      }}
+                    >
+                      {el.conductorType}
+                    </td>
+                    <td
+                      style={{
+                        background:
+                          el.alarmMaintenanceStatus === 0
+                            ? "#" + el.backgroundColor
+                            : "red",
+                      }}
+                    >
+                      {el.cbPower}
+                    </td>
+                    <td
+                      style={{
+                        background:
+                          el.alarmMaintenanceStatus === 0
+                            ? "#" + el.backgroundColor
+                            : "red",
+                      }}
+                    >
+                      {el.schneider}
+                    </td>
+                    <td
+                      style={{
+                        background:
+                          el.alarmMaintenanceStatus === 0
+                            ? "#" + el.backgroundColor
+                            : "red",
+                      }}
+                    >
+                      {el.yearInstall}
+                    </td>
+                    <td
+                      style={{
+                        background:
+                          el.alarmMaintenanceStatus === 0
+                            ? "#" + el.backgroundColor
+                            : "red",
+                      }}
+                    >
+                      {el.number}
+                    </td>
+                    <td
+                      style={{
+                        background:
+                          el.alarmMaintenanceStatus === 0
+                            ? "#" + el.backgroundColor
+                            : "red",
+                      }}
+                    >
+                      {el.currentStatus}
+                    </td>
+                    <td
+                      style={{
+                        background:
+                          el.alarmMaintenanceStatus === 0
+                            ? "#" + el.backgroundColor
+                            : "red",
+                      }}
                     >
                       <span
                         className="spanButton"
-                        onClick={() => showModal(el)}
+                        onClick={() => {
+                          showModalHistory(el);
+                        }}
                       >
-                        {el.deviceName}
+                        {el.latestMaintenanceTime}
                       </span>
                     </td>
-                  )}
-
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.trademark}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.ratedPower}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.loadDuringPowerOutage}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.batteryQuantity}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.batteryNumber}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.batteryCapacity}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.productionTime}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.conductorType}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.cbPower}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.schneider}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.yearInstall}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.number}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    {el.currentStatus}
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    <span
-                      className="spanButton"
-                      onClick={() => {
-                        showModalHistory(el);
-                      }}
-                    >
-                      {el.latestMaintenanceTime}
-                    </span>
-                  </td>
-                  <td style={{ background: "#" + el.backgroundColor }}>
-                    <Link to={"/manager/hub/device/" + el.hubDetailId}>
-                      <EditOutlined className="buttonIconEdit" />
-                    </Link>
-                    <Popconfirm
-                      title="Alarm"
-                      description="Bạn có chắc muốn xóa?"
-                      placement="topRight"
-                      onConfirm={popConfirmDeleteDevice}
-                      onCancel={cancel}
-                      okText="Yes"
-                      cancelText="No"
-                    >
-                      <DeleteOutlined
-                        className="buttonIconDelete"
-                        onClick={() => {
-                          setHubDetailId(el.hubDetailId);
-                          console.log("Delete click", el.hubDetailId);
-                        }}
-                      />
-                    </Popconfirm>
-                  </td>
-                </tr>
-              </>
-            ))}
+                    <td style={{ background: "#" + el.backgroundColor }}>
+                      <Link to={"/manager/hub/device/" + el.hubDetailId}>
+                        <EditOutlined className="buttonIconEdit" />
+                      </Link>
+                      <Popconfirm
+                        title="Alarm"
+                        description="Bạn có chắc muốn xóa?"
+                        placement="topRight"
+                        onConfirm={popConfirmDeleteDevice}
+                        onCancel={cancel}
+                        okText="Yes"
+                        cancelText="No"
+                      >
+                        <DeleteOutlined
+                          className="buttonIconDelete"
+                          onClick={() => {
+                            setHubDetailId(el.hubDetailId);
+                            console.log("Delete click", el.hubDetailId);
+                          }}
+                        />
+                      </Popconfirm>
+                    </td>
+                  </tr>
+                </>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={21} className="noData" style={{ fontSize: 24 }}>
+                  No data
+                </td>
+              </tr>
+            )}
             {/* <tr> */}
             {/* <td>BTE_BTE</td> */}
             {/* <td>Bến tre</td> */}
@@ -909,11 +1038,13 @@ function ManageHub() {
             {/* <td>Bến tre</td> */}
             {/* <td>Nguyễn Minh Luân</td> */}
             {/* <td>0901811307</td> */}
-            {/* <td>DUY</td> */}?{/* <td>BTE_BTE</td> */}
+            {/* <td>DUY</td> */}
+            {/* <td>BTE_BTE</td> */}
             {/* <td>Bến tre</td> */}
             {/* <td>Nguyễn Minh Luân</td> */}
             {/* <td>0901811307</td> */}
-            {/* <td>DUY</td> */}?{/* <td>BTE_BTE</td> */}
+            {/* <td>DUY</td> */}
+            {/* <td>BTE_BTE</td> */}
             {/* <td>Bến tre</td> */}
             {/* <td>Nguyễn Minh Luân</td> */}
             {/* <td>0901811307</td> */}
@@ -958,7 +1089,11 @@ function ManageHub() {
       />
       {formLoading && <SpanLoading />}
     </>
+  ) : (
+    <div>
+      Bạn cần <a href="/login"> đăng nhập</a>
+    </div>
   );
-}
+};
 
 export default ManageHub;

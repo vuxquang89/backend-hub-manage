@@ -15,7 +15,7 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { DeleteOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
 
-function HubDetail() {
+const HubDetail = () => {
   const axiosPrivate = useAxiosPrivate();
   const [getData, setGetData] = useState(false);
   const [dataSource, setDataSource] = useState([]);
@@ -31,7 +31,7 @@ function HubDetail() {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    getHubByUsername();
+    localStorage.getItem("isLogin") && getHubByUsername();
   }, []);
 
   const listItemDevice = [
@@ -122,7 +122,7 @@ function HubDetail() {
       });
   };
 
-  return (
+  return localStorage.getItem("isLogin") ? (
     <>
       <div className="container">
         <div className="main-container">
@@ -401,7 +401,11 @@ function HubDetail() {
     /> */}
       {formLoading && <SpanLoading />}
     </>
+  ) : (
+    <div>
+      Bạn cần <a href="/login"> đăng nhập</a>
+    </div>
   );
-}
+};
 
 export default HubDetail;

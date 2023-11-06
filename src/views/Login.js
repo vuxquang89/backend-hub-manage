@@ -8,7 +8,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "../API/axios";
 const LOGIN_URL = "/api/auth/login";
 
-function Login() {
+const Login = ({ connectSocket }) => {
   const { setAuth } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,8 +34,10 @@ function Login() {
       const accessToken = response?.data?.accessToken;
       const refreshToken = response?.data?.refreshToken;
       const roles = response?.data?.roles;
+      //const username = response?.data?.username;
 
       localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("username", username);
       localStorage.setItem("isLogin", true);
 
       console.log(roles);
@@ -48,6 +50,8 @@ function Login() {
       } else {
         navigate(from, { replace: true });
       }
+      connectSocket();
+      message.success("Đăng nhập thành công");
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No server response");
@@ -60,8 +64,6 @@ function Login() {
       }
       errRef.current.focus();
     }
-
-    message.success("Đăng nhập thành công");
   };
   return (
     <>
@@ -114,6 +116,6 @@ function Login() {
       <div className="bg"></div>
     </>
   );
-}
+};
 
 export default Login;

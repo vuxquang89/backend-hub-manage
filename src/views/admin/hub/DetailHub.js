@@ -152,6 +152,7 @@ function DetailHub() {
             <RollbackOutlined
               onClick={() => navigate(-1)}
               className="buttonRollBack"
+              title="Quay lại"
             />
           </div>
         </div>

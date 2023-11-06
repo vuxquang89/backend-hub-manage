@@ -29,6 +29,8 @@ import DetailHub from "./views/admin/hub/DetailHub";
 import ManageHub from "./views/user/ManageHub";
 import PersistentLogin from "./components/PersistentLogin";
 import HubDetail from "./views/user/HubDetail";
+import { useEffect, useState } from "react";
+import { BASE_URL } from "./config/config";
 
 const ROLES = {
   User: "ROLE_USER",
@@ -36,7 +38,60 @@ const ROLES = {
   Admin: "ROLE_ADMIN",
 };
 
-function App() {
+const App = () => {
+  const [countAlarm, setCountAlarm] = useState(1);
+  const [stompClient, setStompClient] = useState();
+  const [userData, setUserData] = useState({
+    // username: localStorage.getItem("username"),
+    username: "",
+    receiverName: "",
+    connected: false,
+    message: "",
+  });
+
+  const sendPrivateValue = (stompClient, message) => {
+    if (stompClient) {
+      // var chatMessage = {
+      //   senderName: userData.username,
+      //   receiverName: "vu",
+      //   message: userData.message,
+      //   status: "MESSAGE",
+      //   action: "EDIT_MAINTENANCE",
+      // };
+      console.log(">>>>>>>>send message");
+      stompClient.send("/app/private-message", {}, JSON.stringify(message));
+    }
+  };
+
+  const sendPrivateActionValue = (stompClient, message) => {
+    if (stompClient) {
+      // var chatMessage = {
+      //   senderName: userData.username,
+      //   receiverName: "vu",
+      //   message: userData.message,
+      //   status: "MESSAGE",
+      //   action: "EDIT_MAINTENANCE",
+      // };
+      console.log(">>>>>>>>send message");
+      stompClient?.send("/app/private-message", {}, JSON.stringify(message));
+    }
+  };
+
+  const receive = (stomp, to) => {
+    stomp?.subscribe("/user/" + to + "/private", onPrivateMessage);
+  };
+
+  const onPrivateMessage = (payload) => {
+    console.log(">>>>>>>>>receive message from stomp", payload);
+    var payloadData = JSON.parse(payload.body);
+    if (
+      payloadData.action === "EDIT_MAINTENANCE" ||
+      payloadData.action === "GET_ALARM"
+    ) {
+      setCountAlarm(payloadData.message);
+    }
+  };
+
   return (
     // <div className="App">
     //   {/* <Header /> */}
@@ -69,7 +124,15 @@ function App() {
       <Route
         path="/"
         element={
-          <Layout allowedRoles={[ROLES.User, ROLES.Admin, ROLES.Manager]} />
+          <Layout
+            countAlarm={countAlarm}
+            userData={userData}
+            setUserData={setUserData}
+            setCountAlarm={setCountAlarm}
+            setStompClient={setStompClient}
+            sendPrivateValue={sendPrivateValue}
+            allowedRoles={[ROLES.User, ROLES.Admin, ROLES.Manager]}
+          />
         }
       >
         {/* public routes */}
@@ -90,11 +153,28 @@ function App() {
           </Route>
 
           <Route element={<RequireAuth allowedRoles={[ROLES.Manager]} />}>
-            <Route path="manager" element={<ManageHub />} />
+            <Route
+              path="manager"
+              element={
+                <ManageHub
+                  userData={userData}
+                  stompClient={stompClient}
+                  receive={receive}
+                  sendPrivateValue={sendPrivateActionValue}
+                />
+              }
+            />
             <Route path="manager/hub" element={<HubDetail />} />
             <Route
               path="manager/hub/device/:hubDetailId"
-              element={<DetailDevice />}
+              element={
+                <DetailDevice
+                  userData={userData}
+                  stompClient={stompClient}
+                  receive={receive}
+                  sendPrivateValue={sendPrivateActionValue}
+                />
+              }
             />
           </Route>
 
@@ -126,6 +206,6 @@ function App() {
       </Route>
     </Routes>
   );
-}
+};
 
 export default App;

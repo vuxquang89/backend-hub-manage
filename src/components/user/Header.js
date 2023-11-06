@@ -23,7 +23,7 @@ import { Link, useNavigate } from "react-router-dom";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import useAuth from "../../hooks/useAuth";
 
-function UserHeader() {
+const UserHeader = ({ countAlarm }) => {
   const axiosPrivate = useAxiosPrivate();
   const { auth } = useAuth();
   const logout = useLogout();
@@ -31,6 +31,7 @@ function UserHeader() {
   const [openMenu, setOpenMenu] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [alarm, setAlarm] = useState([]);
+  const [initLoading, setInitLoading] = useState(false);
 
   const items = [
     {
@@ -48,19 +49,27 @@ function UserHeader() {
     },
   ];
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   getAlarm();
+  // }, []);
+
+  const loadAlarm = () => {
     getAlarm();
-  }, []);
+  };
 
   const getAlarm = async () => {
+    setInitLoading(true);
     await axiosPrivate
       .get("/api/hub/detail/alarm")
       .then((res) => {
         console.log(">>>>get list alarm", res.data);
         setAlarm(res.data);
+        setInitLoading(false);
+        setNotificationOpen(true);
       })
       .catch((err) => {
         console.log("get list alarm error", err);
+        setInitLoading(false);
       });
   };
 
@@ -97,14 +106,14 @@ function UserHeader() {
           {auth.roles[0] === "ROLE_MANAGER" ? (
             <>
               <Badge
-                count={alarm.length}
+                count={countAlarm}
                 // count={5}
                 className="bellFill"
               >
                 <BellFilled
                   style={{ fontSize: 18 }}
                   onClick={() => {
-                    setNotificationOpen(true);
+                    loadAlarm();
                   }}
                 />
               </Badge>
@@ -119,10 +128,15 @@ function UserHeader() {
               >
                 <List
                   dataSource={alarm}
+                  loading={initLoading}
                   renderItem={(item) => {
                     return (
                       <Link to={`/manager/hub/device/${item.hubDetailId}`}>
-                        <List.Item>
+                        <List.Item
+                          onClick={() => {
+                            setNotificationOpen(false);
+                          }}
+                        >
                           Thiết bị{" "}
                           <strong>
                             {item.deviceName}({item.hubDetailId})
@@ -199,6 +213,6 @@ function UserHeader() {
       </Drawer>
     </div>
   );
-}
+};
 
 export default UserHeader;
