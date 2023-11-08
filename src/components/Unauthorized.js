@@ -1,9 +1,9 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Unauthorized = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const goBack = () => navigate(-1);
+  // const goBack = () => navigate(-1);
 
   return (
     <section>
@@ -11,7 +11,8 @@ const Unauthorized = () => {
       <br />
       <p>You do not have access to the requested page.</p>
       <div className="flexGrow">
-        <button onClick={goBack}>Go Back</button>
+        {/* <button onClick={goBack}>Go Back</button> */}
+        <Link to="/">Go Homepage</Link>
       </div>
     </section>
   );

@@ -36,7 +36,7 @@ function DetailHub() {
   const [hubCity, setHubCity] = useState("");
   const [hubManagerName, setHubManagerName] = useState("");
   const [hubManagerPhone, setHubManagerPhone] = useState("");
-  const [userId, setUserId] = useState("");
+  const [userValue, setUserValue] = useState("");
 
   useEffect(() => {
     const getData = async () => {
@@ -48,7 +48,7 @@ function DetailHub() {
           console.log(">>>>>add branch result", res.data);
           if (result.status === 100) {
             setBranchValue(result.hubResponse.branchResponse.branchId);
-            setUserId(result.hubResponse.userResponse.id);
+            setUserValue(result.hubResponse.userResponse.id);
             setHubName(result.hubResponse.hubName);
             setHubAddress(result.hubResponse.hubAddress);
             setHubCity(result.hubResponse.hubCity);
@@ -114,7 +114,7 @@ function DetailHub() {
     setFormLoading(true);
     await axiosPrivate
       .put(`/api/hub/${id}`, {
-        userId: userId,
+        userId: userValue,
         branchId: branchValue,
         hubName: record.hubName,
         hubAddress: record.hubAddress,
@@ -126,7 +126,7 @@ function DetailHub() {
         console.log(">>>>> update hub", res.data);
         let result = res.data;
         setBranchValue(result.branchResponse.branchId);
-        setUserId(result.userResponse.id);
+        setUserValue(result.userResponse.id);
         setHubName(result.hubName);
         setHubAddress(result.hubAddress);
         setHubCity(result.hubCity);
@@ -175,7 +175,7 @@ function DetailHub() {
                   className="userUpdateForm"
                 >
                   <Row>
-                    <Col span={12}>
+                    <Col span={24}>
                       <div className="userUpdateItem">
                         <InputCustom
                           {...hubName_validation}
@@ -230,7 +230,7 @@ function DetailHub() {
                     </Col>
                   </Row>
                   <Row>
-                    <Col span={12}>
+                    <Col span={24}>
                       <div className="userUpdateItem">
                         <label className="label-input font-semibold capitalize ">
                           Thuộc chi nhánh
@@ -283,10 +283,10 @@ function DetailHub() {
                           }
                           onChange={(e, value) => {
                             console.log(">>> check select onchange:", e);
-                            setUserId(e);
+                            setUserValue(e);
                           }}
                           options={listUserManager}
-                          value={userId}
+                          value={userValue}
                         />
                       </div>
                       <div className="userUpdateItem">

@@ -77,8 +77,8 @@ export const username_validation = {
       message: "Tối đa 15 ký tự",
     },
     minLength: {
-      value: 5,
-      message: "Tối thiểu 5 ký tự",
+      value: 2,
+      message: "Tối thiểu 2 ký tự",
     },
   },
 };

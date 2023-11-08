@@ -9,7 +9,11 @@ import {
   Popconfirm,
   message,
 } from "antd";
-import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  CloseOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import { userRows } from "../../../API/dummyData";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./ListUser.css";
@@ -60,16 +64,16 @@ function ListUser() {
           let data = dataSource;
 
           data = data.filter((item) => item.id !== id);
-          toast.success("Xóa thành công");
+          toast.success("Đã khoá thành công");
           setDataSource(data);
         } else {
-          toast.warning("Không thể xóa");
+          toast.warning("Không thể khoá tài khoản này");
         }
         setFormLoading(false);
       })
       .catch((err) => {
         console.log(">>>>>delete user error", err);
-        toast.error("Không thể xóa");
+        toast.error("Không thể khoá tài khoản này");
         setFormLoading(false);
       });
   };
@@ -116,6 +120,7 @@ function ListUser() {
           {
             title: "Username",
             dataIndex: "username",
+            key: "username",
             filteredValue: [searchedText],
             onFilter: (value, record) => {
               return (
@@ -135,19 +140,28 @@ function ListUser() {
           {
             title: "Fullname",
             dataIndex: "fullname",
+            key: "fullname",
           },
           {
             title: "Email",
             dataIndex: "email",
+            key: "email",
           },
           {
             title: "Phone",
             dataIndex: "phone",
+            key: "phone",
           },
 
           {
             title: "Role",
-            dataIndex: "role",
+            dataIndex: "rolesName",
+            key: "rolesName",
+          },
+          {
+            title: "Active",
+            dataIndex: "statusName",
+            key: "statusName",
           },
           {
             title: "Action",
@@ -165,20 +179,28 @@ function ListUser() {
                     Edit
                   </button>
                 </Link>
-
-                <Popconfirm
-                  title="Alarm"
-                  description="Bạn có chắc muốn xóa?"
-                  onConfirm={confirmDeleteUser}
-                  onCancel={cancel}
-                  okText="Yes"
-                  cancelText="No"
-                >
-                  <DeleteOutlined
+                {record.status === 1 ? (
+                  <Popconfirm
+                    title="Alarm"
+                    description="Bạn có muốn khoá tài khoản?"
+                    onConfirm={confirmDeleteUser}
+                    onCancel={cancel}
+                    okText="Yes"
+                    cancelText="No"
+                  >
+                    <CloseOutlined
+                      className="btnUserDelete"
+                      onClick={() => handleDeleteOnClick(record)}
+                      title="Khoá tài khoản"
+                    />
+                  </Popconfirm>
+                ) : (
+                  <CloseOutlined
+                    disabled
+                    title="Khoá tài khoản"
                     className="btnUserDelete"
-                    onClick={() => handleDeleteOnClick(record)}
                   />
-                </Popconfirm>
+                )}
               </>
             ),
           },

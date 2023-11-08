@@ -33,6 +33,7 @@ function EditUser() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState(3);
+  const [activate, setActivate] = useState(0);
 
   const [formLoading, setFormLoading] = useState(false);
 
@@ -58,7 +59,8 @@ function EditUser() {
           setEmail(response.email);
           setFullname(response.fullname);
           setPhone(response.phone);
-          setRole(response.roles[0]);
+          setRole(response.rolesId[0]);
+          setActivate(response.status);
 
           setStatus(true);
         } else {
@@ -83,6 +85,7 @@ function EditUser() {
         email,
         phone,
         role,
+        status: activate,
       })
       .then((res) => {
         const result = res.data;
@@ -94,7 +97,8 @@ function EditUser() {
           setEmail(response.email);
           setFullname(response.fullname);
           setPhone(response.phone);
-          setRole(response.roles[0]);
+          setRole(response.rolesId[0]);
+          setActivate(response.status);
 
           message.success("Cập nhật thành công");
           setStatus(true);
@@ -142,6 +146,7 @@ function EditUser() {
               <div className="userShowTopTitle">
                 <span className="userShowUsername">
                   {status ? dataSource.fullname : "null"}
+                  {/* {dataSource.fullname} */}
                 </span>
               </div>
             </div>
@@ -151,6 +156,7 @@ function EditUser() {
                 <UserOutlined className="userShowIcon" />
                 <span className="userShowInfoTitle">
                   {status ? dataSource.username : "null"}
+                  {/* {dataSource.username} */}
                 </span>
               </div>
 
@@ -158,12 +164,14 @@ function EditUser() {
                 <PhoneOutlined className="userShowIcon" />
                 <span className="userShowInfoTitle">
                   {status ? dataSource.phone : "null"}
+                  {/* {dataSource.phone} */}
                 </span>
               </div>
               <div className="userShowInfo">
                 <MailOutlined className="userShowIcon" />
                 <span className="userShowInfoTitle">
                   {status ? dataSource.email : "null"}
+                  {/* {dataSource.email} */}
                 </span>
               </div>
             </div>
@@ -210,6 +218,21 @@ function EditUser() {
                           setPhone(e.target.value);
                         }}
                       />
+                    </div>
+                    <div className="userUpdateItem">
+                      <label
+                        for="selectRole"
+                        className="label-input font-semibold capitalize "
+                      >
+                        Trạng thái tài khoản
+                      </label>
+                      <select
+                        value={activate}
+                        onChange={(e) => setActivate(e.target.value)}
+                      >
+                        <option value="0">Đang bị khoá</option>
+                        <option value="1">Đang hoạt động</option>
+                      </select>
                     </div>
                     <div className="userUpdateItem">
                       <label

@@ -39,6 +39,7 @@ function AddBranch() {
     let branchName = form.branchName;
     let deputyTechnicalDirector = form.deputyTechnicalDirector;
     let phoneDeputyTechnicalDirector = form.phoneDeputyTechnicalDirector;
+    let emailDeputyTechnicalDirector = form.emailDeputyTechnicalDirector;
     setFormLoading(true);
     await axiosPrivate
       .post("/api/branch", {
@@ -46,6 +47,7 @@ function AddBranch() {
         branchName,
         deputyTechnicalDirector,
         phoneDeputyTechnicalDirector,
+        emailDeputyTechnicalDirector,
       })
       .then((res) => {
         console.log(">>>>>add branch result", res.data);

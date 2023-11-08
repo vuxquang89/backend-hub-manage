@@ -13,8 +13,8 @@ export const deviceName_validation = {
       message: "Tối đa 30 ký tự",
     },
     minLength: {
-      value: 5,
-      message: "Tối thiểu 5 ký tự",
+      value: 2,
+      message: "Tối thiểu 2 ký tự",
     },
   },
 };
@@ -36,8 +36,8 @@ export const add_deviceName_validation = {
       message: "Tối đa 30 ký tự",
     },
     minLength: {
-      value: 5,
-      message: "Tối thiểu 5 ký tự",
+      value: 2,
+      message: "Tối thiểu 2 ký tự",
     },
   },
 };

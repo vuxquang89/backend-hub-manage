@@ -415,7 +415,9 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
                   <tr>
                     {rowSpan[index] > 0 && (
                       <>
-                        <td rowSpan={rowSpan[index]}>{el.hubId}</td>
+                        <td rowSpan={rowSpan[index]} key={el.hubId}>
+                          {el.hubId}
+                        </td>
 
                         <td rowSpan={rowSpan[index]}>{el.hubAddress}</td>
                         <td rowSpan={rowSpan[index]}>{el.hubManagerName}</td>

@@ -60,7 +60,7 @@ const HubDetail = () => {
   const getHubByUsername = async () => {
     setIsLoading(true);
     await axiosPrivate
-      .get("/api/hub")
+      .get("/api/hub/manager")
       .then((res) => {
         console.log(">>>>get list hub username", res.data);
         setDataSource(res.data);
@@ -135,7 +135,7 @@ const HubDetail = () => {
           <Row>
             <Col span={24}>
               <Row>
-                <Col span={11}>
+                <Col span={12}>
                   <Card>
                     <Row>
                       <Col span={24}>
@@ -200,13 +200,13 @@ const HubDetail = () => {
                     </Row>
                   </Card>
                 </Col>
-                <Col className="ps-12" span={13}>
+                <Col className="ps-12" span={12}>
                   <Row>
                     <Col span={24}>
                       {isAddDevice && (
                         <Card>
                           <Row>
-                            <Col span={12}>
+                            <Col span={24}>
                               <Typography.Title level={5}>
                                 Thêm mới thiết bị cho hub - {hubName}
                               </Typography.Title>

@@ -445,7 +445,8 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
         console.log(">>>>add new history", res.data);
 
         //update table
-        setDataHistory([...dataHistory, res.data]);
+        // setDataHistory([...dataHistory, res.data]);
+        setDataHistory([res.data, ...dataHistory]);
         message.success("Thêm mới thành công");
         send();
         form.resetFields();
@@ -841,7 +842,9 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
           <Form
             //   layout="horizontal"
             form={form}
-            onFinish={(values) => handleAddNewHistory(values)}
+            onFinish={(values) => {
+              !isEditTable && handleAddNewHistory(values);
+            }}
           >
             <Row className="cardBody mb-10">
               <Col span={8}>
@@ -880,6 +883,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                         console.log(">>>>>date", date.toLocaleDateString());
                         setDateMaintenance(date);
                       }}
+                      minDate={moment().toDate()}
                     />
 
                     {/* <input

@@ -62,7 +62,10 @@ const Home = () => {
     console.log(record);
     setIsLoading(true);
     setDateMaintenance(record.dateMaintenance);
-    setDataViewHistory(record.maintenanceHistories);
+    var obj = [...record.maintenanceHistories];
+    obj.sort((a, b) => b.maintenanseId - a.maintenanseId);
+
+    setDataViewHistory(obj);
     setIsLoading(false);
     setOpen(true);
   };
@@ -204,7 +207,9 @@ const Home = () => {
                   <tr>
                     {rowSpan[index] > 0 && (
                       <>
-                        <td rowSpan={rowSpan[index]}>{el.hubId}</td>
+                        <td rowSpan={rowSpan[index]} key={el.hubId}>
+                          {el.hubId}
+                        </td>
 
                         <td rowSpan={rowSpan[index]}>{el.hubAddress}</td>
                         <td rowSpan={rowSpan[index]}>{el.hubManagerName}</td>

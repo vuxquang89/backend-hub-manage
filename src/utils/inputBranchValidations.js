@@ -83,10 +83,10 @@ export const phone_validation = {
 };
 
 export const email_validation = {
-  name: "email",
-  label: "email address",
+  name: "emailDeputyTechnicalDirector",
+  label: "Email address",
   type: "email",
-  id: "email",
+  id: "emailDeputyTechnicalDirector",
   placeholder: "Email",
   tickValidation: "*",
   validation: {

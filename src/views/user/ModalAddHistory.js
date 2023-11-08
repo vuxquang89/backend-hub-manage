@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, Row, Col, Space, Form, Input, DatePicker } from "antd";
 import { FormProvider } from "react-hook-form";
 import TextArea from "antd/es/input/TextArea";
+import moment from "moment";
 
 const ModalViewHistory = ({
   open,
@@ -48,7 +49,16 @@ const ModalViewHistory = ({
                   },
                 ]}
               >
-                <DatePicker onChange={onChange} format={dateFormat} />
+                <DatePicker
+                  onChange={onChange}
+                  format={dateFormat}
+                  disabledDate={(current) => {
+                    return (
+                      moment().add(-1, "days") >= current ||
+                      moment().add(1, "month") <= current
+                    );
+                  }}
+                />
               </Form.Item>
             </div>
             <div className="borderItem">
