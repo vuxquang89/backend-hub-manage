@@ -76,8 +76,7 @@ const UserHeader = ({ countAlarm }) => {
   const signOut = async (e) => {
     console.log(">>>logout");
     await logout();
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("isLogin");
+
     navigate("/login");
   };
 

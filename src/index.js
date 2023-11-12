@@ -8,7 +8,7 @@ import AuthProvider from "./context/AuthProvider";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={"/sctvhub"}>
       <AuthProvider>
         <App />
       </AuthProvider>

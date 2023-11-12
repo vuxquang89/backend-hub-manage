@@ -5,6 +5,7 @@ const useRefreshToken = () => {
   const { auth, setAuth } = useAuth();
   console.log(">>>check refreshToken", auth.refreshToken);
   console.log(">>>>local store", localStorage.getItem("refreshToken"));
+  console.log(">>>>local store isLogin", localStorage.getItem("isLogin"));
   const refreshToken = localStorage.getItem("refreshToken");
   const refresh = async () => {
     const response = await axios.post(

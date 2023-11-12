@@ -6,6 +6,7 @@ import useAuth from "../hooks/useAuth";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import axios from "../API/axios";
+import SpanLoading from "../components/loading/SpanLoading";
 const LOGIN_URL = "/api/auth/login";
 
 const Login = ({ connectSocket }) => {
@@ -19,6 +20,7 @@ const Login = ({ connectSocket }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errMsg, setErrMsg] = useState("");
+  const [formLoading, setFormLoading] = useState(false);
 
   useEffect(() => {
     setErrMsg("");
@@ -26,7 +28,7 @@ const Login = ({ connectSocket }) => {
 
   const login = async (e) => {
     console.log(e);
-
+    setFormLoading(true);
     try {
       const response = await axios.post(LOGIN_URL, { username, password });
       console.log(JSON.stringify(response?.data));
@@ -51,8 +53,10 @@ const Login = ({ connectSocket }) => {
         navigate(from, { replace: true });
       }
       connectSocket();
+      setFormLoading(false);
       message.success("Đăng nhập thành công");
     } catch (err) {
+      setFormLoading(false);
       if (!err?.response) {
         setErrMsg("No server response");
       } else if (err.response?.status === 400) {
@@ -84,6 +88,10 @@ const Login = ({ connectSocket }) => {
                 required: true,
                 message: "Cần nhập tên đăng nhập",
               },
+              {
+                pattern: new RegExp(/^[a-zA-Z0-9]*$/),
+                message: "Không nhập khoảng trắng hoặc ký tự đặc biệt",
+              },
             ]}
             label="Tên đăng nhập"
             name={"username"}
@@ -114,6 +122,7 @@ const Login = ({ connectSocket }) => {
         </Form>
       </div>
       <div className="bg"></div>
+      {formLoading && <SpanLoading />}
     </>
   );
 };

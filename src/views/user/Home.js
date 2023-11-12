@@ -72,7 +72,11 @@ const Home = () => {
 
   const onSearch = (value, _e, info) => {
     console.log(info?.source, value);
-    getDataSearch(value);
+    if (value && value.trim().length > 0) {
+      getDataSearch(value);
+    } else {
+      loadData();
+    }
   };
   const getDataSearch = async (value) => {
     setFormLoading(true);
@@ -219,53 +223,49 @@ const Home = () => {
                     )}
                     {clos[index] > 0 && (
                       <td
-                        style={{ background: "#" + el.backgroundColor }}
+                        className={`b-${el.backgroundColor}`}
                         rowSpan={clos[index]}
                       >
                         {el.deviceName}
                       </td>
                     )}
 
-                    <td style={{ background: "#" + el.backgroundColor }}>
+                    <td className={`b-${el.backgroundColor}`}>
                       {el.trademark}
                     </td>
-                    <td style={{ background: "#" + el.backgroundColor }}>
+                    <td className={`b-${el.backgroundColor}`}>
                       {el.ratedPower}
                     </td>
-                    <td style={{ background: "#" + el.backgroundColor }}>
+                    <td className={`b-${el.backgroundColor}`}>
                       {el.loadDuringPowerOutage}
                     </td>
-                    <td style={{ background: "#" + el.backgroundColor }}>
+                    <td className={`b-${el.backgroundColor}`}>
                       {el.batteryQuantity}
                     </td>
-                    <td style={{ background: "#" + el.backgroundColor }}>
+                    <td className={`b-${el.backgroundColor}`}>
                       {el.batteryNumber}
                     </td>
-                    <td style={{ background: "#" + el.backgroundColor }}>
+                    <td className={`b-${el.backgroundColor}`}>
                       {el.batteryCapacity}
                     </td>
-                    <td style={{ background: "#" + el.backgroundColor }}>
+                    <td className={`b-${el.backgroundColor}`}>
                       {el.productionTime}
                     </td>
-                    <td style={{ background: "#" + el.backgroundColor }}>
+                    <td className={`b-${el.backgroundColor}`}>
                       {el.conductorType}
                     </td>
-                    <td style={{ background: "#" + el.backgroundColor }}>
-                      {el.cbPower}
-                    </td>
-                    <td style={{ background: "#" + el.backgroundColor }}>
+                    <td className={`b-${el.backgroundColor}`}>{el.cbPower}</td>
+                    <td className={`b-${el.backgroundColor}`}>
                       {el.schneider}
                     </td>
-                    <td style={{ background: "#" + el.backgroundColor }}>
+                    <td className={`b-${el.backgroundColor}`}>
                       {el.yearInstall}
                     </td>
-                    <td style={{ background: "#" + el.backgroundColor }}>
-                      {el.number}
-                    </td>
-                    <td style={{ background: "#" + el.backgroundColor }}>
+                    <td className={`b-${el.backgroundColor}`}>{el.number}</td>
+                    <td className={`b-${el.backgroundColor}`}>
                       {el.currentStatus}
                     </td>
-                    <td style={{ background: "#" + el.backgroundColor }}>
+                    <td className={`b-${el.backgroundColor}`}>
                       <span
                         className="spanButton"
                         onClick={() => {

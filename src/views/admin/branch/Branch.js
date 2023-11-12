@@ -124,6 +124,7 @@ function Branch() {
             {
               title: "Tên chi nhánh",
               dataIndex: "branchName",
+              key: "branchName",
               filteredValue: [searchedText],
               onFilter: (value, record) => {
                 return (
@@ -142,14 +143,17 @@ function Branch() {
             {
               title: "Giám Đốc KT",
               dataIndex: "deputyTechnicalDirector",
+              key: "deputyTechnicalDirector",
             },
             {
               title: "Số điên thoại",
               dataIndex: "phoneDeputyTechnicalDirector",
+              key: "phoneDeputyTechnicalDirector",
             },
             {
               title: "Email",
               dataIndex: "emailDeputyTechnicalDirector",
+              key: "emailDeputyTechnicalDirector",
             },
             {
               title: "Action",

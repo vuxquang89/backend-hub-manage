@@ -1,5 +1,6 @@
 import axios from "axios";
-const BASE_URL = "http://localhost:8080";
+import { BASE_URL } from "../config/config";
+// const BASE_URL = "http://10.255.254.111:8080/sctv";
 
 export default axios.create({
   baseURL: BASE_URL,

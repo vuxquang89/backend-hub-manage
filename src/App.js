@@ -72,7 +72,7 @@ const App = () => {
       //   status: "MESSAGE",
       //   action: "EDIT_MAINTENANCE",
       // };
-      console.log(">>>>>>>>send message");
+      console.log(">>>>>>>>send message", message);
       stompClient?.send("/app/private-message", {}, JSON.stringify(message));
     }
   };

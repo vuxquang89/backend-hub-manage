@@ -11,12 +11,12 @@ export const hubName_validation = {
       message: "Không được để trống",
     },
     maxLength: {
-      value: 20,
-      message: "Tối đa 20 ký tự",
+      value: 50,
+      message: "Tối đa 50 ký tự",
     },
     minLength: {
-      value: 3,
-      message: "Tối thiểu 3 ký tự",
+      value: 2,
+      message: "Tối thiểu 2 ký tự",
     },
   },
 };
@@ -34,12 +34,12 @@ export const hubCode_validation = {
       message: "Không được để trống",
     },
     maxLength: {
-      value: 30,
-      message: "Tối đa 30 ký tự",
+      value: 50,
+      message: "Tối đa 50 ký tự",
     },
     minLength: {
-      value: 3,
-      message: "Tối thiểu 3 ký tự",
+      value: 2,
+      message: "Tối thiểu 2 ký tự",
     },
   },
 };
@@ -57,12 +57,12 @@ export const hubAddress_validation = {
       message: "Không được để trống",
     },
     maxLength: {
-      value: 30,
-      message: "Tối đa 30 ký tự",
+      value: 60,
+      message: "Tối đa 60 ký tự",
     },
     minLength: {
-      value: 5,
-      message: "Tối thiểu 5 ký tự",
+      value: 2,
+      message: "Tối thiểu 2 ký tự",
     },
   },
 };
@@ -84,8 +84,8 @@ export const hubCity_validation = {
       message: "Tối đa 20 ký tự",
     },
     minLength: {
-      value: 5,
-      message: "Tối thiểu 5 ký tự",
+      value: 2,
+      message: "Tối thiểu 2 ký tự",
     },
   },
 };

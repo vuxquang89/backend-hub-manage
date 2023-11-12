@@ -70,28 +70,28 @@ tr.red th {
   background-color: rgb(3, 150, 22);
 }
 
-.UPS {
+.b-UPS {
   background-color: #b4c6e7;
 }
 
-.B-UPS {
+.b-B-UPS {
   background-color: #dbdbdb;
 }
 
-.MPD {
+.b-MPD {
   background-color: #bdd7ee;
 }
 
-.TD {
+.b-TD {
   background-color: #ffe699;
 }
 
-.ML {
+.b-ML {
   background-color: #c6e0b4;
 }
 
 .deviceTitle {
-  background-color: #f22a2a;
+  background-color: #f37777;
 }
 
 .buttonIconDelete {
@@ -175,4 +175,8 @@ tr.red th {
 .noData {
   text-align: center;
   font-size: 24px;
+}
+
+.b-1 {
+  background-color: #c41212;
 }

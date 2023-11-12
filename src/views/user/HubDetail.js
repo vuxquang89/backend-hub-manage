@@ -12,7 +12,12 @@ import {
   Typography,
 } from "antd";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { DeleteOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EyeOutlined,
+  PlusOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import { toast } from "react-toastify";
 
 const HubDetail = () => {
@@ -29,6 +34,7 @@ const HubDetail = () => {
   const [isAddDevice, setIsAddDevice] = useState(false);
   const [mes, setMes] = useState("");
   const [form] = Form.useForm();
+  const [searchedText, setSearchText] = useState("");
 
   useEffect(() => {
     localStorage.getItem("isLogin") && getHubByUsername();
@@ -125,7 +131,7 @@ const HubDetail = () => {
   return localStorage.getItem("isLogin") ? (
     <>
       <div className="container">
-        <div className="main-container">
+        <div className="main-container-hub-detail">
           <Row>
             <Col span={24} className="title-container">
               <Typography.Title level={3}>Quản lý Hub</Typography.Title>
@@ -139,18 +145,62 @@ const HubDetail = () => {
                   <Card>
                     <Row>
                       <Col span={24}>
-                        <Typography.Title level={5}>
-                          Thông tin Hub
-                        </Typography.Title>
+                        <Row>
+                          <Col span={8}>
+                            <Typography.Title level={5}>
+                              Thông tin Hub
+                            </Typography.Title>
+                          </Col>
+                          <Col span={8}>
+                            <Input
+                              placeholder="Mã / Tên phòng máy ..."
+                              onSearch={(value) => {
+                                setSearchText(value);
+                              }}
+                              onChange={(e) => {
+                                console.log(
+                                  ">>>>>>search text",
+                                  e.target.value
+                                );
+                                setSearchText(e.target.value);
+                              }}
+                              prefix={<SearchOutlined />}
+                            />
+                          </Col>
+                        </Row>
+
                         <Row>
                           <Col span={24}>
                             <Table
                               loading={isLoading}
                               columns={[
                                 {
+                                  title: "Id",
+                                  key: "hubId",
+                                  dataIndex: "hubId",
+                                  hidden: true,
+                                },
+                                {
                                   title: "Phòng máy",
                                   dataIndex: "hubName",
                                   key: "hubName",
+                                  filteredValue: [searchedText],
+                                  onFilter: (value, record) => {
+                                    return (
+                                      String(record.hubName)
+                                        .toLowerCase()
+                                        .includes(value.toLowerCase()) ||
+                                      String(record.hubId)
+                                        .toLowerCase()
+                                        .includes(value.toLowerCase())
+                                    );
+                                    //  ||
+                                    // String(
+                                    //   record.emailDeputyTechnicalDirector
+                                    // )
+                                    // .toLowerCase()
+                                    // .includes(value.toLowerCase())
+                                  },
                                 },
                                 {
                                   title: "Địa chỉ",
@@ -174,8 +224,8 @@ const HubDetail = () => {
                                 },
                                 {
                                   title: "Action",
-                                  key: "hubId",
-                                  dataIndex: "hubId",
+                                  key: "action",
+                                  dataIndex: "action",
                                   render: (text, record) => (
                                     <>
                                       <PlusOutlined

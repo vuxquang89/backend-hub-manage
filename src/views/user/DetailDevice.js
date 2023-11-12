@@ -37,6 +37,7 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { FormProvider, useForm } from "react-hook-form";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import SpanLoading from "../../components/loading/SpanLoading";
+import useAuth from "../../hooks/useAuth";
 
 import ModalMaintenanceHistory from "./ModalMaintenanceHistory";
 import moment from "moment";
@@ -46,6 +47,7 @@ import { over } from "stompjs";
 import SockJS from "socketjs-client";
 
 const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
+  const { auth } = useAuth();
   const axiosPrivate = useAxiosPrivate();
   let { hubDetailId } = useParams();
   const [form] = Form.useForm();
@@ -1009,12 +1011,13 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
 
   const send = () => {
     var sendMessage = {
-      senderName: userData.username,
-      receiverName: userData.receiverName,
+      senderName: auth.username,
+      receiverName: auth.username,
       message: "",
       status: "MESSAGE",
       action: "EDIT_MAINTENANCE",
     };
+    console.log(">>>>>>>>>>>>>username send edit", auth.username);
     sendPrivateValue(stompClient, sendMessage);
   };
 

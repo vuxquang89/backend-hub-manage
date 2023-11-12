@@ -17,11 +17,12 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import ModalAddHistory from "./ModalAddHistory";
 import useLogout from "../../hooks/useLogout";
 import { toast } from "react-toastify";
+import moment from "moment";
 
 const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
   const logout = useLogout();
   const { Search } = Input;
-  const { setAuth } = useContext(AuthContext);
+  const { auth, setAuth } = useContext(AuthContext);
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
   const location = useLocation();
@@ -53,9 +54,14 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
   }, []);
 
   const sendSocket = () => {
+    console.log(">>>>>>>manager hub send socket", auth);
+    let name = auth?.username;
+    if (name === undefined) {
+      name = localStorage.getItem("username");
+    }
     var sendMessage = {
-      senderName: userData.username,
-      receiverName: userData.receiverName,
+      senderName: name,
+      receiverName: name,
       message: "",
       status: "MESSAGE",
       action: "EDIT_MAINTENANCE",
@@ -122,7 +128,7 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
         let index = updateCellTable();
 
         setDataSource(addArrayAfter(dataSource, index, result));
-
+        sendSocket();
         form.resetFields();
         setOpen(false);
         setFormLoading(false);
@@ -213,14 +219,18 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
 
   //update dataSource after addNew history
   const updateData = async (res) => {
-    let alarmMaintenanceStatus = res.alarmMaintenanceStatus;
-    console.log(">>>>>>>>>result data", alarmMaintenanceStatus);
+    // let dateMaintenance = res.dateMaintenance;
+    var dateNow = moment().toDate();
+    var dayChange = moment(datePickerHistory, "YYYY-MM-DD");
+    let days = dayChange.diff(dateNow, "days") >= 0 ? 0 : 1;
+
+    console.log(">>>>>>>>>>>>>>>>>date change", days);
     const updateHubDetailArray = dataSource.map((hubDetail) => {
       if (hubDetail.hubDetailId === hubDetailId) {
         return {
           ...hubDetail,
           latestMaintenanceTime: datePickerHistory,
-          alarmMaintenanceStatus: alarmMaintenanceStatus,
+          alarmMaintenanceStatus: days,
         };
       } else {
         return hubDetail;
@@ -253,6 +263,7 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
           data = data.filter((item) => item.hubDetailId !== hubDetailId);
           setDataSource(data);
           message.success("Xóa thành công");
+          sendSocket();
         } else {
           message.warning("Không thể xóa");
         }
@@ -276,7 +287,11 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
 
   const onSearch = (value, _e, info) => {
     console.log(info?.source, value);
-    getDataSearch(value);
+    if (value && value.trim().length > 0) {
+      getDataSearch(value);
+    } else {
+      loadData();
+    }
   };
   const getDataSearch = async (value) => {
     setFormLoading(true);
@@ -427,7 +442,8 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
                     )}
                     {clos[index] > 0 && (
                       <td
-                        style={{ background: "#" + el.backgroundColor }}
+                        className={`b-${el.backgroundColor}`}
+                        // style={{ background: "#" + el.backgroundColor }}
                         rowSpan={clos[index]}
                       >
                         <span
@@ -440,142 +456,112 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
                     )}
 
                     <td
-                      style={{
-                        background:
-                          el.alarmMaintenanceStatus === 0
-                            ? "#" + el.backgroundColor
-                            : "red",
-                      }}
+                      className={`b-${
+                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                      }`}
+                      // style={{
+                      //   background:
+                      //     el.alarmMaintenanceStatus === 0
+                      //       ? "#" + el.backgroundColor
+                      //       : "red",
+                      // }}
                     >
                       {el.trademark}
                     </td>
                     <td
-                      style={{
-                        background:
-                          el.alarmMaintenanceStatus === 0
-                            ? "#" + el.backgroundColor
-                            : "red",
-                      }}
+                      className={`b-${
+                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                      }`}
+                      // style={{
+                      //   background:
+                      //     el.alarmMaintenanceStatus === 0
+                      //       ? "#" + el.backgroundColor
+                      //       : "red",
+                      // }}
                     >
                       {el.ratedPower}
                     </td>
                     <td
-                      style={{
-                        background:
-                          el.alarmMaintenanceStatus === 0
-                            ? "#" + el.backgroundColor
-                            : "red",
-                      }}
+                      className={`b-${
+                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                      }`}
                     >
                       {el.loadDuringPowerOutage}
                     </td>
                     <td
-                      style={{
-                        background:
-                          el.alarmMaintenanceStatus === 0
-                            ? "#" + el.backgroundColor
-                            : "red",
-                      }}
+                      className={`b-${
+                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                      }`}
                     >
                       {el.batteryQuantity}
                     </td>
                     <td
-                      style={{
-                        background:
-                          el.alarmMaintenanceStatus === 0
-                            ? "#" + el.backgroundColor
-                            : "red",
-                      }}
+                      className={`b-${
+                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                      }`}
                     >
                       {el.batteryNumber}
                     </td>
                     <td
-                      style={{
-                        background:
-                          el.alarmMaintenanceStatus === 0
-                            ? "#" + el.backgroundColor
-                            : "red",
-                      }}
+                      className={`b-${
+                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                      }`}
                     >
                       {el.batteryCapacity}
                     </td>
                     <td
-                      style={{
-                        background:
-                          el.alarmMaintenanceStatus === 0
-                            ? "#" + el.backgroundColor
-                            : "red",
-                      }}
+                      className={`b-${
+                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                      }`}
                     >
                       {el.productionTime}
                     </td>
                     <td
-                      style={{
-                        background:
-                          el.alarmMaintenanceStatus === 0
-                            ? "#" + el.backgroundColor
-                            : "red",
-                      }}
+                      className={`b-${
+                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                      }`}
                     >
                       {el.conductorType}
                     </td>
                     <td
-                      style={{
-                        background:
-                          el.alarmMaintenanceStatus === 0
-                            ? "#" + el.backgroundColor
-                            : "red",
-                      }}
+                      className={`b-${
+                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                      }`}
                     >
                       {el.cbPower}
                     </td>
                     <td
-                      style={{
-                        background:
-                          el.alarmMaintenanceStatus === 0
-                            ? "#" + el.backgroundColor
-                            : "red",
-                      }}
+                      className={`b-${
+                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                      }`}
                     >
                       {el.schneider}
                     </td>
                     <td
-                      style={{
-                        background:
-                          el.alarmMaintenanceStatus === 0
-                            ? "#" + el.backgroundColor
-                            : "red",
-                      }}
+                      className={`b-${
+                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                      }`}
                     >
                       {el.yearInstall}
                     </td>
                     <td
-                      style={{
-                        background:
-                          el.alarmMaintenanceStatus === 0
-                            ? "#" + el.backgroundColor
-                            : "red",
-                      }}
+                      className={`b-${
+                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                      }`}
                     >
                       {el.number}
                     </td>
                     <td
-                      style={{
-                        background:
-                          el.alarmMaintenanceStatus === 0
-                            ? "#" + el.backgroundColor
-                            : "red",
-                      }}
+                      className={`b-${
+                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                      }`}
                     >
                       {el.currentStatus}
                     </td>
                     <td
-                      style={{
-                        background:
-                          el.alarmMaintenanceStatus === 0
-                            ? "#" + el.backgroundColor
-                            : "red",
-                      }}
+                      className={`b-${
+                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                      }`}
                     >
                       <span
                         className="spanButton"
@@ -586,7 +572,10 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
                         {el.latestMaintenanceTime}
                       </span>
                     </td>
-                    <td style={{ background: "#" + el.backgroundColor }}>
+                    <td
+                      className={`b-${el.backgroundColor}`}
+                      // style={{ background: "#" + el.backgroundColor }}
+                    >
                       <Link to={"/manager/hub/device/" + el.hubDetailId}>
                         <EditOutlined className="buttonIconEdit" />
                       </Link>

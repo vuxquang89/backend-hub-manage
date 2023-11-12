@@ -9,6 +9,8 @@ import { useEffect } from "react";
 
 import { over } from "stompjs";
 import SockJS from "sockjs-client";
+import ScrollButton from "./ScrollButton";
+import { BASE_URL } from "../config/config";
 
 var stomp = null;
 
@@ -24,19 +26,28 @@ const Layout = ({
   const { auth } = useAuth();
 
   useEffect(() => {
-    if (localStorage.getItem("isLogin")) {
+    const isLogin = localStorage.getItem("isLogin");
+    console.log(">>>>>>>>>layout", auth);
+    if (isLogin) {
       console.log(">>>>>>>>>>>>>>>>>>>>> da dang nhap");
+      console.log(">>>>>>>>>>>>isLogin ", isLogin);
       connect();
     } else {
       console.log(">>>>>>>>>>>>>>>>>>>>>> chua dang nhap");
-      setUserData({ ...userData, connected: false });
+      console.log(">>>>>>>>>>>>isLogin ", isLogin);
+      setUserData({
+        ...userData,
+        connected: false,
+        receiverName: "",
+        username: "",
+      });
     }
   }, [localStorage.getItem("isLogin")]);
 
   console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>user data", userData);
 
-  const connect = async () => {
-    const Sock = new SockJS(`http://localhost:8080/chat`);
+  const connect = () => {
+    const Sock = new SockJS(`${BASE_URL}/chat`);
 
     stomp = over(Sock);
     stomp.connect({}, onConnected, onError);
@@ -45,7 +56,10 @@ const Layout = ({
   };
 
   const onConnected = () => {
-    let name = localStorage.getItem("username");
+    let name = auth?.username;
+    if (name === undefined) {
+      name = localStorage.getItem("username");
+    }
     console.log(">>>>>>>>>connect.....");
     setUserData({
       ...userData,
@@ -54,27 +68,29 @@ const Layout = ({
       username: name,
     });
 
-    stomp.subscribe(
-      "/user/" + userData.username + "/private",
-      onPrivateMessage
+    console.log(">>>>>>>>>>>>>get user from auth", auth?.username);
+    console.log(
+      ">>>>>>>>>>>>>get user from auth",
+      localStorage.getItem("username")
     );
-    userJoin();
+    stomp.subscribe("/user/" + name + "/private", onPrivateMessage);
+    userJoin(name, "JOIN MESSAGE");
     // loadMessage();
   };
 
-  const userJoin = () => {
+  const userJoin = (username, message) => {
     var chatMessage = {
-      senderName: userData.username,
+      senderName: username,
       action: "GET_ALARM",
       status: "JOIN",
     };
     stomp.send("/app/message", {}, JSON.stringify(chatMessage));
-    console.log(">>>>>>>>>>>join message");
+    console.log(">>>>>>>>>>>join message", username);
 
     var getMessage = {
-      senderName: userData.username,
-      receiverName: userData.username,
-      message: userData.message,
+      senderName: username,
+      receiverName: username,
+      message: message,
       status: "MESSAGE",
       action: "GET_ALARM",
     };
@@ -130,6 +146,7 @@ const Layout = ({
               Same as
             </ToastContainer>
           </div>
+          <ScrollButton />
         </>
       ) : (
         <>
@@ -150,6 +167,7 @@ const Layout = ({
           >
             Same as
           </ToastContainer>
+          <ScrollButton />
         </>
       )}
     </div>
