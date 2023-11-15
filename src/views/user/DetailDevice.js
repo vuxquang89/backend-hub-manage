@@ -45,6 +45,7 @@ import ModalSwitchDevice from "./ModalSwitchDevice";
 
 import { over } from "stompjs";
 import SockJS from "socketjs-client";
+import TabHistoryOperation from "./detail_device/TabHistoryOperation";
 
 const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
   const { auth } = useAuth();
@@ -118,11 +119,15 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
   //--------------------
   const [inputText, setInputText] = useState("");
 
+  //---------------------
+  const [isLoading, setIsLoading] = useState(false);
+  const [dataHistoryOperation, setDataHistoryOperation] = useState([]);
+
   useEffect(() => {
     localStorage.getItem("isLogin") && loadData();
     // getNewDate();
 
-    receive(stompClient, userData.receiverName);
+    //receive(stompClient, userData.receiverName);
   }, [hubDetailId]);
 
   //-------------
@@ -646,10 +651,36 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
 
   const onChangeTabs = (key) => {
     console.log(key);
-    if (key === "2") {
-      console.log(">>>get history");
-      handleOpenHistory();
+    switch (key) {
+      case "2":
+        console.log(">>>get history");
+        handleOpenHistory();
+        break;
+      case "3":
+        console.log(">>>>>get history operation");
+        handleGetHistoryOperation();
+        break;
+      default:
+        break;
     }
+  };
+
+  //----------------------------
+  const handleGetHistoryOperation = async () => {
+    setIsLoading(true);
+    await axiosPrivate
+      .get(`/api/hub/detail/device/history/operation/${hubDetailId}`)
+      .then((res) => {
+        const result = res.data;
+        console.log(">>>>>data history operation", result);
+        setDataHistoryOperation(result);
+        //setOpenHistory(true);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        console.log(">>>>get history operation error", err);
+      });
   };
 
   const items = [
@@ -969,8 +1000,8 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
 
               {
                 title: "Action",
-                key: "hubId",
-                dataIndex: "hubId",
+                key: "action",
+                dataIndex: "action",
                 render: (text, record) => (
                   <>
                     <EditOutlined
@@ -1007,17 +1038,36 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
         </>
       ),
     },
+    {
+      key: "3",
+      label: "Lịch sử thao tác",
+      children: (
+        <TabHistoryOperation
+          isLoading={isLoading}
+          dataSource={dataHistoryOperation}
+        />
+      ),
+    },
   ];
 
   const send = () => {
+    let username = auth.username;
+    if (username === undefined) {
+      username = localStorage.getItem("username");
+    }
+
     var sendMessage = {
-      senderName: auth.username,
-      receiverName: auth.username,
+      senderName: username,
+      receiverName: username,
       message: "",
       status: "MESSAGE",
       action: "EDIT_MAINTENANCE",
     };
     console.log(">>>>>>>>>>>>>username send edit", auth.username);
+    console.log(
+      ">>>>>>>>>>>>>username get from localStorage send edit",
+      username
+    );
     sendPrivateValue(stompClient, sendMessage);
   };
 
