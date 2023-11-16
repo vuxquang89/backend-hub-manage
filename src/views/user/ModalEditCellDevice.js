@@ -5,6 +5,8 @@ import { FormProvider } from "react-hook-form";
 const ModalEditCellDevice = ({
   open,
   form,
+  checked,
+  setChecked,
   deviceType,
   handleSubmit,
   handleCancelOnClick,
@@ -12,7 +14,7 @@ const ModalEditCellDevice = ({
   title,
 }) => {
   //---------------------------------------
-  const [checked, setChecked] = useState(true);
+
   const [disabled, setDisabled] = useState(false);
 
   useEffect(() => {
@@ -297,7 +299,7 @@ const ModalEditCellDevice = ({
                       ]
                     }
                   >
-                    <Input type="number" />
+                    <Input type="number" disabled={!checked} />
                   </Form.Item>
                 </div>
               </Col>

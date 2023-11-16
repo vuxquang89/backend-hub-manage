@@ -123,6 +123,7 @@ const HubDetail = () => {
         currentStatus: record.currentStatus,
         number: record.number,
         dateMaintenance: record.dateMaintenance,
+        orderMaintenance: checked,
       })
       .then((res) => {
         console.log(">>>>get list hub detail", res.data);
@@ -136,7 +137,7 @@ const HubDetail = () => {
       .catch((err) => {
         console.log("get list hub detail error", err);
         setFormLoading(false);
-        toast.success("Thêm mới thất bại");
+        toast.error("Thêm mới thất bại");
         // navigate("/login", { state: { from: location }, replace: true });
       });
   };

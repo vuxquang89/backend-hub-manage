@@ -14,6 +14,7 @@ import {
   Popconfirm,
   // DatePicker,
   Button,
+  Checkbox,
 } from "antd";
 // import DatePicker from "react-multi-date-picker";
 import DatePicker from "react-datepicker";
@@ -100,12 +101,14 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
   const [yearInstall, setYearInstall] = useState("");
   const [currentStatus, setCurrentStatus] = useState("");
   const [number, setNumber] = useState("");
+  const [checked, setChecked] = useState(true);
+  const [dateMaintenance, setDateMaintenance] = useState("");
   const [newDate, setNewDate] = useState("");
 
   //-----------
 
   const [openHistory, setOpenHistory] = useState(false);
-  const [dateMaintenance, setDateMaintenance] = useState(new Date());
+  const [dayMaintenance, setDayMaintenance] = useState(new Date());
   const [dateSelect, setDateSelect] = useState("");
   const [note, setNote] = useState("");
   const [maintenanceId, setMaintenanceId] = useState("");
@@ -117,6 +120,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
   const [hubList, setHubList] = useState([]);
 
   //--------------------
+
   const [inputText, setInputText] = useState("");
 
   //---------------------
@@ -371,6 +375,8 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
           setYearInstall(response.yearInstall);
           setCurrentStatus(response.currentStatus);
           setNumber(response.number);
+          setChecked(response.orderMaintenance);
+          setDateMaintenance(response.dateMaintenance);
 
           setGetData(true);
         } else {
@@ -407,6 +413,8 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
         yearInstall,
         currentStatus,
         number,
+        dateMaintenance,
+        orderMaintenance: checked,
       })
       .then((res) => {
         console.log(">>>>update hub detail", res.data);
@@ -445,7 +453,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
     await axiosPrivate
       .post("/api/hub/device/maintenancehistory", {
         hubDetailId: hubDetailId,
-        maintenanceTime: dateMaintenance.toLocaleDateString(),
+        maintenanceTime: dayMaintenance.toLocaleDateString(),
         maintenanceNote: note,
       })
       .then((res) => {
@@ -504,7 +512,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
   };
   const handleEditOnClick = (e) => {
     console.log("edit click", e);
-    setDateMaintenance(new Date(e.maintenanceTime));
+    setDayMaintenance(new Date(e.maintenanceTime));
     setNote(e.maintenanceNote);
     setMaintenanceId(e.id);
     setIsEditTable(true);
@@ -515,7 +523,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
     setFormLoading(true);
     await axiosPrivate
       .put(`/api/hub/device/maintenancehistory/${maintenanceId}`, {
-        maintenanceTime: dateMaintenance.toLocaleDateString(),
+        maintenanceTime: dayMaintenance.toLocaleDateString(),
         maintenanceNote: note,
       })
       .then((res) => {
@@ -567,7 +575,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
   function resetFormHistory() {
     console.log(">>>>reset form hítory");
     setNote("");
-    setDateMaintenance(new Date());
+    setDayMaintenance(new Date());
   }
 
   //--------------------
@@ -649,6 +657,13 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
     setOpenModalSwitch(false);
   };
 
+  //----------------------------
+  const handleCheckBoxOnChange = (e) => {
+    console.log("checked = ", e.target.checked);
+    // form.resetFields();
+    setChecked(e.target.checked);
+  };
+
   const onChangeTabs = (key) => {
     console.log(key);
     switch (key) {
@@ -719,70 +734,208 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                       </Form.Item>
                     </div>
                     <div className="updateItem">
-                      <label>CS định mức (KVA)</label>
-                      <Form.Item name="ratedPower">
+                      <label>
+                        CS định mức (KVA){" "}
+                        <span
+                          hidden={
+                            (deviceId === 1 || deviceId === 3) && checked
+                              ? false
+                              : true
+                          }
+                          className="tick"
+                        >
+                          *
+                        </span>
+                      </label>
+                      <Form.Item
+                        name="ratedPower"
+                        rules={
+                          (deviceId === 1 || deviceId === 3) &&
+                          ratedPower.length < 1 &&
+                          checked && [
+                            {
+                              required: true,
+                              message: "Không được để trống",
+                            },
+                          ]
+                        }
+                      >
                         <Input
                           defaultValue={ratedPower}
                           onChange={(e) => {
                             setRatePower(e.target.value);
                           }}
+                          disabled={
+                            deviceId === 1 || deviceId === 3 ? false : true
+                          }
                         />
                       </Form.Item>
                     </div>
                     <div className="updateItem">
-                      <label>%Tải khi mất điện</label>
-                      <Form.Item name="loadDuringPowerOutage">
+                      <label>
+                        %Tải khi mất điện{" "}
+                        <span
+                          hidden={
+                            (deviceId === 1 || deviceId === 3) && checked
+                              ? false
+                              : true
+                          }
+                          className="tick"
+                        >
+                          *
+                        </span>
+                      </label>
+                      <Form.Item
+                        name="loadDuringPowerOutage"
+                        rules={
+                          (deviceId === 1 || deviceId === 3) &&
+                          loadDuringPowerOutage.length < 1 &&
+                          checked && [
+                            {
+                              required: true,
+                              message: "Không được để trống",
+                            },
+                          ]
+                        }
+                      >
                         <Input
                           defaultValue={loadDuringPowerOutage}
                           onChange={(e) => {
                             setLoadDuringPowerOutage(e.target.value);
                           }}
+                          disabled={
+                            deviceId === 1 || deviceId === 3 ? false : true
+                          }
                         />
                       </Form.Item>
                     </div>
                     <div className="updateItem">
-                      <label>Số bình/ Chuỗi hiện tại</label>
-                      <Form.Item name="batteryQuantity">
+                      <label>
+                        Số bình/ Chuỗi hiện tại{" "}
+                        <span
+                          hidden={deviceId === 1 && checked ? false : true}
+                          className="tick"
+                        >
+                          *
+                        </span>
+                      </label>
+                      <Form.Item
+                        name="batteryQuantity"
+                        rules={
+                          deviceId === 1 &&
+                          batteryQuantity.length < 1 &&
+                          checked && [
+                            {
+                              required: true,
+                              message: "Không được để trống",
+                            },
+                          ]
+                        }
+                      >
                         <Input
                           defaultValue={batteryQuantity}
                           onChange={(e) => {
                             setBatteryQuantity(e.target.value);
                           }}
+                          disabled={deviceId === 1 ? false : true}
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="updateItem">
+                      <label>
+                        Số chuỗi Battery hiện tại{" "}
+                        <span
+                          hidden={deviceId === 1 && checked ? false : true}
+                          className="tick"
+                        >
+                          *
+                        </span>
+                      </label>
+                      <Form.Item
+                        name="batteryNumber"
+                        rules={
+                          deviceId === 1 &&
+                          batteryNumber.length < 1 &&
+                          checked && [
+                            {
+                              required: true,
+                              message: "Không được để trống",
+                            },
+                          ]
+                        }
+                      >
+                        <Input
+                          defaultValue={batteryNumber}
+                          onChange={(e) => {
+                            setBatteryNumber(e.target.value);
+                          }}
+                          disabled={deviceId === 1 ? false : true}
                         />
                       </Form.Item>
                     </div>
                   </Col>
                   <Col span={8} className="pe-50">
                     <div className="updateItem">
-                      <label>Số chuỗi Battery hiện tại</label>
-                      <Form.Item name="batteryNumber">
-                        <Input
-                          defaultValue={batteryNumber}
-                          onChange={(e) => {
-                            setBatteryNumber(e.target.value);
-                          }}
-                        />
-                      </Form.Item>
-                    </div>
-                    <div className="updateItem">
-                      <label>Model (dung lượng AH)</label>
-                      <Form.Item name="batteryCapacity">
+                      <label>
+                        Model (dung lượng AH){" "}
+                        <span
+                          hidden={deviceId === 2 && checked ? false : true}
+                          className="tick"
+                        >
+                          *
+                        </span>
+                      </label>
+                      <Form.Item
+                        name="batteryCapacity"
+                        rules={
+                          deviceId === 2 &&
+                          batteryCapacity.length < 1 &&
+                          checked && [
+                            {
+                              required: true,
+                              message: "Không được để trống",
+                            },
+                          ]
+                        }
+                      >
                         <Input
                           defaultValue={batteryCapacity}
                           onChange={(e) => {
                             setBatteryCapacity(e.target.value);
                           }}
+                          disabled={deviceId !== 2}
                         />
                       </Form.Item>
                     </div>
                     <div className="updateItem">
-                      <label>Ngày sản xuất</label>
-                      <Form.Item name="productionTime">
+                      <label>
+                        Ngày sản xuất{" "}
+                        <span
+                          hidden={deviceId === 2 && checked ? false : true}
+                          className="tick"
+                        >
+                          *
+                        </span>
+                      </label>
+                      <Form.Item
+                        name="productionTime"
+                        rules={
+                          deviceId === 2 &&
+                          productionTime.length < 1 &&
+                          checked && [
+                            {
+                              required: true,
+                              message: "Không được để trống",
+                            },
+                          ]
+                        }
+                      >
                         <Input
                           defaultValue={productionTime}
                           onChange={(e) => {
                             setProductionTime(e.target.value);
                           }}
+                          disabled={deviceId !== 2}
                         />
                       </Form.Item>
                     </div>
@@ -794,6 +947,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                           onChange={(e) => {
                             setConductorType(e.target.value);
                           }}
+                          disabled={deviceId !== 4}
                         />
                       </Form.Item>
                     </div>
@@ -805,11 +959,10 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                           onChange={(e) => {
                             setCBPower(e.target.value);
                           }}
+                          disabled={deviceId !== 4}
                         />
                       </Form.Item>
                     </div>
-                  </Col>
-                  <Col span={8} className="pe-50">
                     <div className="updateItem">
                       <label>Cắt lọc sét</label>
                       <Form.Item name="schneider">
@@ -818,9 +971,12 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                           onChange={(e) => {
                             setSchneider(e.target.value);
                           }}
+                          disabled={deviceId !== 4}
                         />
                       </Form.Item>
                     </div>
+                  </Col>
+                  <Col span={8} className="pe-50">
                     <div className="updateItem">
                       <label>Năm lắp đặt HTĐ</label>
                       <Form.Item name="yearInstall">
@@ -829,6 +985,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                           onChange={(e) => {
                             setYearInstall(e.target.value);
                           }}
+                          disabled={deviceId !== 4}
                         />
                       </Form.Item>
                     </div>
@@ -851,6 +1008,53 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                           onChange={(e) => {
                             setNumber(e.target.value);
                           }}
+                          disabled={deviceId !== 5}
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="updateItem">
+                      <Form.Item name="orderMaintenance">
+                        <Checkbox
+                          checked={checked}
+                          disabled={
+                            deviceId === 1 || deviceId === 2 ? true : false
+                          }
+                          onChange={handleCheckBoxOnChange}
+                        >
+                          Đặt lịch bảo dưỡng
+                        </Checkbox>
+                      </Form.Item>
+                    </div>
+                    <div className="updateItem">
+                      <label>
+                        Số ngày BD định kỳ{" "}
+                        <span hidden={!checked} className="tick">
+                          *
+                        </span>
+                      </label>
+                      <Form.Item
+                        name="dateMaintenance"
+                        rules={
+                          checked &&
+                          dateMaintenance.length < 1 && [
+                            {
+                              required: true,
+                              message: "Không được để trống",
+                            },
+                            {
+                              pattern: new RegExp(/^([1-9][0-9]*|0)$/),
+                              message: "Chỉ được nhập số nguyên dương",
+                            },
+                          ]
+                        }
+                      >
+                        <Input
+                          type="number"
+                          defaultValue={dateMaintenance}
+                          onChange={(e) => {
+                            setDateMaintenance(e.target.value);
+                          }}
+                          disabled={!checked}
                         />
                       </Form.Item>
                     </div>
@@ -909,12 +1113,12 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                       // onChange={handleDatePickerOnChange}
                       //filterDate={(dateMaintenance) => new Date() < dateMaintenance}
                       className="datePicker"
-                      selected={dateMaintenance}
+                      selected={dayMaintenance}
                       dateFormat="yyyy-MM-dd"
                       disabled={isEditTable}
                       onChange={(date) => {
                         console.log(">>>>>date", date.toLocaleDateString());
-                        setDateMaintenance(date);
+                        setDayMaintenance(date);
                       }}
                       minDate={moment().toDate()}
                     />

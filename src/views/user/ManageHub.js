@@ -45,6 +45,8 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
   const [deviceId, setDeviceId] = useState("");
   const [hubId, setHubId] = useState("");
 
+  const [checkedOrderMaintenance, setCheckedOrderMaintenance] = useState(true);
+
   const [inputSearch, setInputSearch] = useState("");
 
   useEffect(() => {
@@ -102,6 +104,7 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
   };
 
   const addNewDeviceHubDetail = async (record) => {
+    console.log(">>>>>send form", record);
     setFormLoading(true);
     await axiosPrivate
       .post("/api/hub/detail", {
@@ -121,6 +124,7 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
         currentStatus: record.currentStatus,
         number: record.number,
         dateMaintenance: record.dateMaintenance,
+        orderMaintenance: checkedOrderMaintenance,
       })
       .then((res) => {
         console.log(">>>>get list hub detail", res.data);
@@ -137,7 +141,7 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
       .catch((err) => {
         console.log("get list hub detail error", err);
         setFormLoading(false);
-        toast.success("Thêm mới thất bại");
+        toast.error("Thêm mới thất bại");
         // navigate("/login", { state: { from: location }, replace: true });
       });
   };
@@ -1066,6 +1070,8 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
         open={open}
         form={form}
         deviceType={deviceId}
+        checked={checkedOrderMaintenance}
+        setChecked={setCheckedOrderMaintenance}
         handleSubmit={handleSubmit}
         handleCancelOnClick={handleCancelOnClick}
         isLoading={isLoading}
