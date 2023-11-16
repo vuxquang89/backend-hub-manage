@@ -70,6 +70,21 @@ tr.red th {
   background-color: rgb(3, 150, 22);
 }
 
+.borderModalFooter {
+  display: flex;
+  /* flex-direction: column; */
+  justify-content: center;
+  margin-top: 10px;
+  margin-right: 10px;
+}
+
+.clickRowStyle {
+  background-color: #f3b9b9;
+}
+
+.tick {
+  color: red;
+}
 .b-UPS {
   background-color: #b4c6e7;
 }

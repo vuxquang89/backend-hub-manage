@@ -28,24 +28,24 @@ import {
   HomeOutlined,
 } from "@ant-design/icons";
 import "./DetailDevice.css";
-import home from "../../assets/images/home.jpg";
+import home from "../../../assets/images/home.jpg";
 import {
   device_trademark_validation,
   device_ratedPower_validation,
-} from "../../utils/inputDetailDeviceValidations";
+} from "../../../utils/inputDetailDeviceValidations";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { FormProvider, useForm } from "react-hook-form";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import SpanLoading from "../../components/loading/SpanLoading";
-import useAuth from "../../hooks/useAuth";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import SpanLoading from "../../../components/loading/SpanLoading";
+import useAuth from "../../../hooks/useAuth";
 
-import ModalMaintenanceHistory from "./ModalMaintenanceHistory";
+import ModalMaintenanceHistory from "../ModalMaintenanceHistory";
 import moment from "moment";
-import ModalSwitchDevice from "./ModalSwitchDevice";
+import ModalSwitchDevice from "../ModalSwitchDevice";
 
 import { over } from "stompjs";
 import SockJS from "socketjs-client";
-import TabHistoryOperation from "./detail_device/TabHistoryOperation";
+import TabHistoryOperation from "./TabHistoryOperation";
 
 const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
   const { auth } = useAuth();

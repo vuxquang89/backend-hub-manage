@@ -14,7 +14,7 @@ import DetailHub from "../../views/admin/hub/DetailHub";
 import ListDevice from "../../views/admin/device/ListDevice";
 import Home from "../../views/user/Home";
 import Login from "../../views/Login";
-import DetailDevice from "../../views/user/DetailDevice";
+import DetailDevice from "../../views/user/detail_device/DetailDevice";
 import LinkPage from "../../components/LinkPage";
 import Unauthorized from "../../components/Unauthorized";
 import PersistentLogin from "../../components/PersistentLogin";

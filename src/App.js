@@ -12,7 +12,7 @@ import Login from "./views/Login";
 import Missing from "./components/Missing";
 import RequireAuth from "./components/RequireAuth";
 import Home from "./views/user/Home";
-import DetailDevice from "./views/user/DetailDevice";
+import DetailDevice from "./views/user/detail_device/DetailDevice";
 import DashBoard from "./views/admin/Dashboard";
 import Lounge from "./components/Lounge";
 import Unauthorized from "./components/Unauthorized";

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import SpanLoading from "../../components/loading/SpanLoading";
 import {
   Card,
+  Checkbox,
   Col,
   Form,
   Input,
@@ -36,9 +37,21 @@ const HubDetail = () => {
   const [form] = Form.useForm();
   const [searchedText, setSearchText] = useState("");
 
+  //---------------------------------------
+  const [checked, setChecked] = useState(true);
+  const [disabled, setDisabled] = useState(false);
+
   useEffect(() => {
     localStorage.getItem("isLogin") && getHubByUsername();
   }, []);
+
+  const label = `Đặt lịch bảo dưỡng`;
+
+  const handleCheckBoxOnChange = (e) => {
+    console.log("checked = ", e.target.checked);
+    form.resetFields();
+    setChecked(e.target.checked);
+  };
 
   const listItemDevice = [
     {
@@ -126,6 +139,11 @@ const HubDetail = () => {
         toast.success("Thêm mới thất bại");
         // navigate("/login", { state: { from: location }, replace: true });
       });
+  };
+
+  const setRowClassName = (record) => {
+    return record.hubId === hubId ? "clickRowStyle" : "";
+    // console.log(">>>>>>>set rơ class name", record);
   };
 
   return localStorage.getItem("isLogin") ? (
@@ -243,6 +261,23 @@ const HubDetail = () => {
                               pagination={{
                                 pageSize: 5,
                               }}
+                              rowClassName={(record) => setRowClassName(record)}
+                              // onRow={(record, index) => {
+                              //   return {
+                              //     onClick: (event) => {
+                              //       console.log(record);
+                              //       console.log(">>>>table index", index);
+                              //     },
+                              //   };
+                              // }}
+                              // onRow={(record, index) =>
+
+                              //     {
+                              //     style: {
+                              //         background: record === 'something' ? 'red' : 'default',
+                              //     }
+                              //   }
+                              // }
                             ></Table>
                           </Col>
                         </Row>
@@ -280,23 +315,39 @@ const HubDetail = () => {
                                 <Row>
                                   <Col span={8} className="pe-50">
                                     <div className="updateItem">
-                                      <label>Chọn thiết bị</label>
+                                      <label>
+                                        Chọn thiết bị{" "}
+                                        <span className="tick">*</span>
+                                      </label>
                                       <Form.Item
                                         name="deviceId"
+                                        key="deviceId"
                                         rules={[
                                           {
                                             required: true,
-                                            message:
-                                              "Please input the title of collection!",
+                                            message: "Chưa chọn thiết bị",
                                           },
                                         ]}
                                       >
                                         <Select
+                                          // value={deviceId}
                                           onChange={(e, value) => {
                                             console.log(
                                               ">>> check select onchange:",
                                               e
                                             );
+                                            if (e !== deviceId) {
+                                              form.resetFields();
+                                              form.setFieldsValue({
+                                                deviceId: e,
+                                              });
+                                            }
+                                            if (e === "1" || e === "2") {
+                                              setDisabled(true);
+                                              setChecked(true);
+                                            } else {
+                                              setDisabled(false);
+                                            }
                                             setDeviceId(value.value);
                                           }}
                                           options={listItemDevice}
@@ -310,53 +361,216 @@ const HubDetail = () => {
                                       </Form.Item>
                                     </div>
                                     <div className="updateItem">
-                                      <label>CS định mức (KVA)</label>
-                                      <Form.Item name="ratedPower">
-                                        <Input />
+                                      <label>
+                                        CS định mức (KVA){" "}
+                                        <span
+                                          hidden={
+                                            (deviceId === "1" ||
+                                              deviceId === "3") &&
+                                            checked
+                                              ? false
+                                              : true
+                                          }
+                                          className="tick"
+                                        >
+                                          *
+                                        </span>
+                                      </label>
+                                      <Form.Item
+                                        name="ratedPower"
+                                        rules={
+                                          (deviceId === "1" ||
+                                            deviceId === "3") &&
+                                          checked && [
+                                            {
+                                              required: true,
+                                              message: "Không được để trống",
+                                            },
+                                          ]
+                                        }
+                                      >
+                                        <Input
+                                          disabled={
+                                            deviceId === "1" || deviceId === "3"
+                                              ? false
+                                              : true
+                                          }
+                                        />
                                       </Form.Item>
                                     </div>
                                     <div className="updateItem">
-                                      <label>%Tải khi mất điện</label>
-                                      <Form.Item name="loadDuringPowerOutage">
-                                        <Input />
+                                      <label>
+                                        %Tải khi mất điện{" "}
+                                        <span
+                                          hidden={
+                                            (deviceId === "1" ||
+                                              deviceId === "3") &&
+                                            checked
+                                              ? false
+                                              : true
+                                          }
+                                          className="tick"
+                                        >
+                                          *
+                                        </span>
+                                      </label>
+                                      <Form.Item
+                                        name="loadDuringPowerOutage"
+                                        rules={
+                                          (deviceId === "1" ||
+                                            deviceId === "3") &&
+                                          checked && [
+                                            {
+                                              required: true,
+                                              message: "Không được để trống",
+                                            },
+                                          ]
+                                        }
+                                      >
+                                        <Input
+                                          disabled={
+                                            deviceId === "1" || deviceId === "3"
+                                              ? false
+                                              : true
+                                          }
+                                        />
                                       </Form.Item>
                                     </div>
                                     <div className="updateItem">
-                                      <label>Số bình/ Chuỗi hiện tại</label>
-                                      <Form.Item name="batteryQuantity">
-                                        <Input />
+                                      <label>
+                                        Số bình/ Chuỗi hiện tại{" "}
+                                        <span
+                                          hidden={
+                                            deviceId === "1" && checked
+                                              ? false
+                                              : true
+                                          }
+                                          className="tick"
+                                        >
+                                          *
+                                        </span>
+                                      </label>
+                                      <Form.Item
+                                        name="batteryQuantity"
+                                        rules={
+                                          deviceId === "1" &&
+                                          checked && [
+                                            {
+                                              required: true,
+                                              message: "Không được để trống",
+                                            },
+                                          ]
+                                        }
+                                      >
+                                        <Input
+                                          disabled={
+                                            deviceId === "1" ? false : true
+                                          }
+                                        />
                                       </Form.Item>
                                     </div>
                                   </Col>
                                   <Col span={8} className="pe-50">
                                     <div className="updateItem">
-                                      <label>Số chuỗi Battery hiện tại</label>
-                                      <Form.Item name="batteryNumber">
-                                        <Input />
+                                      <label>
+                                        Số chuỗi Battery hiện tại{" "}
+                                        <span
+                                          hidden={
+                                            deviceId === "1" && checked
+                                              ? false
+                                              : true
+                                          }
+                                          className="tick"
+                                        >
+                                          *
+                                        </span>
+                                      </label>
+                                      <Form.Item
+                                        name="batteryNumber"
+                                        rules={
+                                          deviceId === "1" &&
+                                          checked && [
+                                            {
+                                              required: true,
+                                              message: "Không được để trống",
+                                            },
+                                          ]
+                                        }
+                                      >
+                                        <Input
+                                          disabled={
+                                            deviceId === "1" ? false : true
+                                          }
+                                        />
                                       </Form.Item>
                                     </div>
                                     <div className="updateItem">
-                                      <label>Model (dung lượng AH)</label>
-                                      <Form.Item name="batteryCapacity">
-                                        <Input />
+                                      <label>
+                                        Model (dung lượng AH){" "}
+                                        <span
+                                          hidden={
+                                            (deviceId === "2") & checked
+                                              ? false
+                                              : true
+                                          }
+                                          className="tick"
+                                        >
+                                          *
+                                        </span>
+                                      </label>
+                                      <Form.Item
+                                        name="batteryCapacity"
+                                        rules={
+                                          (deviceId === "2") & checked && [
+                                            {
+                                              required: true,
+                                              message: "Không được để trống",
+                                            },
+                                          ]
+                                        }
+                                      >
+                                        <Input disabled={deviceId !== "2"} />
                                       </Form.Item>
                                     </div>
                                     <div className="updateItem">
-                                      <label>Ngày sản xuất</label>
-                                      <Form.Item name="productionTime">
-                                        <Input />
+                                      <label>
+                                        Ngày sản xuất{" "}
+                                        <span
+                                          hidden={
+                                            deviceId === "2" && checked
+                                              ? false
+                                              : true
+                                          }
+                                          className="tick"
+                                        >
+                                          *
+                                        </span>
+                                      </label>
+                                      <Form.Item
+                                        name="productionTime"
+                                        rules={
+                                          deviceId === "2" &&
+                                          checked && [
+                                            {
+                                              required: true,
+                                              message: "Không được để trống",
+                                            },
+                                          ]
+                                        }
+                                      >
+                                        <Input disabled={deviceId !== "2"} />
                                       </Form.Item>
                                     </div>
                                     <div className="updateItem">
                                       <label>Dây dẫn</label>
                                       <Form.Item name="conductorType">
-                                        <Input />
+                                        <Input disabled={deviceId !== "4"} />
                                       </Form.Item>
                                     </div>
                                     <div className="updateItem">
                                       <label>CB nguồn</label>
                                       <Form.Item name="cbPower">
-                                        <Input />
+                                        <Input disabled={deviceId !== "4"} />
                                       </Form.Item>
                                     </div>
                                   </Col>
@@ -364,13 +578,13 @@ const HubDetail = () => {
                                     <div className="updateItem">
                                       <label>Cắt lọc sét</label>
                                       <Form.Item name="schneider">
-                                        <Input />
+                                        <Input disabled={deviceId !== "4"} />
                                       </Form.Item>
                                     </div>
                                     <div className="updateItem">
                                       <label>Năm lắp đặt HTĐ</label>
                                       <Form.Item name="yearInstall">
-                                        <Input />
+                                        <Input disabled={deviceId !== "4"} />
                                       </Form.Item>
                                     </div>
                                     <div className="updateItem">
@@ -382,29 +596,52 @@ const HubDetail = () => {
                                     <div className="updateItem">
                                       <label>Số lượng</label>
                                       <Form.Item name="number">
-                                        <TextArea />
+                                        <TextArea disabled={deviceId !== "5"} />
+                                      </Form.Item>
+                                    </div>
+                                    <div className="updateItem">
+                                      <Form.Item name="orderMaintenance">
+                                        <Checkbox
+                                          checked={checked}
+                                          disabled={disabled}
+                                          onChange={handleCheckBoxOnChange}
+                                        >
+                                          {label}
+                                        </Checkbox>
                                       </Form.Item>
                                     </div>
                                     <div className="borderItem">
-                                      <label>Số ngày bảo dưỡng định kỳ</label>
+                                      <label>
+                                        Số ngày BD định kỳ{" "}
+                                        <span
+                                          hidden={!checked}
+                                          className="tick"
+                                        >
+                                          *
+                                        </span>
+                                      </label>
                                       <Form.Item
                                         name="dateMaintenance"
-                                        rules={[
-                                          {
-                                            required: true,
-                                            message:
-                                              "Please input the title of collection!",
-                                          },
-                                          {
-                                            pattern: new RegExp(
-                                              /^([1-9][0-9]*|0)$/
-                                            ),
-                                            message:
-                                              "No Space or Special Characters Allowed",
-                                          },
-                                        ]}
+                                        rules={
+                                          checked && [
+                                            {
+                                              required: true,
+                                              message: "Không được để trống",
+                                            },
+                                            {
+                                              pattern: new RegExp(
+                                                /^([1-9][0-9]*|0)$/
+                                              ),
+                                              message:
+                                                "Chỉ được nhập số nguyên dương",
+                                            },
+                                          ]
+                                        }
                                       >
-                                        <Input type="number" />
+                                        <Input
+                                          type="number"
+                                          disabled={!checked}
+                                        />
                                       </Form.Item>
                                     </div>
                                   </Col>
@@ -413,7 +650,9 @@ const HubDetail = () => {
                             </Row>
 
                             <div className="bottomForm text-align-center">
-                              <button className="userUpdateButton">Thêm</button>
+                              <button className="userUpdateButton">
+                                Thêm mới
+                              </button>
                             </div>
                           </Form>
                         </Card>

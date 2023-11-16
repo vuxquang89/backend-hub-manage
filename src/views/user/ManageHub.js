@@ -1065,6 +1065,7 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
       <ModalEditCellDevice
         open={open}
         form={form}
+        deviceType={deviceId}
         handleSubmit={handleSubmit}
         handleCancelOnClick={handleCancelOnClick}
         isLoading={isLoading}
