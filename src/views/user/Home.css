@@ -5,9 +5,18 @@
 }
 
 .container {
-  margin-top: 40px;
+  /* margin-top: 40px; */
   margin-left: 20px;
   margin-right: 20px;
+}
+
+.boxSearch {
+  display: flex;
+  align-items: center;
+}
+
+.lblTitleSearch {
+  width: 25%;
 }
 
 #tableDevice table {

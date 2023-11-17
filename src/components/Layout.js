@@ -11,6 +11,7 @@ import { over } from "stompjs";
 import SockJS from "sockjs-client";
 import ScrollButton from "./ScrollButton";
 import { BASE_URL } from "../config/config";
+import MainBanner from "./banner/MainBanner";
 
 var stomp = null;
 
@@ -127,7 +128,9 @@ const Layout = ({
     <div className="App">
       {auth.roles[0] === "ROLE_ADMIN" ? (
         <>
+          <MainBanner />
           <Header />
+
           <div className="SideMenuAndPageContent">
             <SideMenu />
             <PageContent />
@@ -151,7 +154,7 @@ const Layout = ({
       ) : (
         <>
           <UserHeader countAlarm={countAlarm} />
-
+          <MainBanner />
           <PageContent />
           <ToastContainer
             position="top-right"

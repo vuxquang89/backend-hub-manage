@@ -5,7 +5,7 @@ import {
   EditOutlined,
   RetweetOutlined,
 } from "@ant-design/icons";
-import { Popconfirm, Space, message, Input } from "antd";
+import { Popconfirm, Space, message, Input, Row, Col } from "antd";
 import ModalEditCellDevice from "./ModalEditCellDevice";
 import { useForm } from "react-hook-form";
 import { useNavigate, Link, useLocation } from "react-router-dom";
@@ -152,24 +152,29 @@ const Home = () => {
     <>
       <div className="container">
         <h4>Trang chủ</h4>
-        <Space className="mb-10">
-          <label>Tìm kiếm</label>
-          <Search
-            placeholder="Nhập chi nhánh / phòng hub..."
-            onSearch={onSearch}
-            onChange={(e) => setInputSearch(e.target.value)}
-            value={inputSearch}
-            enterButton
-          />
-          <RetweetOutlined
-            className="buttonIconRefresh"
-            onClick={() => {
-              setInputSearch("");
-              loadData();
-            }}
-            title="Làm mới"
-          />
-        </Space>
+
+        <Row>
+          <Col span={6}>
+            <div className="mb-10 boxSearch">
+              <label className="lblTitleSearch">Tìm kiếm</label>
+              <Search
+                placeholder="Nhập chi nhánh / phòng hub..."
+                onSearch={onSearch}
+                onChange={(e) => setInputSearch(e.target.value)}
+                value={inputSearch}
+                enterButton
+              />
+              <RetweetOutlined
+                className="buttonIconRefresh"
+                onClick={() => {
+                  setInputSearch("");
+                  loadData();
+                }}
+                title="Làm mới"
+              />
+            </div>
+          </Col>
+        </Row>
         <table id="tableDevice">
           <thead>
             <tr>

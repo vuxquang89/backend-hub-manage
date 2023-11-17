@@ -1,0 +1,10 @@
+.mainBanner {
+  display: flex;
+  justify-content: center;
+  background: darkorange;
+}
+
+.imgBanner {
+  width: 1500px;
+  height: 300px;
+}

@@ -5,7 +5,7 @@ import {
   EditOutlined,
   RetweetOutlined,
 } from "@ant-design/icons";
-import { Popconfirm, Space, message } from "antd";
+import { Col, Popconfirm, Row, Space, message } from "antd";
 import ModalEditCellDevice from "./ModalEditCellDevice";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation, Link } from "react-router-dom";
@@ -372,26 +372,30 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
   return localStorage.getItem("isLogin") ? (
     <>
       <div className="container">
-        <h4>Quản lý thiết bị</h4>
+        <h4>Thiết bị phòng hub</h4>
 
-        <Space className="mb-10">
-          <label>Tìm kiếm</label>
-          <Search
-            placeholder="Nhập chi nhánh / phòng hub..."
-            onSearch={onSearch}
-            onChange={(e) => setInputSearch(e.target.value)}
-            value={inputSearch}
-            enterButton
-          />
-          <RetweetOutlined
-            className="buttonIconRefresh"
-            onClick={() => {
-              setInputSearch("");
-              loadData();
-            }}
-            title="Làm mới"
-          />
-        </Space>
+        <Row>
+          <Col span={6}>
+            <div className="mb-10 boxSearch">
+              <label className="lblTitleSearch">Tìm kiếm</label>
+              <Search
+                placeholder="Nhập chi nhánh / phòng hub..."
+                onSearch={onSearch}
+                onChange={(e) => setInputSearch(e.target.value)}
+                value={inputSearch}
+                enterButton
+              />
+              <RetweetOutlined
+                className="buttonIconRefresh"
+                onClick={() => {
+                  setInputSearch("");
+                  loadData();
+                }}
+                title="Làm mới"
+              />
+            </div>
+          </Col>
+        </Row>
         <table id="tableDevice">
           <thead>
             <tr>
