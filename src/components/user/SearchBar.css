@@ -1,0 +1,23 @@
+.justify-content-center {
+  justify-content: center;
+}
+.fix-search .boxSearch {
+  position: fixed;
+  top: 10px;
+  justify-content: center;
+  z-index: 100;
+}
+
+.fix-search .boxSearch label {
+  display: none;
+}
+
+.boxSearch input {
+}
+
+.boxSearch {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  width: 400px;
+}
