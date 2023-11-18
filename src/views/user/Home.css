@@ -10,8 +10,15 @@
   margin-right: 20px;
 }
 
-.boxSearch {
-  display: flex;
+.bg-card-body {
+  background-color: #becfde96;
+}
+
+.m-0 {
+  margin: 0;
+}
+
+.align-item-center {
   align-items: center;
 }
 
@@ -61,6 +68,7 @@ tr.red th {
   font-size: 12px;
   border-collapse: collapse;
   width: 100%;
+  margin-top: 45px;
 }
 
 #tableDevice td {
@@ -129,6 +137,7 @@ tr.red th {
 .buttonIconRefresh {
   color: #f3f3f3;
   padding: 8px;
+  margin-left: 5px;
   background-color: #e47015;
   border-radius: 5px;
 }

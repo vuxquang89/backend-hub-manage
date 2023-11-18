@@ -42,7 +42,7 @@ const UserHeader = ({ countAlarm }) => {
             signOut();
           }}
         >
-          "Logout"
+          Logout
         </a>
       ),
       icon: <LogoutOutlined />,

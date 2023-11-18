@@ -21,6 +21,7 @@ import { getOrders } from "../../API";
 import { useState } from "react";
 import useLogout from "../../hooks/useLogout";
 import { useNavigate } from "react-router-dom";
+import logo from "../../assets/images/logo_login.png";
 
 // const items = [
 //   {
@@ -44,8 +45,9 @@ function Header() {
           onClick={() => {
             signOut();
           }}
+          title="Đăng xuất"
         >
-          "Logout"
+          Logout
         </a>
       ),
       icon: <LogoutOutlined />,
@@ -61,7 +63,9 @@ function Header() {
 
   return (
     <div className="header">
-      <Image width={40} src=""></Image>
+      <div className="logoStyle">
+        <img src={logo} alt="Logo" />
+      </div>
       <Typography.Title>Admin Page</Typography.Title>
       <Space>
         <>

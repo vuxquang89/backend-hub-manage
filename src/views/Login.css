@@ -17,6 +17,18 @@
   z-index: 2000;
 }
 
+.loginForm h1 {
+  font-size: 30px;
+  margin-bottom: 1em;
+}
+
+.logoLogin {
+  margin-top: 20px;
+}
+.logoLogin img {
+  width: 80px;
+}
+
 .offscreen {
   position: absolute;
   left: -9999px;

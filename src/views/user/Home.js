@@ -13,6 +13,7 @@ import useLogout from "../../hooks/useLogout";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import ModalViewHistory from "./ModalViewHistory";
 import SpanLoading from "../../components/loading/SpanLoading";
+import SearchBar from "../../components/user/SearchBar";
 
 const Home = () => {
   const { Search } = Input;
@@ -153,7 +154,13 @@ const Home = () => {
       <div className="container">
         <h4>Trang chủ</h4>
 
-        <Row>
+        <SearchBar
+          onSearch={onSearch}
+          inputSearch={inputSearch}
+          setInputSearch={setInputSearch}
+          loadData={loadData}
+        />
+        {/* <Row className="fix-search">
           <Col span={6}>
             <div className="mb-10 boxSearch">
               <label className="lblTitleSearch">Tìm kiếm</label>
@@ -174,7 +181,7 @@ const Home = () => {
               />
             </div>
           </Col>
-        </Row>
+        </Row> */}
         <table id="tableDevice">
           <thead>
             <tr>

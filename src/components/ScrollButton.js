@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { UpCircleOutlined } from "@ant-design/icons";
 import { Button } from "../components/Style";
+import "./ScrollButton.css";
 
 const ScrollButton = () => {
   const [visible, setVisible] = useState(false);
@@ -26,7 +27,7 @@ const ScrollButton = () => {
   window.addEventListener("scroll", toggleVisible);
 
   return (
-    <Button>
+    <Button className="btnScroll">
       <UpCircleOutlined
         onClick={scrollToTop}
         style={{ display: visible ? "inline" : "none" }}

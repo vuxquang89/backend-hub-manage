@@ -12,8 +12,8 @@ export const Content = styled.div`
 
 export const Button = styled.div`
   position: fixed;
-  width: 100%;
-  left: 96%;
+
+  left: 96.5%;
   bottom: 40px;
   height: 20px;
   font-size: 3rem;

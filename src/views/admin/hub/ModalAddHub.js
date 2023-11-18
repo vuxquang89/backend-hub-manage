@@ -81,7 +81,7 @@ const ModalAddHub = ({
                   </Col>
                   <Col span={12}>
                     <div className="addBranchItem">
-                      <label>Chọn phụ người trách</label>
+                      <label>Chọn người phụ trách</label>
                       <Select
                         showSearch
                         style={{

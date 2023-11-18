@@ -12,6 +12,8 @@ import SockJS from "sockjs-client";
 import ScrollButton from "./ScrollButton";
 import { BASE_URL } from "../config/config";
 import MainBanner from "./banner/MainBanner";
+import Footer from "./user/Footer";
+import FooterAdmin from "./admin/Footer";
 
 var stomp = null;
 
@@ -128,7 +130,7 @@ const Layout = ({
     <div className="App">
       {auth.roles[0] === "ROLE_ADMIN" ? (
         <>
-          <MainBanner />
+          {/* <MainBanner /> */}
           <Header />
 
           <div className="SideMenuAndPageContent">
@@ -149,13 +151,16 @@ const Layout = ({
               Same as
             </ToastContainer>
           </div>
+
           <ScrollButton />
+          <FooterAdmin />
         </>
       ) : (
         <>
           <UserHeader countAlarm={countAlarm} />
           <MainBanner />
           <PageContent />
+          <Footer />
           <ToastContainer
             position="top-right"
             autoClose={5000}

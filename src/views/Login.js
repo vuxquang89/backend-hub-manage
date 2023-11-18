@@ -2,6 +2,9 @@ import { useRef, useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthProvider";
 import "./Login.css";
 import { Button, Col, Form, Input, Row, Typography, message } from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import logoLogin from "../assets/images/logo_login.png";
+
 import useAuth from "../hooks/useAuth";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
@@ -73,6 +76,9 @@ const Login = ({ connectSocket }) => {
     <>
       <div className="appBg">
         <Form className="loginForm text-align-center" onFinish={login}>
+          <div className="logoLogin">
+            <img src={logoLogin} alt="Logo login" />
+          </div>
           <Typography.Title>Đăng nhập</Typography.Title>
           <p
             ref={errRef}
@@ -93,12 +99,12 @@ const Login = ({ connectSocket }) => {
                 message: "Không nhập khoảng trắng hoặc ký tự đặc biệt",
               },
             ]}
-            label="Tên đăng nhập"
             name={"username"}
           >
             <Input
               placeholder="Tên đăng nhập"
               onChange={(e) => setUsername(e.target.value)}
+              prefix={<UserOutlined className="site-form-item-icon" />}
             />
           </Form.Item>
           <Form.Item
@@ -108,12 +114,12 @@ const Login = ({ connectSocket }) => {
                 message: "Cần nhập mật khẩu",
               },
             ]}
-            label="Mật khẩu"
             name={"password"}
           >
             <Input.Password
-              placeholder="Mật khểu"
+              placeholder="Mật khẩu"
               onChange={(e) => setPassword(e.target.value)}
+              prefix={<LockOutlined className="site-form-item-icon" />}
             />
           </Form.Item>
           <Button type="primary" htmlType="submit">

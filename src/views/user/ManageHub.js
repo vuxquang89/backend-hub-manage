@@ -18,6 +18,7 @@ import ModalAddHistory from "./ModalAddHistory";
 import useLogout from "../../hooks/useLogout";
 import { toast } from "react-toastify";
 import moment from "moment";
+import SearchBar from "../../components/user/SearchBar";
 
 const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
   const logout = useLogout();
@@ -373,8 +374,13 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
     <>
       <div className="container">
         <h4>Thiết bị phòng hub</h4>
-
-        <Row>
+        <SearchBar
+          onSearch={onSearch}
+          inputSearch={inputSearch}
+          setInputSearch={setInputSearch}
+          loadData={loadData}
+        />
+        {/* <Row>
           <Col span={6}>
             <div className="mb-10 boxSearch">
               <label className="lblTitleSearch">Tìm kiếm</label>
@@ -395,7 +401,7 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
               />
             </div>
           </Col>
-        </Row>
+        </Row> */}
         <table id="tableDevice">
           <thead>
             <tr>

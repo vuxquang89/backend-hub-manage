@@ -161,13 +161,13 @@ const HubDetail = () => {
             <Col span={24}>
               <Row>
                 <Col span={12}>
-                  <Card>
+                  <Card className="boxShadow">
                     <Row>
                       <Col span={24}>
-                        <Row>
+                        <Row className="align-item-center mb-10">
                           <Col span={8}>
-                            <Typography.Title level={5}>
-                              Thông tin Hub
+                            <Typography.Title level={5} className="m-0 ">
+                              Danh sách Hub
                             </Typography.Title>
                           </Col>
                           <Col span={8}>
@@ -290,7 +290,7 @@ const HubDetail = () => {
                   <Row>
                     <Col span={24}>
                       {isAddDevice && (
-                        <Card>
+                        <Card className="bg-card-body boxShadow">
                           <Row>
                             <Col span={24}>
                               <Typography.Title level={5}>

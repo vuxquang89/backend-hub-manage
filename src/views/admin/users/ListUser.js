@@ -90,7 +90,7 @@ function ListUser() {
   return (
     <div className="ps-12">
       <Flex justify="space-between" align="center">
-        <Typography.Title level={4}>List User</Typography.Title>
+        <Typography.Title level={4}>Danh sách User</Typography.Title>
         <Link to="/admin/users/add">
           <button className="btnAddUser">Thêm mới</button>
         </Link>

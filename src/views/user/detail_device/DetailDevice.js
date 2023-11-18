@@ -751,8 +751,8 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                         name="ratedPower"
                         rules={
                           (deviceId === 1 || deviceId === 3) &&
-                          ratedPower.length < 1 &&
-                          checked && [
+                          checked &&
+                          (ratedPower === null || ratedPower.length < 1) && [
                             {
                               required: true,
                               message: "Không được để trống",
@@ -789,8 +789,9 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                         name="loadDuringPowerOutage"
                         rules={
                           (deviceId === 1 || deviceId === 3) &&
-                          loadDuringPowerOutage.length < 1 &&
-                          checked && [
+                          checked &&
+                          (loadDuringPowerOutage === null ||
+                            loadDuringPowerOutage.length < 1) && [
                             {
                               required: true,
                               message: "Không được để trống",
@@ -823,7 +824,8 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                         name="batteryQuantity"
                         rules={
                           deviceId === 1 &&
-                          batteryQuantity.length < 1 &&
+                          (batteryQuantity === null ||
+                            batteryQuantity.length < 1) &&
                           checked && [
                             {
                               required: true,
@@ -855,7 +857,8 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                         name="batteryNumber"
                         rules={
                           deviceId === 1 &&
-                          batteryNumber.length < 1 &&
+                          (batteryNumber === null ||
+                            batteryNumber.length < 1) &&
                           checked && [
                             {
                               required: true,
@@ -889,7 +892,8 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                         name="batteryCapacity"
                         rules={
                           deviceId === 2 &&
-                          batteryCapacity.length < 1 &&
+                          (batteryCapacity === null ||
+                            batteryCapacity.length < 1) &&
                           checked && [
                             {
                               required: true,
@@ -921,7 +925,8 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                         name="productionTime"
                         rules={
                           deviceId === 2 &&
-                          productionTime.length < 1 &&
+                          (productionTime === null ||
+                            productionTime.length < 1) &&
                           checked && [
                             {
                               required: true,
@@ -1036,7 +1041,8 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                         name="dateMaintenance"
                         rules={
                           checked &&
-                          dateMaintenance.length < 1 && [
+                          (dateMaintenance === null ||
+                            dateMaintenance.length < 1) && [
                             {
                               required: true,
                               message: "Không được để trống",
@@ -1291,7 +1297,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
               <Col span={24}>
                 <Row>
                   <Col span={8}>
-                    <Card>
+                    <Card className="boxShadow">
                       <Row>
                         <Col span={24}>
                           <Typography.Title level={5}>
@@ -1436,7 +1442,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                     </Row>
                     <Row>
                       <Col span={24}>
-                        <Card>
+                        <Card className="boxShadow">
                           <Tabs
                             defaultActiveKey="1"
                             items={items}
