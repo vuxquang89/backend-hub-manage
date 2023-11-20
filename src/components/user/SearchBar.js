@@ -10,7 +10,7 @@ const SearchBar = ({ onSearch, inputSearch, setInputSearch, loadData }) => {
 
   const toggleFixSearchBar = () => {
     const scrolled = document.documentElement.scrollTop;
-    if (scrolled > 320) {
+    if (scrolled > 240) {
       setVisible(true);
     } else {
       setVisible(false);
