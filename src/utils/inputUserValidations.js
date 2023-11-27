@@ -57,6 +57,10 @@ export const password_validation = {
       value: 5,
       message: "Tối thiểu 5 ký tự",
     },
+    pattern: {
+      value: new RegExp(/^[a-zA-Z0-9]*$/),
+      message: "Không nhập khoảng trắng hoặc ký tự đặc biệt",
+    },
   },
 };
 
@@ -79,6 +83,10 @@ export const username_validation = {
     minLength: {
       value: 2,
       message: "Tối thiểu 2 ký tự",
+    },
+    pattern: {
+      value: new RegExp(/^[a-zA-Z0-9]*$/),
+      message: "Không nhập khoảng trắng hoặc ký tự đặc biệt",
     },
   },
 };

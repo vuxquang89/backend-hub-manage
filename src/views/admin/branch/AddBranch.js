@@ -3,14 +3,12 @@ import InputCustom from "../../../components/input/Input";
 import SpanLoading from "../../../components/loading/SpanLoading";
 
 import {
-  name_validation,
   name_branch_validation,
-  email_validation,
-  phone_validation,
   code_branch_validation,
   address_branch_validation,
 } from "../../../utils/inputBranchValidations";
 import { RollbackOutlined } from "@ant-design/icons";
+import { Row, Col } from "antd";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import "./AddBranch.css";
@@ -37,17 +35,19 @@ function AddBranch() {
     console.log(">>>>>add data ", form);
     let branchId = form.branchId;
     let branchName = form.branchName;
-    let deputyTechnicalDirector = form.deputyTechnicalDirector;
-    let phoneDeputyTechnicalDirector = form.phoneDeputyTechnicalDirector;
-    let emailDeputyTechnicalDirector = form.emailDeputyTechnicalDirector;
+    let branchAddress = form.branchAddress;
+    // let deputyTechnicalDirector = form.deputyTechnicalDirector;
+    // let phoneDeputyTechnicalDirector = form.phoneDeputyTechnicalDirector;
+    // let emailDeputyTechnicalDirector = form.emailDeputyTechnicalDirector;
     setFormLoading(true);
     await axiosPrivate
       .post("/api/branch", {
         branchId,
         branchName,
-        deputyTechnicalDirector,
-        phoneDeputyTechnicalDirector,
-        emailDeputyTechnicalDirector,
+        branchAddress,
+        // deputyTechnicalDirector,
+        // phoneDeputyTechnicalDirector,
+        // emailDeputyTechnicalDirector,
       })
       .then((res) => {
         console.log(">>>>>add branch result", res.data);
@@ -94,29 +94,31 @@ function AddBranch() {
           )}
         </div>
         <FormProvider {...methods}>
-          <form className="newUserForm">
-            <div className="newUserItem">
-              <InputCustom
-                {...name_branch_validation}
-                className="inputAdd"
-                onChange={(e) => handleNameBranchOnChange(e)}
-              />
-            </div>
-            <div className="newUserItem">
-              <InputCustom
-                {...code_branch_validation}
-                className="inputAdd"
-                onChange={(e) => handleCodeBranchOnChange(e)}
-                value={code}
-              />
-            </div>
-            <div className="newUserItem">
-              <InputCustom
-                {...address_branch_validation}
-                className="inputAdd"
-              />
-            </div>
-            <div className="newUserItem">
+          <Row>
+            <Col span={12}>
+              <form className="newUserForm">
+                <div className="newUserItem">
+                  <InputCustom
+                    {...name_branch_validation}
+                    className="inputAdd"
+                    onChange={(e) => handleNameBranchOnChange(e)}
+                  />
+                </div>
+                <div className="newUserItem">
+                  <InputCustom
+                    {...code_branch_validation}
+                    className="inputAdd"
+                    onChange={(e) => handleCodeBranchOnChange(e)}
+                    value={code}
+                  />
+                </div>
+                <div className="newUserItem">
+                  <InputCustom
+                    {...address_branch_validation}
+                    className="inputAdd"
+                  />
+                </div>
+                {/* <div className="newUserItem">
               <InputCustom {...name_validation} className="inputAdd" />
             </div>
             <div className="newUserItem">
@@ -125,12 +127,15 @@ function AddBranch() {
 
             <div className="newUserItem">
               <InputCustom {...phone_validation} className="inputAdd" />
-            </div>
-
-            <button onClick={onSubmit} className="newUserButton">
-              Thêm mới
-            </button>
-          </form>
+            </div> */}
+                <div className="newUserItem">
+                  <button onClick={onSubmit} className="newUserButton">
+                    Thêm mới
+                  </button>
+                </div>
+              </form>
+            </Col>
+          </Row>
         </FormProvider>
       </div>
       {formLoading && <SpanLoading />}

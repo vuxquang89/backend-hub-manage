@@ -7,6 +7,7 @@ import {
   HomeOutlined,
   UserOutlined,
   ApiOutlined,
+  UsergroupAddOutlined,
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
@@ -17,48 +18,54 @@ function SideMenu() {
   const [selectedKeys, setSelectedKeys] = useState("/");
   const navigate = useNavigate();
 
+  const [collapsed, setCollapsed] = useState(false);
+  const toggleCollapsed = () => {
+    setCollapsed(!collapsed);
+  };
+
   useEffect(() => {
     const pathName = location.pathname;
     setSelectedKeys(pathName);
   }, [location.pathname]);
 
+  function getItem(label, key, icon, children, type) {
+    return {
+      key,
+      icon,
+      children,
+      label,
+      type,
+    };
+  }
+
+  const items = [
+    getItem("Dashboard", "/admin", <AppstoreOutlined />),
+    getItem("Chi nhánh", "/admin/branch", <HomeOutlined />),
+    getItem("Hub", "/admin/hub", <ShopOutlined />),
+    getItem("Thiết bị", "/admin/device", <ApiOutlined />),
+    getItem("Users", "sub1", <UsergroupAddOutlined />, [
+      getItem("PGĐ KT", "/admin/users/leader", <UserOutlined />),
+      getItem("Quản lý phòng máy", "/admin/users/manager", <UserOutlined />),
+      getItem("Phòng KT", "/admin/users/department", <UserOutlined />),
+    ]),
+  ];
+
   return (
     <div className="side-menu">
       <Menu
         className="side-menu-vertical"
-        mode="vertical"
+        style={{
+          width: 225,
+        }}
         onClick={(item) => {
           //item.key
           navigate(item.key);
         }}
+        mode="inline"
+        theme="dark"
         selectedKeys={[selectedKeys]}
-        items={[
-          {
-            label: "Dashboard",
-            icon: <AppstoreOutlined />,
-            key: "/admin",
-          },
-          {
-            label: "Chi nhánh",
-            icon: <HomeOutlined />,
-            key: "/admin/branch",
-          },
-          {
-            label: "Hub",
-            icon: <ShopOutlined />,
-            key: "/admin/hub",
-          },
-          {
-            label: "Thiết bị",
-            icon: <ApiOutlined />,
-            key: "/admin/device",
-          },
-          {
-            label: "Users",
-            icon: <UserOutlined />,
-            key: "/admin/users",
-          },
-        ]}
+        // inlineCollapsed={collapsed}
+        items={items}
       />
     </div>
   );

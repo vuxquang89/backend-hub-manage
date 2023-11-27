@@ -1,7 +1,11 @@
-import { Table } from "antd";
+import { Table, Button } from "antd";
 import React from "react";
 
-const TabHistoryOperation = ({ isLoading, dataSource }) => {
+const TabHistoryOperation = ({
+  isLoading,
+  dataSource,
+  openModalViewHubDetail,
+}) => {
   return (
     <Table
       loading={isLoading}
@@ -26,6 +30,20 @@ const TabHistoryOperation = ({ isLoading, dataSource }) => {
           title: "Nội dung thao tác",
           key: "content",
           dataIndex: "content",
+          render: (text, record) => (
+            <>
+              {text}
+              {record.action === "CHỈNH SỬA" && (
+                <Button
+                  type="link"
+                  danger
+                  onClick={() => openModalViewHubDetail(record.id)}
+                >
+                  Chi tiết
+                </Button>
+              )}
+            </>
+          ),
         },
       ]}
       dataSource={dataSource}

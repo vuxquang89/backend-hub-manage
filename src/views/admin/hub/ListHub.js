@@ -8,10 +8,16 @@ import {
   Popconfirm,
   message,
   Select,
+  Input,
 } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FormProvider, useForm, useFormState } from "react-hook-form";
-import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EyeOutlined,
+  EditOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import { toast } from "react-toastify";
 import ModalAddHub from "./ModalAddHub";
 import InputCustom from "../../../components/input/Input";
@@ -35,20 +41,32 @@ function ListHub() {
   const [loading, setLoading] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [dataSource, setDataSource] = useState([]);
-  const [branchList, setBranchList] = useState([]);
+
   const [openModal, setOpenModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [editingId, setEditingId] = useState("");
   const [editing, setEditing] = useState(false);
   const [branchValue, setBranchValue] = useState("");
   const [listUserManager, setListUserManager] = useState([]);
+  const [listUserDepartment, setListUserDepartment] = useState([]);
 
   const [hubName, setHubName] = useState("");
   const [hubAddress, setHubAddress] = useState("");
   const [hubCity, setHubCity] = useState("");
   const [hubManagerName, setHubManagerName] = useState("");
   const [hubManagerPhone, setHubManagerPhone] = useState("");
-  const [userId, setUserId] = useState("");
+  const [staffDepartmentId, setStaffDepartmentId] = useState("");
+  const [staffManagerId, setStaffManagerId] = useState("");
+  const [searchedText, setSearchText] = useState("");
+
+  const allSelectItem = [
+    {
+      label: "All",
+      value: "all",
+    },
+  ];
+
+  const [branchList, setBranchList] = useState(allSelectItem);
 
   useEffect(() => {
     loadData();
@@ -58,7 +76,7 @@ function ListHub() {
   const loadData = async () => {
     setLoading(true);
     await axiosPrivate
-      .get("/api/hub")
+      .get("/api/admin/hub")
       .then((res) => {
         console.log(">>>>get list hub", res.data);
         setDataSource(res.data);
@@ -74,10 +92,12 @@ function ListHub() {
 
   const getBranchList = async () => {
     await axiosPrivate
-      .get("/api/branch/list")
+      .get("/api/admin/branch/list")
       .then((res) => {
         console.log(">>>>get list branch", res.data);
-        setBranchList(res.data);
+        // setBranchList(res.data);
+        let data = res.data;
+        setBranchList([...branchList, ...data]);
       })
       .catch((err) => {
         console.log("get list hub branch", err);
@@ -86,13 +106,16 @@ function ListHub() {
       });
   };
 
+  /**
+   * delete
+   */
   const confirmDeleteHub = async () => {
     console.log(">>>comfirm delete", editingId);
 
     setFormLoading(true);
 
     await axiosPrivate
-      .delete(`/api/hub/${editingId}`)
+      .delete(`/api/admin/hub/${editingId}`)
       .then((res) => {
         let result = res.data;
         if (result) {
@@ -115,6 +138,7 @@ function ListHub() {
         message.error("Xóa thất bại");
       });
   };
+
   const cancel = (e) => {
     console.log(e);
     //message.error('Click on No');
@@ -126,21 +150,27 @@ function ListHub() {
   };
 
   const showModal = () => {
-    getUserManager();
+    // getUserManager();
+    getUserDepartment();
   };
 
   const handleOkOnClick = methods.handleSubmit((data) => {
     //setModalText('The modal will be closed after two seconds');
     console.log(">>>>>>get branch value", branchValue);
-    console.log(">>>>>>get user id value", userId);
+    console.log(">>>>>>get user id value", staffDepartmentId);
     console.log(data);
     if (branchValue.length === 0) {
       toast.warning("Kiểm tra, chưa chọn chi nhánh");
       return;
     }
 
-    if (userId.length === 0) {
-      toast.warning("Kiểm tra chưa chọn người phụ trách");
+    if (staffDepartmentId.length === 0) {
+      toast.warning("Kiểm tra, chưa chọn người phụ trách");
+      return;
+    }
+
+    if (staffManagerId.length === 0) {
+      toast.warning("Kiểm tra, chưa chọn quản lý phòng máy");
       return;
     }
 
@@ -181,7 +211,7 @@ function ListHub() {
 
     setFormLoading(true);
     await axiosPrivate
-      .post(`/api/hub/${editingId}`, {
+      .post(`/api/admin/hub/${editingId}`, {
         hubName,
         hubAddress,
         hubCity,
@@ -225,15 +255,14 @@ function ListHub() {
   const addNewHub = async (record) => {
     setIsLoading(true);
     await axiosPrivate
-      .post("/api/hub", {
+      .post("/api/admin/hub", {
         hubId: record.hubId,
-        userId: userId,
+        staffManagerId: staffManagerId,
+        staffDepartmentId: staffDepartmentId,
         branchId: branchValue,
         hubName: record.hubName,
         hubAddress: record.hubAddress,
         hubCity: record.hubCity,
-        hubManagerName: record.hubManagerName,
-        hubManagerPhone: record.hubManagerPhone,
       })
       .then((res) => {
         console.log(">>>>> add new hub", res.data);
@@ -256,7 +285,7 @@ function ListHub() {
   const getHubByBranch = async (branchId) => {
     setLoading(true);
     await axiosPrivate
-      .get(`/api/hub/branch/${branchId}`)
+      .get(`/api/admin/hub/branch/${branchId}`)
       .then((res) => {
         console.log(">>>>get list hub", res.data);
         setDataSource(res.data);
@@ -271,13 +300,34 @@ function ListHub() {
   };
 
   /**
-   * get list user manager
+   * get list user department
    */
-  const getUserManager = async () => {
+  const getUserDepartment = async () => {
     setFormLoading(true);
     methods.reset();
     await axiosPrivate
-      .get(`/api/users/role/selectoption/2`)
+      .get(`/api/admin/users/department/selectoption/role/4`)
+      .then((res) => {
+        console.log(">>>>get list user department", res.data);
+        setListUserDepartment(res.data);
+        setOpenModal(true);
+        setFormLoading(false);
+      })
+      .catch((err) => {
+        console.log("get list user department error", err);
+        setFormLoading(false);
+        navigate("/login", { state: { from: location }, replace: true });
+      });
+  };
+
+  /**
+   * get list user manager
+   */
+  const getUserManager = async (branchId) => {
+    setFormLoading(true);
+    methods.reset();
+    await axiosPrivate
+      .get(`/api/admin/users/manager/branch/${branchId}/selectoption/role/2`)
       .then((res) => {
         console.log(">>>>get list user manager", res.data);
         setListUserManager(res.data);
@@ -320,109 +370,163 @@ function ListHub() {
             }
             onChange={(e, value) => {
               console.log(">>> check select onchange:", e);
-              getHubByBranch(value.value);
-              setBranchValue(value.value);
+              if (e === "all") {
+                loadData();
+              } else {
+                getHubByBranch(value.value);
+                setBranchValue(value.value);
+              }
             }}
             options={branchList}
+            value={allSelectItem.value}
+          />
+
+          <Input
+            placeholder="Search..."
+            onSearch={(value) => {
+              setSearchText(value);
+            }}
+            onChange={(e) => {
+              setSearchText(e.target.value);
+            }}
+            prefix={<SearchOutlined />}
           />
         </Space>
+
         <FormProvider {...tableMethods}>
           <form className="formListHub">
             <Table
               loading={loading}
               columns={[
                 {
+                  title: "Id",
+                  dataIndex: "hubId",
+                  key: "hubId",
+                  filteredValue: [searchedText],
+                  onFilter: (value, record) => {
+                    return (
+                      String(record.hubId)
+                        .toLowerCase()
+                        .includes(value.toLowerCase()) ||
+                      String(record.hubName)
+                        .toLowerCase()
+                        .includes(value.toLowerCase()) ||
+                      String(record.hubManagerName)
+                        .toLowerCase()
+                        .includes(value.toLowerCase())
+                    );
+                  },
+                },
+                {
                   title: "Phòng máy",
                   dataIndex: "hubName",
                   key: "hubName",
-                  render: (text, record) => {
-                    return record.hubId === editingId && editing ? (
-                      <InputCustom
-                        {...hubName_validation}
-                        className="inputEditCell"
-                        onChange={onInputChange}
-                        value={hubName}
-                      />
-                    ) : (
-                      text
-                    );
-                  },
+
+                  // render: (text, record) => {
+                  //   return record.hubId === editingId && editing ? (
+                  //     <InputCustom
+                  //       {...hubName_validation}
+                  //       className="inputEditCell"
+                  //       onChange={onInputChange}
+                  //       value={hubName}
+                  //     />
+                  //   ) : (
+                  //     text
+                  //   );
+                  // },
                 },
                 {
                   title: "Địa chỉ",
                   dataIndex: "hubAddress",
                   key: "hubAddress",
-                  render: (text, record) => {
-                    return record.hubId === editingId && editing ? (
-                      <InputCustom
-                        {...hubAddress_validation}
-                        className="inputEditCell"
-                        onChange={(e) => {
-                          setHubAddress(e.target.value);
-                        }}
-                        value={hubAddress}
-                      />
-                    ) : (
-                      text
-                    );
-                  },
+                  // render: (text, record) => {
+                  //   return record.hubId === editingId && editing ? (
+                  //     <InputCustom
+                  //       {...hubAddress_validation}
+                  //       className="inputEditCell"
+                  //       onChange={(e) => {
+                  //         setHubAddress(e.target.value);
+                  //       }}
+                  //       value={hubAddress}
+                  //     />
+                  //   ) : (
+                  //     text
+                  //   );
+                  // },
                 },
                 {
                   title: "Tỉnh/Thành phố",
                   dataIndex: "hubCity",
                   key: "hubCity",
-                  render: (text, record) => {
-                    return record.hubId === editingId && editing ? (
-                      <InputCustom
-                        {...hubCity_validation}
-                        className="inputEditCell"
-                        onChange={(e) => {
-                          setHubCity(e.target.value);
-                        }}
-                        value={hubCity}
-                      />
-                    ) : (
-                      text
-                    );
-                  },
+                  // render: (text, record) => {
+                  //   return record.hubId === editingId && editing ? (
+                  //     <InputCustom
+                  //       {...hubCity_validation}
+                  //       className="inputEditCell"
+                  //       onChange={(e) => {
+                  //         setHubCity(e.target.value);
+                  //       }}
+                  //       value={hubCity}
+                  //     />
+                  //   ) : (
+                  //     text
+                  //   );
+                  // },
+                },
+                {
+                  title: "Chi nhánh",
+                  dataIndex: "branchName",
+                  key: "branchName",
                 },
                 {
                   title: "Quản lý PM",
                   dataIndex: "hubManagerName",
                   key: "hubManagerName",
-                  render: (text, record) => {
-                    return record.hubId === editingId && editing ? (
-                      <InputCustom
-                        {...hubManager_validation}
-                        className="inputEditCell"
-                        onChange={(e) => {
-                          setHubManagerName(e.target.value);
-                        }}
-                        value={hubManagerName}
-                      />
-                    ) : (
-                      text
-                    );
-                  },
+                  // render: (text, record) => {
+                  //   return record.hubId === editingId && editing ? (
+                  //     <InputCustom
+                  //       {...hubManager_validation}
+                  //       className="inputEditCell"
+                  //       onChange={(e) => {
+                  //         setHubManagerName(e.target.value);
+                  //       }}
+                  //       value={hubManagerName}
+                  //     />
+                  //   ) : (
+                  //     text
+                  //   );
+                  // },
                 },
+
                 {
                   title: "SĐT quản lý PM",
                   dataIndex: "hubManagerPhone",
                   key: "hubManagerPhone",
-                  render: (text, record) => {
-                    return record.hubId === editingId && editing ? (
-                      <InputCustom
-                        {...phone_validation}
-                        className="inputEditCell"
-                        onChange={(e) => {
-                          setHubManagerPhone(e.target.value);
-                        }}
-                        value={hubManagerPhone}
-                      />
-                    ) : (
-                      text
-                    );
-                  },
+                  // render: (text, record) => {
+                  //   return record.hubId === editingId && editing ? (
+                  //     <InputCustom
+                  //       {...phone_validation}
+                  //       className="inputEditCell"
+                  //       onChange={(e) => {
+                  //         setHubManagerPhone(e.target.value);
+                  //       }}
+                  //       value={hubManagerPhone}
+                  //     />
+                  //   ) : (
+                  //     text
+                  //   );
+                  // },
+                },
+
+                {
+                  title: "Người phụ trách",
+                  dataIndex: "departmentName",
+                  key: "departmentName",
+                },
+                {
+                  title: "SĐT",
+                  dataIndex: "departmentPhone",
+                  key: "departmentPhone",
                 },
                 {
                   title: "Action",
@@ -430,7 +534,7 @@ function ListHub() {
                   dataIndex: "hubId",
                   render: (text, record) => (
                     <>
-                      {editing && record.hubId === editingId ? (
+                      {/* {editing && record.hubId === editingId ? (
                         <>
                           <button
                             className="btnUserEdit"
@@ -461,9 +565,9 @@ function ListHub() {
                         >
                           Edit
                         </button>
-                      )}
+                      )} */}
                       <Link to={"/admin/hub/" + record.hubId}>
-                        <EyeOutlined className="buttonViewCell" />
+                        <EditOutlined className="buttonViewCell" />
                       </Link>
                       <Popconfirm
                         title="Alarm"
@@ -499,9 +603,13 @@ function ListHub() {
         branchValue={branchValue}
         branchList={branchList}
         listUserManager={listUserManager}
+        listUserDepartment={listUserDepartment}
         setBranchValue={setBranchValue}
-        userId={userId}
-        setUserId={setUserId}
+        getUserManager={getUserManager}
+        staffDepartmentId={staffDepartmentId}
+        setStaffDepartmentId={setStaffDepartmentId}
+        staffManagerId={staffManagerId}
+        setStaffManagerId={setStaffManagerId}
       />
       {formLoading && <SpanLoading />}
     </>

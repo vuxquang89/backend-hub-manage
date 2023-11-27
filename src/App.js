@@ -31,15 +31,23 @@ import PersistentLogin from "./components/PersistentLogin";
 import HubDetail from "./views/user/HubDetail";
 import { useEffect, useState } from "react";
 import { BASE_URL } from "./config/config";
+import UserDepartment from "./views/admin/users/department/UserDepartment";
+import AddUserDepartment from "./views/admin/users/department/AddUserDepartment";
+import EditUserDepartment from "./views/admin/users/department/EditUserDepartment";
+import UserManager from "./views/admin/users/branch/UserManager";
+import AddUserManager from "./views/admin/users/branch/AddUserManager";
+import EditUserManager from "./views/admin/users/branch/EditUserManager";
 
 const ROLES = {
   User: "ROLE_USER",
   Manager: "ROLE_MANAGER",
+  Branch: "ROLE_BRANCH",
+  Department: "ROLE_DEPARTMENT",
   Admin: "ROLE_ADMIN",
 };
 
 const App = () => {
-  const [countAlarm, setCountAlarm] = useState(1);
+  const [countAlarm, setCountAlarm] = useState(0);
   const [stompClient, setStompClient] = useState();
   const [userData, setUserData] = useState({
     // username: localStorage.getItem("username"),
@@ -131,7 +139,13 @@ const App = () => {
             setCountAlarm={setCountAlarm}
             setStompClient={setStompClient}
             sendPrivateValue={sendPrivateValue}
-            allowedRoles={[ROLES.User, ROLES.Admin, ROLES.Manager]}
+            allowedRoles={[
+              ROLES.User,
+              ROLES.Admin,
+              ROLES.Manager,
+              ROLES.Branch,
+              ROLES.Department,
+            ]}
           />
         }
       >
@@ -145,14 +159,26 @@ const App = () => {
           <Route
             element={
               <RequireAuth
-                allowedRoles={[ROLES.User, ROLES.Admin, ROLES.Manager]}
+                allowedRoles={[
+                  ROLES.User,
+                  ROLES.Admin,
+                  ROLES.Manager,
+                  ROLES.Branch,
+                  ROLES.Department,
+                ]}
               />
             }
           >
             <Route path="/" element={<Home />} />
           </Route>
 
-          <Route element={<RequireAuth allowedRoles={[ROLES.Manager]} />}>
+          <Route
+            element={
+              <RequireAuth
+                allowedRoles={[ROLES.Manager, ROLES.Branch, ROLES.Department]}
+              />
+            }
+          >
             <Route
               path="manager"
               element={
@@ -184,9 +210,29 @@ const App = () => {
             <Route path="admin/branch" element={<Branch />} />
             <Route path="admin/branch/add" element={<AddBranch />} />
             <Route path="admin/branch/:id" element={<EditBranch />} />
-            <Route path="admin/users" element={<ListUser />} />
-            <Route path="admin/users/:id" element={<EditUser />} />
-            <Route path="admin/users/add" element={<AddUser />} />
+            <Route path="admin/users/leader" element={<ListUser />} />
+            <Route path="admin/users/leader/:id" element={<EditUser />} />
+            <Route path="admin/users/leader/add" element={<AddUser />} />
+
+            <Route path="admin/users/department" element={<UserDepartment />} />
+            <Route
+              path="admin/users/department/:id"
+              element={<EditUserDepartment />}
+            />
+            <Route
+              path="admin/users/department/add"
+              element={<AddUserDepartment />}
+            />
+
+            <Route path="admin/users/manager" element={<UserManager />} />
+            <Route
+              path="admin/users/manager/add"
+              element={<AddUserManager />}
+            />
+            <Route
+              path="admin/users/manager/:id"
+              element={<EditUserManager />}
+            />
 
             <Route path="admin/hub" element={<ListHub />} />
             <Route path="admin/hub/:id" element={<DetailHub />} />

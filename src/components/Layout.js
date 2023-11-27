@@ -77,6 +77,7 @@ const Layout = ({
       localStorage.getItem("username")
     );
     stomp.subscribe("/user/" + name + "/private", onPrivateMessage);
+    stomp.subscribe("/user/ba_tri/private", onPrivateMessage);
     userJoin(name, "JOIN MESSAGE");
     // loadMessage();
   };

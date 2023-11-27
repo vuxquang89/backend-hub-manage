@@ -16,6 +16,7 @@ import {
   address_branch_validation,
   phone_validation,
   email_validation,
+  name_branch_validation,
 } from "../../../utils/inputBranchValidations";
 import home from "../../../assets/images/home.jpg";
 import { useParams } from "react-router-dom";
@@ -33,6 +34,7 @@ function EditBranch() {
   const [formLoading, setFormLoading] = useState(false);
   const [dataSource, setDataSource] = useState([]);
   const [branchName, setBranchName] = useState("");
+
   const [branchId, setBranchId] = useState("");
   const [branchAddress, setBranchAddress] = useState("");
   const [deputyTechnicalDirector, setDeputyTechnicalDirector] = useState("");
@@ -168,27 +170,39 @@ function EditBranch() {
               <div className="userShowInfo">
                 <EnvironmentOutlined className="userShowIcon" />
                 <span className="userShowInfoTitle">
-                  {getData ? dataSource.branchAddress : "null"}
+                  {dataSource.branchAddress &&
+                  dataSource.branchAddress.length > 0
+                    ? dataSource.branchAddress
+                    : "Chưa có thông tin"}
                 </span>
               </div>
               <span className="userShowTitle">Thông tin PGĐ KT</span>
               <div className="userShowInfo">
                 <UserOutlined className="userShowIcon" />
                 <span className="userShowInfoTitle">
-                  {getData ? dataSource.deputyTechnicalDirector : "null"}
+                  {dataSource.deputyTechnicalDirector &&
+                  dataSource.deputyTechnicalDirector.length > 0
+                    ? dataSource.deputyTechnicalDirector
+                    : "Chưa có thông tin"}
                 </span>
               </div>
 
               <div className="userShowInfo">
                 <PhoneOutlined className="userShowIcon" />
                 <span className="userShowInfoTitle">
-                  {getData ? dataSource.phoneDeputyTechnicalDirector : "null"}
+                  {dataSource.phoneDeputyTechnicalDirector &&
+                  dataSource.phoneDeputyTechnicalDirector.length > 0
+                    ? dataSource.phoneDeputyTechnicalDirector
+                    : "Chưa có thông tin"}
                 </span>
               </div>
               <div className="userShowInfo">
                 <MailOutlined className="userShowIcon" />
                 <span className="userShowInfoTitle">
-                  {getData ? dataSource.emailDeputyTechnicalDirector : "null"}
+                  {dataSource.emailDeputyTechnicalDirector &&
+                  dataSource.emailDeputyTechnicalDirector.length > 0
+                    ? dataSource.emailDeputyTechnicalDirector
+                    : "Chưa có thông tin"}
                 </span>
               </div>
             </div>
@@ -213,16 +227,14 @@ function EditBranch() {
                   <div className="userUpdateLeft">
                     <div className="userUpdateItem">
                       <InputCustom
-                        {...name_validation}
+                        {...name_branch_validation}
                         className="userUpdateInput"
-                        value={deputyTechnicalDirector}
-                        onChange={(e) => {
-                          setDeputyTechnicalDirector(e.target.value);
-                        }}
+                        value={branchName}
+                        onChange={(e) => setBranchName(e.target.value)}
                       />
                     </div>
 
-                    <div className="userUpdateItem">
+                    {/* <div className="userUpdateItem">
                       <InputCustom
                         {...email_validation}
                         className="userUpdateInput"
@@ -241,7 +253,7 @@ function EditBranch() {
                           setPhoneDeputyTechnicalDirector(e.target.value);
                         }}
                       />
-                    </div>
+                    </div> */}
                     <div className="userUpdateItem">
                       <InputCustom
                         {...address_branch_validation}

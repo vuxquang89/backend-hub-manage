@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./EditUser.css";
+import "../EditUser.css";
 import {
   MailOutlined,
   PhoneOutlined,
@@ -8,18 +8,18 @@ import {
 } from "@ant-design/icons";
 import { message, Select } from "antd";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
-import SpanLoading from "../../../components/loading/SpanLoading";
+import SpanLoading from "../../../../components/loading/SpanLoading";
 import { FormProvider, useForm } from "react-hook-form";
 import {
   fullname_validation,
   email_validation,
   phone_validation,
-} from "../../../utils/inputUserValidations";
-import InputCustom from "../../../components/input/Input";
-import avatar from "../../../assets/images/user.png";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+} from "../../../../utils/inputUserValidations";
+import InputCustom from "../../../../components/input/Input";
+import avatar from "../../../../assets/images/user.png";
+import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 
-function EditUser() {
+function EditUserManager() {
   let navigate = useNavigate();
   const location = useLocation();
   const axiosPrivate = useAxiosPrivate();
@@ -34,11 +34,10 @@ function EditUser() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState(5);
-  const [branchList, setBranchList] = useState([]);
+  const [activate, setActivate] = useState(0);
   const [branchId, setBranchId] = useState("");
   const [branchName, setBranchName] = useState("");
-  const [activate, setActivate] = useState(0);
-
+  const [branchList, setBranchList] = useState([]);
   const [formLoading, setFormLoading] = useState(false);
 
   useEffect(() => {
@@ -52,7 +51,7 @@ function EditUser() {
 
   const getBranchList = async () => {
     await axiosPrivate
-      .get("/api/branch/list")
+      .get("/api/admin/branch/list")
       .then((res) => {
         console.log(">>>>get list branch", res.data);
         setBranchList(res.data);
@@ -67,7 +66,7 @@ function EditUser() {
   const loadUserDetail = async () => {
     setFormLoading(true);
     await axiosPrivate
-      .get(`/api/admin/users/leader/${id}`)
+      .get(`/api/admin/users/manager/${id}`)
       .then((res) => {
         const result = res.data;
         console.log(">>>>>get user result", res.data);
@@ -100,7 +99,7 @@ function EditUser() {
   const saveEdit = async () => {
     setFormLoading(true);
     await axiosPrivate
-      .put(`/api/admin/users/leader/${id}`, {
+      .put(`/api/admin/users/manager/${id}`, {
         fullname,
         email,
         phone,
@@ -151,9 +150,9 @@ function EditUser() {
     <>
       <div className="user ps-12 pe-12">
         <div className="userTitleContainer">
-          <h4 className="userTitle">Chỉnh sửa User - PGĐ KT</h4>
+          <h4 className="userTitle">Chỉnh sửa User - PKT</h4>
           <div className="buttonContainer">
-            <Link to="/admin/users/leader/add">
+            <Link to="/admin/users/manager/add">
               <button className="userAddButton">Thêm mới</button>
             </Link>
             <RollbackOutlined
@@ -262,10 +261,7 @@ function EditUser() {
                             .localeCompare((optionB?.label ?? "").toLowerCase())
                         }
                         onChange={(e, value) => {
-                          console.log(
-                            ">>> check select onchange:",
-                            value.label
-                          );
+                          console.log(">>> check select onchange:", e);
                           setBranchId(e);
                           setBranchName(value.label);
                         }}
@@ -299,7 +295,7 @@ function EditUser() {
                         value={role}
                         onChange={(e) => setRole(e.target.value)}
                       >
-                        <option value="3">Branch</option>
+                        <option value="2">Manager</option>
                         <option value="5">User</option>
                       </select>
                     </div>
@@ -323,4 +319,4 @@ function EditUser() {
   );
 }
 
-export default EditUser;
+export default EditUserManager;

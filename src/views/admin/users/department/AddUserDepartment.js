@@ -1,64 +1,34 @@
-import React, { useEffect, useState } from "react";
-import "./AddUser.css";
+import React, { useState } from "react";
+import "../AddUser.css";
 import { FormProvider, useForm } from "react-hook-form";
 import { RollbackOutlined } from "@ant-design/icons";
-import { useNavigate, useLocation } from "react-router-dom";
-import InputCustom from "../../../components/input/Input";
-import SpanLoading from "../../../components/loading/SpanLoading";
+import { useNavigate } from "react-router-dom";
+import InputCustom from "../../../../components/input/Input";
+import SpanLoading from "../../../../components/loading/SpanLoading";
 import {
   username_validation,
   fullname_validation,
   email_validation,
   password_validation,
   phone_validation,
-} from "../../../utils/inputUserValidations";
+} from "../../../../utils/inputUserValidations";
+import { Row, Col } from "antd";
 import { toast } from "react-toastify";
-import { Row, Col, Select } from "antd";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 
-function AddUser() {
+function AddUserDepartment() {
   const axiosPrivate = useAxiosPrivate();
 
   let navigate = useNavigate();
-
-  const location = useLocation();
   const methods = useForm();
   const [success, setSuccess] = useState(false);
-  const [branchList, setBranchList] = useState([]);
-  const [branchId, setBranchId] = useState("");
-  const [branchName, setBranchName] = useState("");
   const [mes, setMes] = useState("");
 
   const [formLoading, setFormLoading] = useState(false);
 
-  useEffect(() => {
-    getBranchList();
-  }, []);
-
   const onSubmit = methods.handleSubmit((data) => {
-    if (branchId.length === 0) {
-      toast.warning("Kiểm tra, chưa chọn chi nhánh");
-      setSuccess(true);
-      setMes("Kiểm tra, chưa chọn chi nhánh");
-      return;
-    }
-
     createUser(data);
   });
-
-  const getBranchList = async () => {
-    await axiosPrivate
-      .get("/api/branch/list")
-      .then((res) => {
-        console.log(">>>>get list branch", res.data);
-        setBranchList(res.data);
-      })
-      .catch((err) => {
-        console.log("get list hub branch", err);
-
-        navigate("/login", { state: { from: location }, replace: true });
-      });
-  };
 
   const createUser = async (record) => {
     let username = record.username;
@@ -69,14 +39,12 @@ function AddUser() {
 
     setFormLoading(true);
     await axiosPrivate
-      .post("/api/admin/users/leader", {
+      .post("/api/admin/users/department", {
         username,
         password,
         email,
         fullname,
         phone,
-        branchId: branchId,
-        branchName: branchName,
       })
       .then((res) => {
         console.log(">>>>> create user result", res.data);
@@ -103,7 +71,7 @@ function AddUser() {
     <>
       <div className="newUser ps-12">
         <div className="titleContainer">
-          <h4 className="newUserTitle">Thêm mới User - PGĐ KT</h4>
+          <h4 className="newUserTitle">Thêm mới User - PKT</h4>
           <button onClick={() => navigate(-1)} className="btnRollBack">
             <RollbackOutlined /> Quay lại
           </button>
@@ -135,38 +103,9 @@ function AddUser() {
                 <div className="newUserItem">
                   <InputCustom {...phone_validation} className="inputAdd" />
                 </div>
-
-                <div className="newUserItem">
-                  <label>
-                    Chọn chi nhánh <span>*</span>
-                  </label>
-                  <Select
-                    showSearch
-                    style={{
-                      width: 200,
-                    }}
-                    placeholder="Search to Select"
-                    optionFilterProp="children"
-                    filterOption={(input, option) =>
-                      (option?.label ?? "").includes(input)
-                    }
-                    filterSort={(optionA, optionB) =>
-                      (optionA?.label ?? "")
-                        .toLowerCase()
-                        .localeCompare((optionB?.label ?? "").toLowerCase())
-                    }
-                    onChange={(e, value) => {
-                      console.log(">>> check select onchange:", e);
-                      setBranchId(e);
-                      setBranchName(value.label);
-                    }}
-                    options={branchList}
-                    value={branchId}
-                  />
-                </div>
                 <div className="newUserItem">
                   <button onClick={onSubmit} className="newUserButton">
-                    Thêm mới
+                    Create
                   </button>
                 </div>
               </form>
@@ -179,4 +118,4 @@ function AddUser() {
   );
 }
 
-export default AddUser;
+export default AddUserDepartment;

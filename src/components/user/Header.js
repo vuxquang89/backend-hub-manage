@@ -102,7 +102,9 @@ const UserHeader = ({ countAlarm }) => {
         <HeaderMenu />
 
         <div className="notiRight">
-          {auth.roles[0] === "ROLE_MANAGER" ? (
+          {auth.roles[0] === "ROLE_MANAGER" ||
+          auth.roles[0] === "ROLE_BRANCH" ||
+          auth.roles[0] === "ROLE_DEPARTMENT" ? (
             <>
               <Badge
                 count={countAlarm}
@@ -153,6 +155,7 @@ const UserHeader = ({ countAlarm }) => {
           ) : (
             <></>
           )}
+          <div>{auth.username}</div>
           <Dropdown
             menu={{
               items,
@@ -178,7 +181,9 @@ const UserHeader = ({ countAlarm }) => {
         bodyStyle={{ backgroundColor: "darkorange" }}
       >
         <HeaderMenu isInLine />
-        {auth.roles[0] === "ROLE_MANAGER" ? (
+        {auth.roles[0] === "ROLE_MANAGER" ||
+        auth.roles[0] === "ROLE_BRANCH" ||
+        auth.roles[0] === "ROLE_DEPARTMENT" ? (
           <>
             <Badge
               count={alarm.length}

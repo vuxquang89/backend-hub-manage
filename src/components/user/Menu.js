@@ -52,7 +52,13 @@ function HeaderMenu({ isInLine = false }) {
         navigate(item.key);
       }}
       mode={isInLine ? "inline" : "horizontal"}
-      items={auth.roles[0] === "ROLE_MANAGER" ? menuManager : menuUser}
+      items={
+        auth.roles[0] === "ROLE_MANAGER" ||
+        auth.roles[0] === "ROLE_BRANCH" ||
+        auth.roles[0] === "ROLE_DEPARTMENT"
+          ? menuManager
+          : menuUser
+      }
     ></Menu>
   );
 }

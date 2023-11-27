@@ -41,6 +41,7 @@ const Home = () => {
     setFormLoading(true);
     await axiosPrivate
       .get("/api/user/hub/detail")
+      // .get("/api/hub/manager/detail")
       .then((res) => {
         console.log(">>>>get list hub detail", res.data);
         setDataSource(res.data);

@@ -52,6 +52,7 @@ const ModalSwitchDevice = ({
                       onChange={(e, value) => {
                         console.log(">>> check select onchange:", e);
                         setBranchValue(e);
+
                         handleOnChangeBranch(e);
                       }}
                       options={branchList}

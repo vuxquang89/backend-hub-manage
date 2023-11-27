@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   Space,
@@ -16,6 +16,7 @@ import {
   Button,
   Checkbox,
 } from "antd";
+import TextArea from "antd/es/input/TextArea";
 // import DatePicker from "react-multi-date-picker";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -47,12 +48,14 @@ import ModalSwitchDevice from "../ModalSwitchDevice";
 import { over } from "stompjs";
 import SockJS from "socketjs-client";
 import TabHistoryOperation from "./TabHistoryOperation";
+import ModalViewHubDetail from "./ModalViewHubDetail";
 
 const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
   const { auth } = useAuth();
   const axiosPrivate = useAxiosPrivate();
   let { hubDetailId } = useParams();
-  const [form] = Form.useForm();
+  const [formDevice] = Form.useForm();
+  const [formHistory] = Form.useForm();
   // const [formHistory] = Form.useForm();
   const { TextArea } = Input;
 
@@ -105,6 +108,12 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
   const [dateMaintenance, setDateMaintenance] = useState("");
   const [newDate, setNewDate] = useState("");
 
+  const [
+    dataHistoryHubDetailBeforeChange,
+    setDataHistoryHubDetailBeforeChange,
+  ] = useState([]);
+  const [dataHubDetailAfterChange, setDataHubDetailAfterChange] = useState([]);
+  const [openModalViewHubDetail, setOpenModalViewHubDetail] = useState(false);
   //-----------
 
   const [openHistory, setOpenHistory] = useState(false);
@@ -114,6 +123,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
   const [maintenanceId, setMaintenanceId] = useState("");
   const [isEditTable, setIsEditTable] = useState(false);
 
+  const refMaintenanceNote = useRef(null);
   //--------------
   const [openModalSwitch, setOpenModalSwitch] = useState(false);
   const [branchList, setBranchList] = useState([]);
@@ -419,6 +429,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
       .then((res) => {
         console.log(">>>>update hub detail", res.data);
         let result = res.data;
+        // setDataHubDetailAfterChange(result);
         message.success("Cập nhật thành công");
         setFormLoading(false);
       })
@@ -454,7 +465,8 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
       .post("/api/hub/device/maintenancehistory", {
         hubDetailId: hubDetailId,
         maintenanceTime: dayMaintenance.toLocaleDateString(),
-        maintenanceNote: note,
+        // maintenanceNote: note,
+        maintenanceNote: refMaintenanceNote.current.value,
       })
       .then((res) => {
         console.log(">>>>add new history", res.data);
@@ -464,7 +476,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
         setDataHistory([res.data, ...dataHistory]);
         message.success("Thêm mới thành công");
         send();
-        form.resetFields();
+        formHistory.resetFields();
         resetFormHistory();
         setFormLoading(false);
       })
@@ -524,7 +536,8 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
     await axiosPrivate
       .put(`/api/hub/device/maintenancehistory/${maintenanceId}`, {
         maintenanceTime: dayMaintenance.toLocaleDateString(),
-        maintenanceNote: note,
+        // maintenanceNote: note,
+        maintenanceNote: refMaintenanceNote.current.value,
       })
       .then((res) => {
         const result = res.data;
@@ -532,7 +545,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
         if (result.status === 100) {
           const response = result.response;
           updateDataHistory(response);
-          form.resetFields();
+          formHistory.resetFields();
           resetFormHistory();
           setIsEditTable(false);
           message.success("Cập nhật thành công");
@@ -546,6 +559,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
       })
       .catch((err) => {
         console.log(">>>>save edit history error", err);
+        message.error("Lỗi! Không thể cập nhật");
         setFormLoading(false);
         setIsEditTable(false);
         // navigate("/login", { state: { from: location }, replace: true });
@@ -642,7 +656,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
         console.log("save switch hub error", err);
         setOpenModalSwitch(false);
         setFormLoading(false);
-        message.error(`Chuyển thiết bị thành công`);
+        message.error(`Không thể chuyển thiết bị`);
         // navigate("/login", { state: { from: location }, replace: true });
       });
   };
@@ -650,6 +664,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
   const handleOnChangeBranch = (branchId) => {
     setFormLoading(true);
     setHubId("");
+    console.log(">>>>>>>>>>>hub id", hubId);
     getHubList(branchId);
   };
 
@@ -698,6 +713,47 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
       });
   };
 
+  const handleCloseModalViewHubDetail = () => {
+    setOpenModalViewHubDetail(false);
+  };
+
+  const handelOpenModalViewHubDetail = (value) => {
+    getDataHubDetailChange(value);
+    setOpenModalViewHubDetail(true);
+  };
+
+  // const getDataHubDetailAfterChange = async (value) => {
+  //   setIsLoading(true);
+  //   await axiosPrivate
+  //     .get(`/api/hub/detail/${value}`)
+  //     .then((res) => {
+  //       const result = res.data;
+  //       console.log(">>>>>data history operation", result);
+  //       setDataHubDetailAfterChange(result.response);
+  //       setIsLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       setIsLoading(false);
+  //       console.log(">>>>get history operation error", err);
+  //     });
+  // };
+
+  const getDataHubDetailChange = async (value) => {
+    setIsLoading(true);
+    await axiosPrivate
+      .get(`/api/hub/detail/historybeforechange/${value}`)
+      .then((res) => {
+        const result = res.data;
+        console.log(">>>>>data history operation", result);
+        setDataHistoryHubDetailBeforeChange(result);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        console.log(">>>>get history operation error", err);
+      });
+  };
+
   const items = [
     {
       key: "1",
@@ -717,7 +773,11 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
             )}
           </div>
           {/* <FormProvider {...methods}> */}
-          <Form name="formHubDetail" form={form} onFinish={handleUpdateSubmit}>
+          <Form
+            name="formHubDetail"
+            form={formDevice}
+            onFinish={handleUpdateSubmit}
+          >
             <Row>
               <Col span={24}>
                 <Row>
@@ -1084,7 +1144,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
         <>
           <Form
             //   layout="horizontal"
-            form={form}
+            form={formHistory}
             onFinish={(values) => {
               !isEditTable && handleAddNewHistory(values);
             }}
@@ -1155,14 +1215,17 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                       },
                     ]}
                   >
+                    {/* <TextArea
+                      onChange={(e) => handleOnchangeMaintenanceNote(e)}
+                      defaultValue={note}
+                    /> */}
                     <textarea
                       defaultValue={note}
-                      onChange={(e) => {
-                        setNote(e.target.value);
-                      }}
+                      ref={refMaintenanceNote}
+                      // onChange={(e) => handleOnchangeMaintenanceNote(e)}
                       rows={4}
                       cols={40}
-                    />
+                    ></textarea>
                   </Form.Item>
                 </div>
               </Col>
@@ -1220,22 +1283,24 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                         handleEditOnClick(record);
                       }}
                     />
-                    <Popconfirm
-                      title="Alarm"
-                      description="Bạn có chắc muốn xóa?"
-                      onConfirm={confirmDeleteHistory}
-                      onCancel={() => {}}
-                      okText="Yes"
-                      cancelText="No"
-                    >
-                      <DeleteOutlined
-                        className="btnUserDelete"
-                        onClick={() => {
-                          setMaintenanceId(record.id);
-                          console.log("Delete click", record);
-                        }}
-                      />
-                    </Popconfirm>
+                    {auth.roles[0] === "ROLE_DEPARTMENT" && (
+                      <Popconfirm
+                        title="Alarm"
+                        description="Bạn có chắc muốn xóa?"
+                        onConfirm={confirmDeleteHistory}
+                        onCancel={() => {}}
+                        okText="Yes"
+                        cancelText="No"
+                      >
+                        <DeleteOutlined
+                          className="btnUserDelete"
+                          onClick={() => {
+                            setMaintenanceId(record.id);
+                            console.log("Delete click", record);
+                          }}
+                        />
+                      </Popconfirm>
+                    )}
                   </>
                 ),
               },
@@ -1255,6 +1320,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
         <TabHistoryOperation
           isLoading={isLoading}
           dataSource={dataHistoryOperation}
+          openModalViewHubDetail={handelOpenModalViewHubDetail}
         />
       ),
     },
@@ -1467,6 +1533,13 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
         cancelOnClick={cancelOnClick}
         dataHistory={dataHistory}
       /> */}
+      <ModalViewHubDetail
+        open={openModalViewHubDetail}
+        handleCancelOnClick={handleCloseModalViewHubDetail}
+        dataHubDetailAfterChange={dataHubDetailAfterChange}
+        dataHistoryHubDetailBeforeChange={dataHistoryHubDetailBeforeChange}
+      />
+
       <ModalSwitchDevice
         open={openModalSwitch}
         handleCancelOnClick={handleCancelOnClick}

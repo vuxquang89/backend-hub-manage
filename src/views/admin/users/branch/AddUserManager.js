@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from "react";
-import "./AddUser.css";
+import "../AddUser.css";
 import { FormProvider, useForm } from "react-hook-form";
+
 import { RollbackOutlined } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router-dom";
-import InputCustom from "../../../components/input/Input";
-import SpanLoading from "../../../components/loading/SpanLoading";
+import InputCustom from "../../../../components/input/Input";
+import SpanLoading from "../../../../components/loading/SpanLoading";
 import {
   username_validation,
   fullname_validation,
   email_validation,
   password_validation,
   phone_validation,
-} from "../../../utils/inputUserValidations";
-import { toast } from "react-toastify";
+} from "../../../../utils/inputUserValidations";
 import { Row, Col, Select } from "antd";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import { toast } from "react-toastify";
+import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 
-function AddUser() {
+function AddUserManager() {
   const axiosPrivate = useAxiosPrivate();
 
   let navigate = useNavigate();
@@ -26,7 +27,6 @@ function AddUser() {
   const [success, setSuccess] = useState(false);
   const [branchList, setBranchList] = useState([]);
   const [branchId, setBranchId] = useState("");
-  const [branchName, setBranchName] = useState("");
   const [mes, setMes] = useState("");
 
   const [formLoading, setFormLoading] = useState(false);
@@ -69,14 +69,13 @@ function AddUser() {
 
     setFormLoading(true);
     await axiosPrivate
-      .post("/api/admin/users/leader", {
+      .post("/api/admin/users/manager", {
         username,
         password,
         email,
         fullname,
         phone,
         branchId: branchId,
-        branchName: branchName,
       })
       .then((res) => {
         console.log(">>>>> create user result", res.data);
@@ -103,7 +102,7 @@ function AddUser() {
     <>
       <div className="newUser ps-12">
         <div className="titleContainer">
-          <h4 className="newUserTitle">Thêm mới User - PGĐ KT</h4>
+          <h4 className="newUserTitle">Thêm mới User - QL phòng máy</h4>
           <button onClick={() => navigate(-1)} className="btnRollBack">
             <RollbackOutlined /> Quay lại
           </button>
@@ -158,7 +157,6 @@ function AddUser() {
                     onChange={(e, value) => {
                       console.log(">>> check select onchange:", e);
                       setBranchId(e);
-                      setBranchName(value.label);
                     }}
                     options={branchList}
                     value={branchId}
@@ -166,7 +164,7 @@ function AddUser() {
                 </div>
                 <div className="newUserItem">
                   <button onClick={onSubmit} className="newUserButton">
-                    Thêm mới
+                    Create
                   </button>
                 </div>
               </form>
@@ -179,4 +177,4 @@ function AddUser() {
   );
 }
 
-export default AddUser;
+export default AddUserManager;

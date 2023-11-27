@@ -1,27 +1,26 @@
 import React, { useState, useEffect } from "react";
-import "./EditUser.css";
+import "../EditUser.css";
 import {
   MailOutlined,
   PhoneOutlined,
   UserOutlined,
   RollbackOutlined,
 } from "@ant-design/icons";
-import { message, Select } from "antd";
-import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
-import SpanLoading from "../../../components/loading/SpanLoading";
+import { message } from "antd";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import SpanLoading from "../../../../components/loading/SpanLoading";
 import { FormProvider, useForm } from "react-hook-form";
 import {
   fullname_validation,
   email_validation,
   phone_validation,
-} from "../../../utils/inputUserValidations";
-import InputCustom from "../../../components/input/Input";
-import avatar from "../../../assets/images/user.png";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+} from "../../../../utils/inputUserValidations";
+import InputCustom from "../../../../components/input/Input";
+import avatar from "../../../../assets/images/user.png";
+import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 
-function EditUser() {
+function EditUserDepartment() {
   let navigate = useNavigate();
-  const location = useLocation();
   const axiosPrivate = useAxiosPrivate();
   let { id } = useParams();
   const methods = useForm();
@@ -33,41 +32,23 @@ function EditUser() {
   const [fullname, setFullname] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [role, setRole] = useState(5);
-  const [branchList, setBranchList] = useState([]);
-  const [branchId, setBranchId] = useState("");
-  const [branchName, setBranchName] = useState("");
+  const [role, setRole] = useState(3);
   const [activate, setActivate] = useState(0);
 
   const [formLoading, setFormLoading] = useState(false);
 
   useEffect(() => {
     loadUserDetail();
-    getBranchList();
   }, []);
 
   const onSubmit = methods.handleSubmit((data) => {
     saveEdit();
   });
 
-  const getBranchList = async () => {
-    await axiosPrivate
-      .get("/api/branch/list")
-      .then((res) => {
-        console.log(">>>>get list branch", res.data);
-        setBranchList(res.data);
-      })
-      .catch((err) => {
-        console.log("get list hub branch", err);
-
-        navigate("/login", { state: { from: location }, replace: true });
-      });
-  };
-
   const loadUserDetail = async () => {
     setFormLoading(true);
     await axiosPrivate
-      .get(`/api/admin/users/leader/${id}`)
+      .get(`/api/admin/users/department/${id}`)
       .then((res) => {
         const result = res.data;
         console.log(">>>>>get user result", res.data);
@@ -80,8 +61,7 @@ function EditUser() {
           setPhone(response.phone);
           setRole(response.rolesId[0]);
           setActivate(response.status);
-          setBranchId(response.branchId);
-          setBranchName(response.branchName);
+
           setStatus(true);
         } else {
           console.log(">>>> khong tim thay ", id);
@@ -100,14 +80,12 @@ function EditUser() {
   const saveEdit = async () => {
     setFormLoading(true);
     await axiosPrivate
-      .put(`/api/admin/users/leader/${id}`, {
+      .put(`/api/admin/users/department/${id}`, {
         fullname,
         email,
         phone,
         role,
         status: activate,
-        branchId: branchId,
-        branchName: branchName,
       })
       .then((res) => {
         const result = res.data;
@@ -121,8 +99,7 @@ function EditUser() {
           setPhone(response.phone);
           setRole(response.rolesId[0]);
           setActivate(response.status);
-          setBranchId(response.branchId);
-          setBranchName(response.branchName);
+
           message.success("Cập nhật thành công");
           setStatus(true);
           setSuccess(false);
@@ -151,9 +128,9 @@ function EditUser() {
     <>
       <div className="user ps-12 pe-12">
         <div className="userTitleContainer">
-          <h4 className="userTitle">Chỉnh sửa User - PGĐ KT</h4>
+          <h4 className="userTitle">Chỉnh sửa User - PKT</h4>
           <div className="buttonContainer">
-            <Link to="/admin/users/leader/add">
+            <Link to="/admin/users/department/add">
               <button className="userAddButton">Thêm mới</button>
             </Link>
             <RollbackOutlined
@@ -243,37 +220,6 @@ function EditUser() {
                       />
                     </div>
                     <div className="userUpdateItem">
-                      <label>
-                        Chọn chi nhánh <span>*</span>
-                      </label>
-                      <Select
-                        showSearch
-                        style={{
-                          width: 200,
-                        }}
-                        placeholder="Search to Select"
-                        optionFilterProp="children"
-                        filterOption={(input, option) =>
-                          (option?.label ?? "").includes(input)
-                        }
-                        filterSort={(optionA, optionB) =>
-                          (optionA?.label ?? "")
-                            .toLowerCase()
-                            .localeCompare((optionB?.label ?? "").toLowerCase())
-                        }
-                        onChange={(e, value) => {
-                          console.log(
-                            ">>> check select onchange:",
-                            value.label
-                          );
-                          setBranchId(e);
-                          setBranchName(value.label);
-                        }}
-                        options={branchList}
-                        value={branchId}
-                      />
-                    </div>
-                    <div className="userUpdateItem">
                       <label
                         for="selectRole"
                         className="label-input font-semibold capitalize "
@@ -299,7 +245,7 @@ function EditUser() {
                         value={role}
                         onChange={(e) => setRole(e.target.value)}
                       >
-                        <option value="3">Branch</option>
+                        <option value="4">Department</option>
                         <option value="5">User</option>
                       </select>
                     </div>
@@ -323,4 +269,4 @@ function EditUser() {
   );
 }
 
-export default EditUser;
+export default EditUserDepartment;

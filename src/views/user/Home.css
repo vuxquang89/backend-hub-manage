@@ -158,6 +158,11 @@ tr.red th {
   margin-right: 10px;
 }
 
+.borderItem p {
+  margin: 0;
+  font-size: 12px;
+}
+
 .borderItem label {
   font-size: 14px;
   font-weight: 600;

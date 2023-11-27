@@ -7,22 +7,16 @@ import {
   Input,
   Flex,
   Popconfirm,
-  message,
 } from "antd";
-import {
-  DeleteOutlined,
-  CloseOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
-import { userRows } from "../../../API/dummyData";
+import { CloseOutlined, SearchOutlined } from "@ant-design/icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import "./ListUser.css";
+import "../ListUser.css";
 import { toast } from "react-toastify";
-import avatar from "../../../assets/images/user.png";
-import SpanLoading from "../../../components/loading/SpanLoading";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import avatar from "../../../../assets/images/user.png";
+import SpanLoading from "../../../../components/loading/SpanLoading";
+import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 
-function ListUser() {
+function UserManager() {
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
   const location = useLocation();
@@ -39,7 +33,7 @@ function ListUser() {
   const loadData = async () => {
     setLoading(true);
     await axiosPrivate
-      .get("/api/admin/users/leader")
+      .get("/api/admin/users/manager")
       .then((res) => {
         console.log(">>>>get list users", res.data);
         setDataSource(res.data);
@@ -56,7 +50,7 @@ function ListUser() {
   const confirmDeleteUser = async () => {
     setFormLoading(true);
     await axiosPrivate
-      .delete(`/api/admin/users/leader/${id}`)
+      .delete(`/api/admin/users/manager/${id}`)
       .then((res) => {
         console.log(">>>>> delete user result", res.data);
         let result = res.data;
@@ -90,14 +84,16 @@ function ListUser() {
   return (
     <div className="ps-12">
       <Flex justify="space-between" align="center">
-        <Typography.Title level={4}>Danh sách User - PGĐ KT</Typography.Title>
-        <Link to="/admin/users/leader/add">
+        <Typography.Title level={4}>
+          Danh sách User - QL phòng máy
+        </Typography.Title>
+        <Link to="/admin/users/manager/add">
           <button className="btnAddUser">Thêm mới</button>
         </Link>
       </Flex>
       <Space style={{ marginBottom: 8 }}>
         <Input
-          placeholder="Search..."
+          placeholder="username/fullname/email/phone..."
           onSearch={(value) => {
             setSearchText(value);
           }}
@@ -173,7 +169,7 @@ function ListUser() {
             dataIndex: "id",
             render: (text, record) => (
               <>
-                <Link to={"/admin/users/leader/" + record.id}>
+                <Link to={"/admin/users/manager/" + record.id}>
                   <button
                     className="btnUserEdit"
                     onClick={() => {
@@ -219,4 +215,4 @@ function ListUser() {
   );
 }
 
-export default ListUser;
+export default UserManager;

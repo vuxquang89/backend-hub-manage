@@ -39,6 +39,7 @@ const Login = ({ connectSocket }) => {
       const accessToken = response?.data?.accessToken;
       const refreshToken = response?.data?.refreshToken;
       const roles = response?.data?.roles;
+      const path = "user";
       //const username = response?.data?.username;
 
       localStorage.setItem("refreshToken", refreshToken);

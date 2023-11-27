@@ -108,7 +108,7 @@ function Branch() {
         </Flex>
         <Space>
           <Input
-            placeholder="Search..."
+            placeholder="Tên chi nhánh..."
             onSearch={(value) => {
               setSearchText(value);
             }}
@@ -141,19 +141,28 @@ function Branch() {
               },
             },
             {
-              title: "Giám Đốc KT",
+              title: "P.Giám Đốc KT",
               dataIndex: "deputyTechnicalDirector",
               key: "deputyTechnicalDirector",
+              render: (text, record) => (
+                <>{text && text.length > 0 ? text : "NULL"}</>
+              ),
             },
             {
               title: "Số điên thoại",
               dataIndex: "phoneDeputyTechnicalDirector",
               key: "phoneDeputyTechnicalDirector",
+              render: (text, record) => (
+                <>{text && text.length > 0 ? text : "NULL"}</>
+              ),
             },
             {
               title: "Email",
               dataIndex: "emailDeputyTechnicalDirector",
               key: "emailDeputyTechnicalDirector",
+              render: (text, record) => (
+                <>{text && text.length > 0 ? text : "NULL"}</>
+              ),
             },
             {
               title: "Action",

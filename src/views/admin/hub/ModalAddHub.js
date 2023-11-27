@@ -21,14 +21,20 @@ const ModalAddHub = ({
   isLoading,
   branchValue,
   listUserManager,
+  listUserDepartment,
+  getUserManager,
   setBranchValue,
-  userId,
-  setUserId,
+  staffDepartmentId,
+  setStaffDepartmentId,
+  staffManagerId,
+  setStaffManagerId,
   branchList,
 }) => {
   const [code, setCode] = useState("");
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    branchValue && getUserManager(branchValue);
+  }, []);
 
   const handleNameHubOnChange = (e) => {
     setCode(stringToCode(e.target.value));
@@ -73,13 +79,39 @@ const ModalAddHub = ({
                         onChange={(e, value) => {
                           console.log(">>> check select onchange:", e);
                           setBranchValue(e);
+                          getUserManager(e);
                         }}
                         options={branchList}
                         value={branchValue}
                       />
                     </div>
-                  </Col>
-                  <Col span={12}>
+
+                    <div className="addBranchItem">
+                      <label>Chọn QL phòng máy</label>
+                      <Select
+                        showSearch
+                        style={{
+                          width: 200,
+                        }}
+                        placeholder="Search to Select"
+                        optionFilterProp="children"
+                        filterOption={(input, option) =>
+                          (option?.label ?? "").includes(input)
+                        }
+                        filterSort={(optionA, optionB) =>
+                          (optionA?.label ?? "")
+                            .toLowerCase()
+                            .localeCompare((optionB?.label ?? "").toLowerCase())
+                        }
+                        onChange={(e, value) => {
+                          console.log(">>> check select onchange:", e);
+                          setStaffManagerId(e);
+                        }}
+                        options={listUserManager}
+                        value={staffManagerId}
+                      />
+                    </div>
+
                     <div className="addBranchItem">
                       <label>Chọn người phụ trách</label>
                       <Select
@@ -99,20 +131,13 @@ const ModalAddHub = ({
                         }
                         onChange={(e, value) => {
                           console.log(">>> check select onchange:", e);
-                          setUserId(e);
+                          setStaffDepartmentId(e);
                         }}
-                        options={listUserManager}
-                        value={userId}
+                        options={listUserDepartment}
+                        value={staffDepartmentId}
                       />
                     </div>
                   </Col>
-                </Row>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col span={24}>
-                <Row>
                   <Col span={12}>
                     <div className="addHubItem">
                       <Input
@@ -132,17 +157,8 @@ const ModalAddHub = ({
                     <div className="addHubItem">
                       <Input {...hubAddress_validation} className="inputAdd" />
                     </div>
-                  </Col>
-                  <Col span={12}>
                     <div className="addHubItem">
                       <Input {...hubCity_validation} className="inputAdd" />
-                    </div>
-                    <div className="addHubItem">
-                      <Input {...hubManager_validation} className="inputAdd" />
-                    </div>
-
-                    <div className="addHubItem">
-                      <Input {...phone_validation} className="inputAdd" />
                     </div>
                   </Col>
                 </Row>

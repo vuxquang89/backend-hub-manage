@@ -31,12 +31,16 @@ function DetailHub() {
   const [branchValue, setBranchValue] = useState("");
   const [branchResponse, setBranchResponse] = useState([]);
   const [listUserManager, setListUserManager] = useState([]);
+  const [userManagerId, setUserManagerId] = useState("");
   const [hubName, setHubName] = useState("");
   const [hubAddress, setHubAddress] = useState("");
   const [hubCity, setHubCity] = useState("");
   const [hubManagerName, setHubManagerName] = useState("");
   const [hubManagerPhone, setHubManagerPhone] = useState("");
   const [userValue, setUserValue] = useState("");
+
+  const [listUserDepartment, setListUserDepartment] = useState([]);
+  const [userDepartmentId, setUserDepartmentId] = useState("");
 
   useEffect(() => {
     const getData = async () => {
@@ -45,17 +49,20 @@ function DetailHub() {
         .get(`/api/hub/${id}`)
         .then((res) => {
           const result = res.data;
-          console.log(">>>>>add branch result", res.data);
+          console.log(">>>>>get hub result", res.data);
           if (result.status === 100) {
             setBranchValue(result.hubResponse.branchResponse.branchId);
-            setUserValue(result.hubResponse.userResponse.id);
+            // setUserValue(result.hubResponse.userResponse.id);
             setHubName(result.hubResponse.hubName);
             setHubAddress(result.hubResponse.hubAddress);
             setHubCity(result.hubResponse.hubCity);
             setHubManagerName(result.hubResponse.hubManagerName);
             setHubManagerPhone(result.hubResponse.hubManagerPhone);
 
+            setUserDepartmentId(result.hubResponse.departmentResponse.id);
+            setUserManagerId(result.hubResponse.managerResponse.id);
             setGetData(true);
+            getUserManager(result.hubResponse.branchResponse.branchId);
           } else {
             console.log(">>>> khong tim thay ", id);
             setGetData(false);
@@ -70,31 +77,35 @@ function DetailHub() {
           navigate("/login", { state: { from: location }, replace: true });
         });
     };
-    getUserManager();
+
     getBranchList();
+    getUserDepartment();
     getData();
   }, []);
 
   /**
    * get list user manager
    */
-  const getUserManager = async () => {
+  const getUserManager = async (branchId) => {
+    setFormLoading(true);
+    // methods.reset();
     await axiosPrivate
-      .get(`/api/users/role/selectoption/2`)
+      .get(`/api/admin/users/manager/branch/${branchId}/selectoption/role/2`)
       .then((res) => {
         console.log(">>>>get list user manager", res.data);
         setListUserManager(res.data);
+        setFormLoading(false);
       })
       .catch((err) => {
         console.log("get list user manager error", err);
-
+        setFormLoading(false);
         navigate("/login", { state: { from: location }, replace: true });
       });
   };
 
   const getBranchList = async () => {
     await axiosPrivate
-      .get("/api/branch/list")
+      .get("/api/admin/branch/list")
       .then((res) => {
         console.log(">>>>get list branch", res.data);
         setBranchResponse(res.data);
@@ -106,6 +117,27 @@ function DetailHub() {
       });
   };
 
+  /**
+   * get list user department
+   */
+  const getUserDepartment = async () => {
+    setFormLoading(true);
+    methods.reset();
+    await axiosPrivate
+      .get(`/api/admin/users/department/selectoption/role/4`)
+      .then((res) => {
+        console.log(">>>>get list user department", res.data);
+        setListUserDepartment(res.data);
+
+        setFormLoading(false);
+      })
+      .catch((err) => {
+        console.log("get list user department error", err);
+        setFormLoading(false);
+        navigate("/login", { state: { from: location }, replace: true });
+      });
+  };
+
   const onSubmit = methods.handleSubmit((record) => {
     save(record);
   });
@@ -113,27 +145,30 @@ function DetailHub() {
   const save = async (record) => {
     setFormLoading(true);
     await axiosPrivate
-      .put(`/api/hub/${id}`, {
-        userId: userValue,
+      .put(`/api/admin/hub/${id}`, {
         branchId: branchValue,
+        staffManagerId: userManagerId,
+        staffDepartmentId: userDepartmentId,
+
         hubName: record.hubName,
         hubAddress: record.hubAddress,
         hubCity: record.hubCity,
-        hubManagerName: record.hubManagerName,
-        hubManagerPhone: record.hubManagerPhone,
       })
       .then((res) => {
         console.log(">>>>> update hub", res.data);
         let result = res.data;
         setBranchValue(result.branchResponse.branchId);
-        setUserValue(result.userResponse.id);
+
         setHubName(result.hubName);
         setHubAddress(result.hubAddress);
         setHubCity(result.hubCity);
-        setHubManagerName(result.hubManagerName);
-        setHubManagerPhone(result.hubManagerPhone);
+        setUserDepartmentId(result.departmentResponse.id);
+        setUserManagerId(result.managerResponse.id);
+
+        getUserManager(result.branchResponse.branchId);
+
         setFormLoading(false);
-        methods.reset();
+
         toast.success("Cập nhật thành công");
       })
       .catch((err) => {
@@ -207,26 +242,6 @@ function DetailHub() {
                           }}
                         />
                       </div>
-                      <div className="userUpdateItem">
-                        <InputCustom
-                          {...hubManager_validation}
-                          className="userUpdateInput"
-                          value={hubManagerName}
-                          onChange={(e) => {
-                            setHubManagerName(e.target.value);
-                          }}
-                        />
-                      </div>
-                      <div className="userUpdateItem">
-                        <InputCustom
-                          {...phone_validation}
-                          className="userUpdateInput"
-                          value={hubManagerPhone}
-                          onChange={(e) => {
-                            setHubManagerPhone(e.target.value);
-                          }}
-                        />
-                      </div>
                     </Col>
                   </Row>
                   <Row>
@@ -255,9 +270,40 @@ function DetailHub() {
                           onChange={(e, value) => {
                             console.log(">>> check select onchange:", e);
                             setBranchValue(e);
+                            setUserManagerId("");
+                            getUserManager(e);
                           }}
                           options={branchResponse}
                           value={branchValue}
+                        />
+                      </div>
+                      <div className="userUpdateItem">
+                        <label className="label-input font-semibold capitalize ">
+                          QL phòng máy
+                        </label>
+                        <Select
+                          showSearch
+                          style={{
+                            width: 200,
+                          }}
+                          placeholder="Search to Select"
+                          optionFilterProp="children"
+                          filterOption={(input, option) =>
+                            (option?.label ?? "").includes(input)
+                          }
+                          filterSort={(optionA, optionB) =>
+                            (optionA?.label ?? "")
+                              .toLowerCase()
+                              .localeCompare(
+                                (optionB?.label ?? "").toLowerCase()
+                              )
+                          }
+                          onChange={(e, value) => {
+                            console.log(">>> check select onchange:", e);
+                            setUserManagerId(e);
+                          }}
+                          options={listUserManager}
+                          value={userManagerId}
                         />
                       </div>
                       <div className="userUpdateItem">
@@ -283,10 +329,10 @@ function DetailHub() {
                           }
                           onChange={(e, value) => {
                             console.log(">>> check select onchange:", e);
-                            setUserValue(e);
+                            setUserDepartmentId(e);
                           }}
-                          options={listUserManager}
-                          value={userValue}
+                          options={listUserDepartment}
+                          value={userDepartmentId}
                         />
                       </div>
                       <div className="userUpdateItem">
