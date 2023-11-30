@@ -14,9 +14,12 @@ import {
   Popconfirm,
   // DatePicker,
   Button,
+  Image,
   Checkbox,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
+import uniqueId from "lodash/uniqueId";
+import { BASE_URL } from "../../../config/config";
 // import DatePicker from "react-multi-date-picker";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -56,6 +59,7 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
   let { hubDetailId } = useParams();
   const [formDevice] = Form.useForm();
   const [formHistory] = Form.useForm();
+  const imageBefore = Form.useWatch("beforeImageFiles", formHistory);
   // const [formHistory] = Form.useForm();
   const { TextArea } = Input;
 
@@ -136,6 +140,14 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
   //---------------------
   const [isLoading, setIsLoading] = useState(false);
   const [dataHistoryOperation, setDataHistoryOperation] = useState([]);
+
+  //------------upload image
+  const [imageBeforePreviews, setImageBeforePreviews] = useState([]);
+  const [selectedImageBeforeFiles, setSelectedImageBeforeFiles] =
+    useState(undefined);
+  const [imageAfterPreviews, setImageAfterPreviews] = useState([]);
+  const [selectedImageAfterFiles, setSelectedImageAfterFiles] =
+    useState(undefined);
 
   useEffect(() => {
     localStorage.getItem("isLogin") && loadData();
@@ -524,20 +536,58 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
   };
   const handleEditOnClick = (e) => {
     console.log("edit click", e);
+    resetFormHistory();
+
     setDayMaintenance(new Date(e.maintenanceTime));
     setNote(e.maintenanceNote);
     setMaintenanceId(e.id);
     setIsEditTable(true);
+    setImageAfterPreviews(e.imageAfterMaintenanceHistoryResponses);
+    setImageBeforePreviews(e.imageBeforeMaintenanceHistoryResponses);
+
     console.log("datepick", note);
   };
 
+  /**
+   * handle edit maintenance history
+   */
   const handleSaveEditHistory = async () => {
+    console.log(">>>>>>>> save edit");
+    if (note.length === 0) {
+      message.warning("Chưa nhập nội dung");
+      return;
+    }
     setFormLoading(true);
+
+    let formData = new FormData();
+
+    for (const key of Object.keys(imageBeforePreviews)) {
+      if (imageBeforePreviews[key].service === "client") {
+        formData.append(
+          "imageBeforeMaintenanceFiles",
+          imageBeforePreviews[key].fileImage
+        );
+      }
+    }
+
+    for (const key of Object.keys(imageAfterPreviews)) {
+      if (imageAfterPreviews[key].service === "client") {
+        formData.append(
+          "imageAfterMaintenanceFiles",
+          imageAfterPreviews[key].fileImage
+        );
+      }
+    }
+
+    formData.append("maintenanceTime", dayMaintenance.toLocaleDateString());
+
+    formData.append("maintenanceNote", refMaintenanceNote.current.value);
+
     await axiosPrivate
-      .put(`/api/hub/device/maintenancehistory/${maintenanceId}`, {
-        maintenanceTime: dayMaintenance.toLocaleDateString(),
-        // maintenanceNote: note,
-        maintenanceNote: refMaintenanceNote.current.value,
+      .put(`/api/hub/device/maintenancehistory/${maintenanceId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       })
       .then((res) => {
         const result = res.data;
@@ -550,22 +600,23 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
           setIsEditTable(false);
           message.success("Cập nhật thành công");
         } else {
-          console.log(">>>> khong tim thay ", hubDetailId);
           message.warning("Không thể cập nhật");
           setIsEditTable(false);
         }
-        console.log(">>>>response save edit history", result.response);
+
         setFormLoading(false);
       })
       .catch((err) => {
-        console.log(">>>>save edit history error", err);
         message.error("Lỗi! Không thể cập nhật");
         setFormLoading(false);
-        setIsEditTable(false);
+        // setIsEditTable(false);
         // navigate("/login", { state: { from: location }, replace: true });
       });
   };
 
+  /**
+   * update data source maintenance history
+   */
   const updateDataHistory = (response) => {
     const updateHistoryArray = dataHistory.map((maintenance) => {
       if (maintenance.id === maintenanceId) {
@@ -573,6 +624,10 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
           ...maintenance,
           maintenanceNote: response.maintenanceNote,
           maintenanceTime: response.maintenanceTime,
+          imageAfterMaintenanceHistoryResponses:
+            response.imageAfterMaintenanceHistoryResponses,
+          imageBeforeMaintenanceHistoryResponses:
+            response.imageBeforeMaintenanceHistoryResponses,
         };
       } else {
         return maintenance;
@@ -587,9 +642,11 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
   };
 
   function resetFormHistory() {
-    console.log(">>>>reset form hítory");
     setNote("");
+    formHistory.resetFields();
     setDayMaintenance(new Date());
+    setImageAfterPreviews([]);
+    setImageBeforePreviews([]);
   }
 
   //--------------------
@@ -598,6 +655,9 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
     getBranchList();
   };
 
+  /**
+   * get branch list
+   */
   const getBranchList = async () => {
     await axiosPrivate
       .get("/api/branch/list")
@@ -618,6 +678,9 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
       });
   };
 
+  /**
+   * get hub list
+   */
   const getHubList = async (branchId) => {
     await axiosPrivate
       .get(`/api/hub/list/branch/${branchId}`)
@@ -634,6 +697,9 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
       });
   };
 
+  /**
+   * handle switch device
+   */
   const handleSwitchSubmit = async () => {
     console.log(">>>>>send hubId", hubId);
     setFormLoading(true);
@@ -661,6 +727,10 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
       });
   };
 
+  /**
+   * handle on change branch
+   * @param {*} branchId
+   */
   const handleOnChangeBranch = (branchId) => {
     setFormLoading(true);
     setHubId("");
@@ -674,7 +744,6 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
 
   //----------------------------
   const handleCheckBoxOnChange = (e) => {
-    console.log("checked = ", e.target.checked);
     // form.resetFields();
     setChecked(e.target.checked);
   };
@@ -751,6 +820,216 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
       .catch((err) => {
         setIsLoading(false);
         console.log(">>>>get history operation error", err);
+      });
+  };
+
+  /**
+   * ====================================================================
+   * upload image
+   */
+  const handleAddNewHistoryMaintenance = async () => {
+    setFormLoading(true);
+
+    let formData = new FormData();
+
+    for (const key of Object.keys(imageBeforePreviews)) {
+      formData.append(
+        "imageBeforeMaintenanceFiles",
+        imageBeforePreviews[key].fileImage
+      );
+    }
+
+    for (const key of Object.keys(imageAfterPreviews)) {
+      formData.append(
+        "imageAfterMaintenanceFiles",
+        imageAfterPreviews[key].fileImage
+      );
+    }
+
+    formData.append("hubDetailId", hubDetailId);
+
+    formData.append("maintenanceTime", dayMaintenance.toLocaleDateString());
+
+    formData.append("maintenanceNote", refMaintenanceNote.current.value);
+
+    await axiosPrivate
+      .post("/api/hub/device/maintenancehistory", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((res) => {
+        //update table
+        // setDataHistory([...dataHistory, res.data]);
+        setDataHistory([res.data, ...dataHistory]);
+        message.success("Thêm mới thành công");
+        send();
+        formHistory.resetFields();
+        resetFormHistory();
+        setFormLoading(false);
+      })
+      .catch((err) => {
+        setFormLoading(false);
+        message.error("Không thể thêm mới");
+        // navigate("/login", { state: { from: location }, replace: true });
+      });
+  };
+
+  const selectBeforeFiles = (event) => {
+    let images = [];
+
+    for (let i = 0; i < event.target.files.length; i++) {
+      // images.push(URL.createObjectURL(event.target.files[i]));
+      const item = {
+        id: uniqueId("image-before-"),
+        imageName: event.target.files[i].name,
+        path: URL.createObjectURL(event.target.files[i]),
+        imageNameResize: "",
+        typeFile: "",
+        service: "client",
+        status: "before",
+        fileImage: event.target.files[i],
+      };
+      console.log(">>>>>> item", item);
+      images.push(item);
+    }
+
+    if (imageBeforePreviews?.length === 0) {
+      setImageBeforePreviews(images);
+    } else {
+      setImageBeforePreviews([...imageBeforePreviews, images[0]]);
+    }
+
+    setSelectedImageBeforeFiles(event.target.files);
+
+    // setProgressInfos({ val: [] });
+    // setMessage([]);
+  };
+
+  const selectAfterImages = (event) => {
+    let images = [];
+
+    for (let i = 0; i < event.target.files.length; i++) {
+      const item = {
+        id: uniqueId("image-after-"),
+        imageName: event.target.files[i].name,
+        path: URL.createObjectURL(event.target.files[i]),
+        imageNameResize: "",
+        typeFile: "",
+        service: "client",
+        status: "after",
+        fileImage: event.target.files[i],
+      };
+
+      images.push(item);
+    }
+
+    if (imageAfterPreviews?.length === 0) {
+      setImageAfterPreviews(images);
+      // setSelectedImageAfterFiles(images);
+    } else {
+      setImageAfterPreviews([...imageAfterPreviews, images[0]]);
+      // setSelectedImageAfterFiles([...selectedImageAfterFiles, images[0]]);
+    }
+
+    // setSelectedImageAfterFiles(event.target.files);
+  };
+
+  function deleteBeforeImageFile(e) {
+    if (e.service === "server") {
+      handelDeleteImageMaintenanceHistory(e.status, e.id);
+    } else {
+      const s = imageBeforePreviews.filter((item, index) => item.id !== e.id);
+      setImageBeforePreviews(s);
+      console.log(s);
+    }
+  }
+
+  function deleteAfterImageFile(e) {
+    if (e.service === "server") {
+      handelDeleteImageMaintenanceHistory(e.status, e.id);
+    } else {
+      const s = imageAfterPreviews.filter((item, index) => item.id !== e.id);
+      setImageAfterPreviews(s);
+      console.log(s);
+    }
+  }
+
+  /**
+   * handel delete image maintenance history
+   */
+  const handelDeleteImageMaintenanceHistory = async (
+    status,
+    imageHistoryId
+  ) => {
+    console.log(">>>>>>>delete image id", imageHistoryId);
+    setFormLoading(true);
+    await axiosPrivate
+      .delete(
+        `/api/hub/device/maintenancehistory/image/${status}/${imageHistoryId}`
+      )
+      .then((res) => {
+        let result = res.data;
+        console.log(">>>>add new history", result);
+        if (result.status === 100) {
+          switch (status) {
+            case "after":
+              const imageAfter = imageAfterPreviews.filter(
+                (item, index) => item.id !== imageHistoryId
+              );
+              setImageAfterPreviews(imageAfter);
+
+              const dataAfter = dataHistory.map((obj) => {
+                if (obj.id === maintenanceId) {
+                  const imageData = obj.imageAfterMaintenanceHistoryResponses;
+                  const img = imageData.filter(
+                    (item, index) => item.id !== imageHistoryId
+                  );
+                  return { ...obj, imageAfterMaintenanceHistoryResponses: img };
+                } else {
+                  return obj;
+                }
+              });
+              setDataHistory(dataAfter);
+
+              break;
+            case "before":
+              const imageBefore = imageBeforePreviews.filter(
+                (item, index) => item.id !== imageHistoryId
+              );
+              setImageBeforePreviews(imageBefore);
+
+              const dataBefore = dataHistory.map((obj) => {
+                if (obj.id === maintenanceId) {
+                  const imageData = obj.imageBeforeMaintenanceHistoryResponses;
+                  const img = imageData.filter(
+                    (item, index) => item.id !== imageHistoryId
+                  );
+                  return {
+                    ...obj,
+                    imageBeforeMaintenanceHistoryResponses: img,
+                  };
+                } else {
+                  return obj;
+                }
+              });
+              setDataHistory(dataBefore);
+
+              break;
+            default:
+              break;
+          }
+          message.success("Xóa thành công");
+        } else {
+          message.warning("Không thể xóa");
+        }
+
+        setFormLoading(false);
+      })
+      .catch((err) => {
+        console.log("add new history error", err);
+        setFormLoading(false);
+        message.error("Không thể xóa");
       });
   };
 
@@ -1146,7 +1425,8 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
             //   layout="horizontal"
             form={formHistory}
             onFinish={(values) => {
-              !isEditTable && handleAddNewHistory(values);
+              // !isEditTable && handleAddNewHistory(values);
+              !isEditTable && handleAddNewHistoryMaintenance(values);
             }}
           >
             <Row className="cardBody mb-10">
@@ -1208,12 +1488,14 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                   <label>Nội dung</label>
                   <Form.Item
                     name="maintenanceNote"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please input the title of collection!",
-                      },
-                    ]}
+                    rules={
+                      note.length === 0 && [
+                        {
+                          required: true,
+                          message: "Please input the title of collection!",
+                        },
+                      ]
+                    }
                   >
                     {/* <TextArea
                       onChange={(e) => handleOnchangeMaintenanceNote(e)}
@@ -1253,6 +1535,154 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
                     <button className="buttonAdd mb-10">Thêm</button>
                   )}
                 </div>
+              </Col>
+
+              <Col span={24}>
+                <Row>
+                  <Col span={12}>
+                    <div className="borderItem">
+                      <label>Hình ảnh trước bảo dưỡng</label>
+
+                      <label for="imageBefore">
+                        <a
+                          className="btn btn-primary text-light"
+                          role="button"
+                          aria-disabled="false"
+                        >
+                          + Thêm ảnh
+                        </a>
+                      </label>
+                      <Form.Item name="beforeImageFiles">
+                        <input
+                          type="file"
+                          multiple={imageBeforePreviews.length === 0}
+                          accept="image/*"
+                          onChange={selectBeforeFiles}
+                          id="imageBefore"
+                          style={{ visibility: "hidden", position: "absolute" }}
+                        />
+                      </Form.Item>
+                      {imageBeforePreviews && (
+                        <div>
+                          {imageBeforePreviews.map((img, i) => {
+                            return (
+                              <div className="box-img-wrap">
+                                <Image
+                                  width={100}
+                                  src={
+                                    img.service === "server"
+                                      ? BASE_URL + "/" + img.path
+                                      : img.path
+                                  }
+                                  alt={img.imageName}
+                                  key={img.id}
+                                />
+
+                                {img.service === "server" ? (
+                                  auth.roles[0] === "ROLE_DEPARTMENT" ? (
+                                    <button
+                                      type="button"
+                                      className="img-delete"
+                                      onClick={() => deleteBeforeImageFile(img)}
+                                    >
+                                      <DeleteOutlined />
+                                    </button>
+                                  ) : (
+                                    <></>
+                                  )
+                                ) : (
+                                  <button
+                                    type="button"
+                                    className="img-delete"
+                                    onClick={() => deleteBeforeImageFile(img)}
+                                  >
+                                    <DeleteOutlined />
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </Col>
+                  <Col span={12}>
+                    <div className="borderItem">
+                      <label>Hình ảnh sau bảo dưỡng</label>
+                      <label for="imageAfter">
+                        <a
+                          className="btn btn-primary text-light"
+                          role="button"
+                          aria-disabled="false"
+                        >
+                          + Thêm ảnh
+                        </a>
+                      </label>
+                      <Form.Item name="afterImageFiles">
+                        <input
+                          type="file"
+                          multiple={imageAfterPreviews.length === 0}
+                          accept="image/*"
+                          onChange={selectAfterImages}
+                          id="imageAfter"
+                          style={{ visibility: "hidden", position: "absolute" }}
+                        />
+                      </Form.Item>
+                      {imageAfterPreviews && (
+                        <div>
+                          {imageAfterPreviews.map((img, i) => {
+                            return (
+                              <div className="box-img-wrap">
+                                <Image
+                                  width={100}
+                                  src={
+                                    img.service === "server"
+                                      ? BASE_URL + "/" + img.path
+                                      : img.path
+                                  }
+                                  alt={img.imageName}
+                                  key={img.id}
+                                />
+                                {/* <img
+                                  className="preview"
+                                  src={
+                                    img.service === "server"
+                                      ? BASE_URL + "/" + img.pathResize
+                                      : img.path
+                                  }
+                                  alt={img.imageName}
+                                  key={img.id}
+                                /> */}
+
+                                {img.service === "server" ? (
+                                  auth.roles[0] === "ROLE_DEPARTMENT" ? (
+                                    <button
+                                      type="button"
+                                      className="img-delete"
+                                      onClick={() => deleteAfterImageFile(img)}
+                                    >
+                                      <DeleteOutlined />
+                                    </button>
+                                  ) : (
+                                    <></>
+                                  )
+                                ) : (
+                                  <button
+                                    type="button"
+                                    className="img-delete"
+                                    onClick={() => deleteAfterImageFile(img)}
+                                  >
+                                    <DeleteOutlined />
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </Col>
+                </Row>
               </Col>
             </Row>
           </Form>

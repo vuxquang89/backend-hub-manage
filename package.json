@@ -11,6 +11,7 @@
     "axios": "0.24.0",
     "flowbite-react": "^0.6.4",
     "framer-motion": "^10.16.4",
+    "lodash.uniqueid": "^4.0.1",
     "moment": "^2.29.4",
     "net": "^1.0.2",
     "react": "^18.2.0",

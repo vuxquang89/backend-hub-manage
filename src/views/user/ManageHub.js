@@ -72,6 +72,21 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
     sendPrivateValue(stompClient, sendMessage);
   };
 
+  const sendActionMessage = (receiverName, action, message) => {
+    let senderName = auth?.username;
+    if (senderName === undefined) {
+      senderName = localStorage.getItem("username");
+    }
+    var sendMessage = {
+      senderName: senderName,
+      receiverName: receiverName,
+      message: message,
+      status: "MESSAGE",
+      action: action,
+    };
+    sendPrivateValue(stompClient, sendMessage);
+  };
+
   const loadData = async () => {
     setFormLoading(true);
     await axiosPrivate
@@ -373,13 +388,23 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
   return localStorage.getItem("isLogin") ? (
     <>
       <div className="container">
-        <h4>Thiết bị phòng hub</h4>
+        <h4>
+          Thiết bị phòng hub{" "}
+          <button
+            onClick={() =>
+              sendActionMessage("ba_tri", "CHANGE", "thay doi thong tin")
+            }
+          >
+            Change
+          </button>
+        </h4>
         <SearchBar
           onSearch={onSearch}
           inputSearch={inputSearch}
           setInputSearch={setInputSearch}
           loadData={loadData}
         />
+
         {/* <Row>
           <Col span={6}>
             <div className="mb-10 boxSearch">
