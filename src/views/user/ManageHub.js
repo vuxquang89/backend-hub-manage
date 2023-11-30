@@ -148,7 +148,8 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
         let index = updateCellTable();
 
         setDataSource(addArrayAfter(dataSource, index, result));
-        sendSocket();
+        // sendSocket();
+        sendActionMessage(hubId, "ADD_DEVICE", "Thêm mới thiết bị hub");
         form.resetFields();
         setOpen(false);
         setFormLoading(false);
@@ -196,6 +197,7 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
 
   const showModalHistory = (e) => {
     setHubDetailId(e.hubDetailId);
+    setHubId(e.hubId);
     setOpenHistory(true);
   };
   const handleHistorySubmit = (values) => {
@@ -206,26 +208,40 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
   };
 
   const addNewHistory = async (record) => {
+    let formData = new FormData();
+    formData.append("hubDetailId", hubDetailId);
+
+    formData.append("maintenanceTime", datePickerHistory);
+
+    formData.append("maintenanceNote", record.maintenanceNote);
     setIsLoading(true);
     await axiosPrivate
-      .post("/api/hub/device/maintenancehistory", {
-        hubDetailId: hubDetailId,
-        maintenanceTime: datePickerHistory,
-        maintenanceNote: record.maintenanceNote,
+      .post("/api/hub/device/maintenancehistory", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       })
       .then((res) => {
-        const result = res.data;
-        console.log(">>>>add new history", res.data);
+        let result = res.data;
 
-        //update table
-        updateData(result.hubDetailResponse);
+        if (result.status === 100) {
+          //update table
+          updateData(result.response.hubDetailResponse);
 
-        console.log(">>>update data source", dataSource);
-        message.success("Thêm mới thành công");
-        form.resetFields();
-        sendSocket();
-        setOpenHistory(false);
-        setDatePickerHistory("");
+          console.log(">>>update data source", dataSource);
+          message.success("Thêm mới thành công");
+          form.resetFields();
+          sendSocket();
+          sendActionMessage(
+            hubId,
+            "ADD_MAINTENANCE",
+            "Thêm mới lịch bảo dưỡng"
+          );
+          setOpenHistory(false);
+          setDatePickerHistory("");
+        } else {
+          message.warning(result.message);
+        }
         setIsLoading(false);
       })
       .catch((err) => {
@@ -284,6 +300,11 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
           setDataSource(data);
           message.success("Xóa thành công");
           sendSocket();
+          sendActionMessage(
+            hubId,
+            "ADD_MAINTENANCE",
+            "Thêm mới lịch bảo dưỡng"
+          );
         } else {
           message.warning("Không thể xóa");
         }
@@ -388,16 +409,7 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
   return localStorage.getItem("isLogin") ? (
     <>
       <div className="container">
-        <h4>
-          Thiết bị phòng hub{" "}
-          <button
-            onClick={() =>
-              sendActionMessage("ba_tri", "CHANGE", "thay doi thong tin")
-            }
-          >
-            Change
-          </button>
-        </h4>
+        <h4>Thiết bị phòng hub</h4>
         <SearchBar
           onSearch={onSearch}
           inputSearch={inputSearch}
@@ -615,26 +627,31 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
                       className={`b-${el.backgroundColor}`}
                       // style={{ background: "#" + el.backgroundColor }}
                     >
-                      <Link to={"/manager/hub/device/" + el.hubDetailId}>
+                      <Link
+                        to={"/manager/hub/device/" + el.hubDetailId}
+                        title="Xem chi tiết"
+                      >
                         <EditOutlined className="buttonIconEdit" />
                       </Link>
-                      <Popconfirm
-                        title="Alarm"
-                        description="Bạn có chắc muốn xóa?"
-                        placement="topRight"
-                        onConfirm={popConfirmDeleteDevice}
-                        onCancel={cancel}
-                        okText="Yes"
-                        cancelText="No"
-                      >
-                        <DeleteOutlined
-                          className="buttonIconDelete"
-                          onClick={() => {
-                            setHubDetailId(el.hubDetailId);
-                            console.log("Delete click", el.hubDetailId);
-                          }}
-                        />
-                      </Popconfirm>
+                      {auth.roles[0] === "ROLE_DEPARTMENT" && (
+                        <Popconfirm
+                          title="Alarm"
+                          description="Bạn có chắc muốn xóa?"
+                          placement="topRight"
+                          onConfirm={popConfirmDeleteDevice}
+                          onCancel={cancel}
+                          okText="Yes"
+                          cancelText="No"
+                        >
+                          <DeleteOutlined
+                            className="buttonIconDelete"
+                            onClick={() => {
+                              setHubDetailId(el.hubDetailId);
+                              setHubId(el.hubId);
+                            }}
+                          />
+                        </Popconfirm>
+                      )}
                     </td>
                   </tr>
                 </>

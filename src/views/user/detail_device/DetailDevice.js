@@ -859,13 +859,21 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
         },
       })
       .then((res) => {
+        let result = res.data;
+
+        if (result.status === 100) {
+          setDataHistory([result.response, ...dataHistory]);
+          message.success("Thêm mới thành công");
+          send();
+          formHistory.resetFields();
+          resetFormHistory();
+        } else {
+          message.warning(result.message);
+        }
         //update table
         // setDataHistory([...dataHistory, res.data]);
-        setDataHistory([res.data, ...dataHistory]);
-        message.success("Thêm mới thành công");
-        send();
-        formHistory.resetFields();
-        resetFormHistory();
+        console.log(">>>>>>>>data", res.data);
+
         setFormLoading(false);
       })
       .catch((err) => {
