@@ -16,6 +16,7 @@ import {
   DownOutlined,
   UserOutlined,
   LogoutOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import "./UserHeader.css";
 import useLogout from "../../hooks/useLogout";
@@ -36,13 +37,18 @@ const UserHeader = ({ countAlarm }) => {
   const items = [
     {
       key: "1",
+      label: <Link to={`/user/password/change`}>Đổi mật khẩu</Link>,
+      icon: <SettingOutlined />,
+    },
+    {
+      key: "2",
       label: (
         <a
           onClick={() => {
             signOut();
           }}
         >
-          Logout
+          Thoát
         </a>
       ),
       icon: <LogoutOutlined />,

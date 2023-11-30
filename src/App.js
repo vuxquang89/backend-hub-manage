@@ -37,6 +37,7 @@ import EditUserDepartment from "./views/admin/users/department/EditUserDepartmen
 import UserManager from "./views/admin/users/branch/UserManager";
 import AddUserManager from "./views/admin/users/branch/AddUserManager";
 import EditUserManager from "./views/admin/users/branch/EditUserManager";
+import ChangePassword from "./views/user/change_password/ChangePassword";
 
 const ROLES = {
   User: "ROLE_USER",
@@ -202,6 +203,8 @@ const App = () => {
                 />
               }
             />
+
+            <Route path="user/password/change" element={<ChangePassword />} />
           </Route>
 
           <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>

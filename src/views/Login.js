@@ -114,6 +114,10 @@ const Login = ({ connectSocket }) => {
                 required: true,
                 message: "Cần nhập mật khẩu",
               },
+              {
+                pattern: new RegExp(/^[a-zA-Z0-9]*$/),
+                message: "Không nhập khoảng trắng hoặc ký tự đặc biệt",
+              },
             ]}
             name={"password"}
           >
