@@ -8,6 +8,7 @@ import {
   UserOutlined,
   ApiOutlined,
   UsergroupAddOutlined,
+  FilePdfOutlined,
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
@@ -48,6 +49,17 @@ function SideMenu() {
       getItem("Quản lý phòng máy", "/admin/users/manager", <UserOutlined />),
       getItem("Phòng KT", "/admin/users/department", <UserOutlined />),
     ]),
+    getItem(
+      <a
+        href="https://drive.google.com/file/d/18bILxQI9cmtO7fk-5NPJYP5sikpfZO87/view"
+        target="_blank"
+        rel="Hướng dẫn sử dụng"
+      >
+        Hỗ trợ
+      </a>,
+      "support",
+      <FilePdfOutlined />
+    ),
   ];
 
   return (

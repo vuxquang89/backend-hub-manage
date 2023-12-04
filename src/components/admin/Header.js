@@ -6,6 +6,7 @@ import {
   DownOutlined,
   UserOutlined,
   LogoutOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import {
   Badge,
@@ -20,7 +21,7 @@ import {
 import { getOrders } from "../../API";
 import { useState } from "react";
 import useLogout from "../../hooks/useLogout";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/logo_login.png";
 
 // const items = [
@@ -40,6 +41,11 @@ function Header() {
   const items = [
     {
       key: "1",
+      label: <Link to={`/admin/password/change`}>Đổi mật khẩu</Link>,
+      icon: <SettingOutlined />,
+    },
+    {
+      key: "2",
       label: (
         <a
           onClick={() => {
@@ -47,7 +53,7 @@ function Header() {
           }}
           title="Đăng xuất"
         >
-          Logout
+          Thoát
         </a>
       ),
       icon: <LogoutOutlined />,

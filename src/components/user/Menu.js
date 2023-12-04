@@ -36,6 +36,18 @@ function HeaderMenu({ isInLine = false }) {
       label: "Quản lý hub",
       key: "/manager/hub",
     },
+    {
+      label: (
+        <a
+          href="https://drive.google.com/file/d/1CzCAkGe9naJ3s7txfmKmQb5fUMNwsfiC/view?usp=sharing"
+          target="_blank"
+          rel="Hướng dẫn sử dụng web"
+        >
+          Hỗ trợ
+        </a>
+      ),
+      key: "support",
+    },
   ];
 
   return (
