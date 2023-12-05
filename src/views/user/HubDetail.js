@@ -20,9 +20,17 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import { toast } from "react-toastify";
+import { AuthContext } from "../../context/AuthProvider";
+import { useContext } from "react";
 
-const HubDetail = () => {
+const HubDetail = ({
+  stompClient,
+  sendPrivateValue,
+  actionStatus,
+  receive,
+}) => {
   const axiosPrivate = useAxiosPrivate();
+  const { auth, setAuth } = useContext(AuthContext);
   const [getData, setGetData] = useState(false);
   const [dataSource, setDataSource] = useState([]);
   const [hubId, setHubId] = useState("");
@@ -45,12 +53,59 @@ const HubDetail = () => {
     localStorage.getItem("isLogin") && getHubByUsername();
   }, []);
 
+  useEffect(() => {
+    switch (actionStatus.action) {
+      case "SWITCH_DEVICE":
+      case "ADD_MAINTENANCE":
+      case "DELETE_DEVICE":
+        pushActionMessage("GET_ALARM", "Get alarm");
+
+        break;
+      case "ADD_DEVICE":
+        break;
+
+      default:
+        break;
+    }
+  }, [actionStatus]);
+
   const label = `Đặt lịch bảo dưỡng`;
 
   const handleCheckBoxOnChange = (e) => {
     console.log("checked = ", e.target.checked);
     form.resetFields();
     setChecked(e.target.checked);
+  };
+
+  const pushActionMessage = (action, message) => {
+    let senderName = auth?.username;
+    if (senderName === undefined) {
+      senderName = localStorage.getItem("username");
+    }
+    var sendMessage = {
+      senderName: senderName,
+      receiverName: senderName,
+      message: message,
+      status: "MESSAGE",
+      action: action,
+    };
+    sendPrivateValue(stompClient, sendMessage);
+  };
+
+  const sendActionMessage = (receiverName, action, message, content) => {
+    let senderName = auth?.username;
+    if (senderName === undefined) {
+      senderName = localStorage.getItem("username");
+    }
+    var sendMessage = {
+      senderName: senderName,
+      receiverName: receiverName,
+      message: message,
+      content: content,
+      status: "MESSAGE",
+      action: action,
+    };
+    sendPrivateValue(stompClient, sendMessage);
   };
 
   const listItemDevice = [
@@ -126,12 +181,18 @@ const HubDetail = () => {
         orderMaintenance: checked,
       })
       .then((res) => {
-        console.log(">>>>get list hub detail", res.data);
+        console.log(">>>>result ", res.data);
         let result = res.data;
 
         form.resetFields();
 
         setFormLoading(false);
+        sendActionMessage(
+          hubId,
+          "ADD_DEVICE",
+          "Thêm mới thiết bị hub",
+          result.hubDetailId
+        );
         toast.success("Thêm mới thành công");
       })
       .catch((err) => {

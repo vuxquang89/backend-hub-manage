@@ -1,11 +1,12 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
+
 import Header from "./admin/Header";
 import SideMenu from "./admin/SideMenu";
 import PageContent from "./admin/PageContent";
 import { ToastContainer } from "react-toastify";
 import useAuth from "../hooks/useAuth";
 import UserHeader from "./user/Header";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { over } from "stompjs";
 import SockJS from "sockjs-client";
@@ -14,6 +15,7 @@ import { BASE_URL } from "../config/config";
 import MainBanner from "./banner/MainBanner";
 import Footer from "./user/Footer";
 import FooterAdmin from "./admin/Footer";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 var stomp = null;
 
@@ -22,11 +24,16 @@ const Layout = ({
   countAlarm,
   userData,
   setUserData,
+  setActionStatus,
   setCountAlarm,
   setStompClient,
   sendPrivateValue,
 }) => {
   const { auth } = useAuth();
+  const axiosPrivate = useAxiosPrivate();
+  let navigate = useNavigate();
+  const location = useLocation();
+  const [dataHubManager, setDataHubManager] = useState([]);
 
   useEffect(() => {
     const isLogin = localStorage.getItem("isLogin");
@@ -34,7 +41,7 @@ const Layout = ({
     if (isLogin) {
       console.log(">>>>>>>>>>>>>>>>>>>>> da dang nhap");
       console.log(">>>>>>>>>>>>isLogin ", isLogin);
-      connect();
+      getHubManager();
     } else {
       console.log(">>>>>>>>>>>>>>>>>>>>>> chua dang nhap");
       console.log(">>>>>>>>>>>>isLogin ", isLogin);
@@ -46,6 +53,19 @@ const Layout = ({
       });
     }
   }, [localStorage.getItem("isLogin")]);
+
+  const getHubManager = async () => {
+    await axiosPrivate
+      .get("/api/hub/manager")
+      .then((res) => {
+        console.log(">>>>get list hub detail manager", res.data);
+        setDataHubManager(res.data);
+        connect();
+      })
+      .catch((err) => {
+        navigate("/login", { state: { from: location }, replace: true });
+      });
+  };
 
   console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>user data", userData);
 
@@ -77,7 +97,11 @@ const Layout = ({
       localStorage.getItem("username")
     );
     stomp.subscribe("/user/" + name + "/private", onPrivateMessage);
-    stomp.subscribe("/user/ba_tri/private", onPrivateMessage);
+    dataHubManager?.map((obj) => {
+      return stomp.subscribe(`/user/${obj.hubId}/private`, onPrivateMessage);
+    });
+
+    // stomp.subscribe("/user/ba_tri/private", onPrivateMessage);
     userJoin(name, "JOIN MESSAGE");
     // loadMessage();
   };
@@ -111,11 +135,44 @@ const Layout = ({
   const onPrivateMessage = (payload) => {
     console.log(">>>>>>>>>receive message", payload);
     var payloadData = JSON.parse(payload.body);
+    let senderName = auth?.username;
+    if (senderName === undefined) {
+      senderName = localStorage.getItem("username");
+    }
+
     if (
       payloadData.action === "EDIT_MAINTENANCE" ||
-      payloadData.action === "GET_ALARM"
+      payloadData.action === "GET_ALARM" ||
+      payloadData.action === "ADD_MAINTENANCE" ||
+      payloadData.action === "DELETE_DEVICE" ||
+      payloadData.action === "SWITCH_DEVICE"
     ) {
-      setCountAlarm(payloadData.message);
+      if (payloadData.senderName === senderName) {
+        setCountAlarm(payloadData.message);
+      } else {
+        setActionStatus((status) => {
+          return {
+            ...status,
+            action: payloadData.action,
+            content: payloadData.content,
+          };
+        });
+      }
+    }
+
+    if (
+      payloadData.action === "ADD_DEVICE" ||
+      payloadData.action === "EDIT_DEVICE"
+    ) {
+      if (payloadData.senderName !== senderName) {
+        setActionStatus((status) => {
+          return {
+            ...status,
+            action: payloadData.action,
+            content: payloadData.content,
+          };
+        });
+      }
     }
   };
 

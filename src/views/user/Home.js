@@ -8,6 +8,8 @@ import {
 import { Popconfirm, Space, message, Input, Row, Col } from "antd";
 import ModalEditCellDevice from "./ModalEditCellDevice";
 import { useForm } from "react-hook-form";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthProvider";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import useLogout from "../../hooks/useLogout";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
@@ -21,6 +23,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   const location = useLocation();
+  const { auth, setAuth } = useContext(AuthContext);
   const axiosPrivate = useAxiosPrivate();
 
   const methods = useForm();
@@ -38,10 +41,16 @@ const Home = () => {
   }, []);
 
   const loadData = async () => {
+    let role = auth?.roles;
+
+    let api = "/api/user/hub/detail";
+    if (role[0] !== "ROLE_USER") {
+      api = "/api/hub/manager/detail";
+    }
     setFormLoading(true);
     await axiosPrivate
-      .get("/api/user/hub/detail")
-      // .get("/api/hub/manager/detail")
+      // .get("/api/user/hub/detail")
+      .get(api)
       .then((res) => {
         console.log(">>>>get list hub detail", res.data);
         setDataSource(res.data);
@@ -81,9 +90,16 @@ const Home = () => {
     }
   };
   const getDataSearch = async (value) => {
+    let role = auth?.roles;
+
+    let api = "/api/hub/detail/search/";
+    if (role[0] !== "ROLE_USER" || role[0] !== "ROLE_ADMIN") {
+      api = "/api/hub/manager/detail/search/";
+    }
     setFormLoading(true);
     await axiosPrivate
-      .get("/api/hub/detail/search/" + value)
+      // .get("/api/hub/detail/search/" + value)
+      .get(api + value)
       .then((res) => {
         console.log(">>>>get list hub detail search", res.data);
         setDataSource(res.data);

@@ -192,7 +192,7 @@ const UserHeader = ({ countAlarm }) => {
         auth.roles[0] === "ROLE_DEPARTMENT" ? (
           <>
             <Badge
-              count={alarm.length}
+              count={countAlarm}
               // count={5}
               className="bellFill"
             >

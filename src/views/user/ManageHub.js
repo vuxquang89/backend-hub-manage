@@ -20,7 +20,13 @@ import { toast } from "react-toastify";
 import moment from "moment";
 import SearchBar from "../../components/user/SearchBar";
 
-const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
+const ManageHub = ({
+  stompClient,
+  userData,
+  sendPrivateValue,
+  actionStatus,
+  receive,
+}) => {
   const logout = useLogout();
   const { Search } = Input;
   const { auth, setAuth } = useContext(AuthContext);
@@ -56,23 +62,98 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
     //receive(stompClient, userData.receiverName);
   }, []);
 
-  const sendSocket = () => {
-    console.log(">>>>>>>manager hub send socket", auth);
-    let name = auth?.username;
-    if (name === undefined) {
-      name = localStorage.getItem("username");
+  useEffect(() => {
+    switch (actionStatus.action) {
+      case "SWITCH_DEVICE":
+      case "ADD_MAINTENANCE":
+        pushActionMessage("GET_ALARM", "Get alarm");
+
+        getDeviceSwitch(actionStatus.content);
+        break;
+      case "ADD_DEVICE":
+      case "EDIT_DEVICE":
+        getDeviceSwitch(actionStatus.content);
+        break;
+      case "DELETE_DEVICE":
+        pushActionMessage("GET_ALARM", "Get alarm");
+        // const dt = dataSource?.filter((item) => {
+        //   return item.hubDetailId !== 749;
+        // });
+        // const dt = dataRemoveItem(dataSource, hubDetailId);
+        setDataSource(dataRemoveItem(dataSource, actionStatus.content));
+        break;
+      default:
+        break;
+    }
+  }, [actionStatus]);
+
+  /**
+   * get device had switch
+   * @param {} detailId
+   */
+  const getDeviceSwitch = async (hubDetailId) => {
+    await axiosPrivate
+      .get(`/api/hub/manager/detail/${hubDetailId}`)
+      .then((res) => {
+        let result = res.data;
+        console.log(">>>>>>>>>data get device", result);
+        // const dt = dataSource.filter((item) => {
+        //   return item.hubDetailId !== hubDetailId;
+        // });
+        const dt = dataRemoveItem(dataSource, hubDetailId);
+        setDataSource(dt);
+
+        let index = updateCellTable(dt, result.hubId, result.deviceId);
+
+        setDataSource(addArrayAfter(dt, index, result));
+      })
+      .catch((err) => {
+        console.log("get list hub detail error", err);
+      });
+  };
+
+  /**
+   *
+   * update data table when delete hubDetailId
+   */
+  const dataRemoveItem = (data, hubDetailId) => {
+    return data.filter((item) => {
+      return item.hubDetailId !== hubDetailId * 1;
+    });
+  };
+
+  // const sendSocket = () => {
+  //   console.log(">>>>>>>manager hub send socket", auth);
+  //   let name = auth?.username;
+  //   if (name === undefined) {
+  //     name = localStorage.getItem("username");
+  //   }
+  //   var sendMessage = {
+  //     senderName: name,
+  //     receiverName: name,
+  //     message: "",
+  //     status: "MESSAGE",
+  //     action: "EDIT_MAINTENANCE",
+  //   };
+  //   sendPrivateValue(stompClient, sendMessage);
+  // };
+
+  const pushActionMessage = (action, message) => {
+    let senderName = auth?.username;
+    if (senderName === undefined) {
+      senderName = localStorage.getItem("username");
     }
     var sendMessage = {
-      senderName: name,
-      receiverName: name,
-      message: "",
+      senderName: senderName,
+      receiverName: senderName,
+      message: message,
       status: "MESSAGE",
-      action: "EDIT_MAINTENANCE",
+      action: action,
     };
     sendPrivateValue(stompClient, sendMessage);
   };
 
-  const sendActionMessage = (receiverName, action, message) => {
+  const sendActionMessage = (receiverName, action, message, content) => {
     let senderName = auth?.username;
     if (senderName === undefined) {
       senderName = localStorage.getItem("username");
@@ -81,6 +162,7 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
       senderName: senderName,
       receiverName: receiverName,
       message: message,
+      content: content,
       status: "MESSAGE",
       action: action,
     };
@@ -145,11 +227,16 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
       .then((res) => {
         console.log(">>>>get list hub detail", res.data);
         let result = res.data;
-        let index = updateCellTable();
+        let index = updateCellTable(dataSource, hubId, deviceId);
 
         setDataSource(addArrayAfter(dataSource, index, result));
         // sendSocket();
-        sendActionMessage(hubId, "ADD_DEVICE", "Thêm mới thiết bị hub");
+        sendActionMessage(
+          hubId,
+          "ADD_DEVICE",
+          "Thêm mới thiết bị hub",
+          result.hubDetailId
+        );
         form.resetFields();
         setOpen(false);
         setFormLoading(false);
@@ -163,7 +250,7 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
       });
   };
 
-  const updateCellTable = () => {
+  const updateCellTable = (dataSource, hubId, deviceId) => {
     //  let index = -1;
     for (let i = 0; i < dataSource.length; i++) {
       if (
@@ -226,16 +313,18 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
 
         if (result.status === 100) {
           //update table
-          updateData(result.response.hubDetailResponse);
+          let hubDetailData = result.response.hubDetailResponse;
+          updateData(hubDetailData);
 
           console.log(">>>update data source", dataSource);
           message.success("Thêm mới thành công");
           form.resetFields();
-          sendSocket();
+          // sendSocket();
           sendActionMessage(
             hubId,
             "ADD_MAINTENANCE",
-            "Thêm mới lịch bảo dưỡng"
+            "Thêm mới lịch bảo dưỡng",
+            hubDetailData.hubDetailId
           );
           setOpenHistory(false);
           setDatePickerHistory("");
@@ -294,16 +383,14 @@ const ManageHub = ({ stompClient, userData, sendPrivateValue, receive }) => {
         //update dataSource
 
         if (res.data) {
-          let data = dataSource;
-
-          data = data.filter((item) => item.hubDetailId !== hubDetailId);
-          setDataSource(data);
+          setDataSource(dataRemoveItem(dataSource, hubDetailId));
           message.success("Xóa thành công");
-          sendSocket();
+          // sendSocket();
           sendActionMessage(
             hubId,
-            "ADD_MAINTENANCE",
-            "Thêm mới lịch bảo dưỡng"
+            "DELETE_DEVICE",
+            "Xóa thiết bị khỏi hub",
+            hubDetailId
           );
         } else {
           message.warning("Không thể xóa");

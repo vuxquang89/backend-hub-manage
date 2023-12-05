@@ -53,7 +53,13 @@ import SockJS from "socketjs-client";
 import TabHistoryOperation from "./TabHistoryOperation";
 import ModalViewHubDetail from "./ModalViewHubDetail";
 
-const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
+const DetailDevice = ({
+  stompClient,
+  userData,
+  sendPrivateValue,
+  actionStatus,
+  receive,
+}) => {
   const { auth } = useAuth();
   const axiosPrivate = useAxiosPrivate();
   let { hubDetailId } = useParams();
@@ -155,6 +161,37 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
 
     //receive(stompClient, userData.receiverName);
   }, [hubDetailId]);
+
+  useEffect(() => {
+    console.log(
+      ">>>>>>>>>>>>>>>>>DetailDevice>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",
+      actionStatus
+    );
+    switch (actionStatus.action) {
+      case "SWITCH_DEVICE":
+      case "ADD_MAINTENANCE":
+      case "DELETE_DEVICE":
+        console.log(
+          ">>>>>>>>>>>>>>>>>DetailDevice>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",
+          actionStatus.action
+        );
+        pushActionMessage("GET_ALARM", "Get alarm");
+        updateSocketEditDevice(actionStatus.content);
+        break;
+      case "EDIT_DEVICE":
+        console.log(
+          ">>>>>>>>>>>>>>>>>Edit Device>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",
+          actionStatus.content
+        );
+        updateSocketEditDevice(actionStatus.content);
+        break;
+      case "ADD_DEVICE":
+        break;
+
+      default:
+        break;
+    }
+  }, [actionStatus]);
 
   //-------------
   // const [userData, setUserData] = useState({
@@ -416,6 +453,41 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
       });
   };
 
+  const updateSocketEditDevice = async (hubDetailId) => {
+    await axiosPrivate
+      .get(`/api/hub/detail/${hubDetailId}`)
+      .then((res) => {
+        const result = res.data;
+        console.log(">>>>> result hub detail", res.data);
+        if (result.status === 100) {
+          const response = result.response;
+
+          setTrademark(response.trademark);
+          setRatePower(response.ratedPower);
+          setLoadDuringPowerOutage(response.loadDuringPowerOutage);
+          setBatteryQuantity(response.batteryQuantity);
+          setBatteryNumber(response.batteryNumber);
+          setBatteryCapacity(response.batteryCapacity);
+          setProductionTime(response.productionTime);
+          setConductorType(response.conductorType);
+          setCBPower(response.cbPower);
+          setSchneider(response.schneider);
+          setYearInstall(response.yearInstall);
+          setCurrentStatus(response.currentStatus);
+          setNumber(response.number);
+          setChecked(response.orderMaintenance);
+          setDateMaintenance(response.dateMaintenance);
+          setGetData(true);
+        } else {
+          console.log(">>>> khong tim thay ", hubDetailId);
+          setGetData(false);
+        }
+      })
+      .catch((err) => {
+        console.log(">>>>add branch error", err);
+      });
+  };
+
   const handleUpdateSubmit = async () => {
     setFormLoading(true);
     await axiosPrivate
@@ -444,6 +516,12 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
         // setDataHubDetailAfterChange(result);
         message.success("Cập nhật thành công");
         setFormLoading(false);
+        sendActionMessage(
+          hubId,
+          "EDIT_DEVICE",
+          "Chỉnh sửa thông tin thiết bị",
+          hubDetailId
+        );
       })
       .catch((err) => {
         console.log("update hub detail error", err);
@@ -711,7 +789,13 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
         message.success(`Chuyển thiết bị thành công`);
         setOpenModalSwitch(false);
         // loadData();
-        send();
+        // send();
+        sendActionMessage(
+          hubId,
+          "SWITCH_DEVICE",
+          "Chuyển thiết bị đến hub khác",
+          hubDetailId
+        );
         setFormLoading(false);
         navigate("/manager", {
           state: { from: location },
@@ -864,7 +948,13 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
         if (result.status === 100) {
           setDataHistory([result.response, ...dataHistory]);
           message.success("Thêm mới thành công");
-          send();
+          // send();
+          sendActionMessage(
+            hubId,
+            "ADD_MAINTENANCE",
+            "Thêm mới lịch sử bảo dưỡng",
+            hubDetailId
+          );
           formHistory.resetFields();
           resetFormHistory();
         } else {
@@ -1763,6 +1853,37 @@ const DetailDevice = ({ stompClient, userData, sendPrivateValue, receive }) => {
       ),
     },
   ];
+
+  const pushActionMessage = (action, message) => {
+    let senderName = auth?.username;
+    if (senderName === undefined) {
+      senderName = localStorage.getItem("username");
+    }
+    var sendMessage = {
+      senderName: senderName,
+      receiverName: senderName,
+      message: message,
+      status: "MESSAGE",
+      action: action,
+    };
+    sendPrivateValue(stompClient, sendMessage);
+  };
+
+  const sendActionMessage = (receiverName, action, message, content) => {
+    let senderName = auth?.username;
+    if (senderName === undefined) {
+      senderName = localStorage.getItem("username");
+    }
+    var sendMessage = {
+      senderName: senderName,
+      receiverName: receiverName,
+      message: message,
+      content: content,
+      status: "MESSAGE",
+      action: action,
+    };
+    sendPrivateValue(stompClient, sendMessage);
+  };
 
   const send = () => {
     let username = auth.username;

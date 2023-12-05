@@ -38,6 +38,7 @@ import UserManager from "./views/admin/users/branch/UserManager";
 import AddUserManager from "./views/admin/users/branch/AddUserManager";
 import EditUserManager from "./views/admin/users/branch/EditUserManager";
 import ChangePassword from "./views/user/change_password/ChangePassword";
+import SupportPage from "./components/SupportPage";
 
 const ROLES = {
   User: "ROLE_USER",
@@ -50,6 +51,7 @@ const ROLES = {
 const App = () => {
   const [countAlarm, setCountAlarm] = useState(0);
   const [stompClient, setStompClient] = useState();
+  const [actionStatus, setActionStatus] = useState({ action: "", content: "" });
   const [userData, setUserData] = useState({
     // username: localStorage.getItem("username"),
     username: "",
@@ -95,7 +97,10 @@ const App = () => {
     var payloadData = JSON.parse(payload.body);
     if (
       payloadData.action === "EDIT_MAINTENANCE" ||
-      payloadData.action === "GET_ALARM"
+      payloadData.action === "GET_ALARM" ||
+      payloadData.action === "ADD_MAINTENANCE" ||
+      payloadData.action === "DELETE_DEVICE" ||
+      payloadData.action === "SWITCH_DEVICE"
     ) {
       setCountAlarm(payloadData.message);
     }
@@ -136,6 +141,7 @@ const App = () => {
           <Layout
             countAlarm={countAlarm}
             userData={userData}
+            setActionStatus={setActionStatus}
             setUserData={setUserData}
             setCountAlarm={setCountAlarm}
             setStompClient={setStompClient}
@@ -187,17 +193,29 @@ const App = () => {
                   userData={userData}
                   stompClient={stompClient}
                   receive={receive}
+                  actionStatus={actionStatus}
                   sendPrivateValue={sendPrivateActionValue}
                 />
               }
             />
-            <Route path="manager/hub" element={<HubDetail />} />
+            <Route
+              path="manager/hub"
+              element={
+                <HubDetail
+                  stompClient={stompClient}
+                  sendPrivateValue={sendPrivateActionValue}
+                  actionStatus={actionStatus}
+                  receive={receive}
+                />
+              }
+            />
             <Route
               path="manager/hub/device/:hubDetailId"
               element={
                 <DetailDevice
                   userData={userData}
                   stompClient={stompClient}
+                  actionStatus={actionStatus}
                   receive={receive}
                   sendPrivateValue={sendPrivateActionValue}
                 />
@@ -239,14 +257,24 @@ const App = () => {
 
             <Route path="admin/hub" element={<ListHub />} />
             <Route path="admin/hub/:id" element={<DetailHub />} />
+
+            <Route path="admin/password/change" element={<ChangePassword />} />
           </Route>
 
           <Route
             element={
-              <RequireAuth allowedRoles={[ROLES.Manager, ROLES.Admin]} />
+              <RequireAuth
+                allowedRoles={[
+                  ROLES.Manager,
+                  ROLES.Admin,
+                  ROLES.Branch,
+                  ROLES.Department,
+                  ROLES.User,
+                ]}
+              />
             }
           >
-            <Route path="lounge" element={<Lounge />} />
+            <Route path="support" element={<SupportPage />} />
           </Route>
         </Route>
 
