@@ -9,6 +9,7 @@ import {
   message,
   Select,
   Input,
+  Form,
 } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FormProvider, useForm, useFormState } from "react-hook-form";
@@ -17,6 +18,7 @@ import {
   EyeOutlined,
   EditOutlined,
   SearchOutlined,
+  ApartmentOutlined,
 } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import ModalAddHub from "./ModalAddHub";
@@ -30,6 +32,7 @@ import {
 } from "../../../utils/inputHubValidations";
 import SpanLoading from "../../../components/loading/SpanLoading";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import ModalSwitchBranch from "./ModalSwitchBranch";
 
 function ListHub() {
   const axiosPrivate = useAxiosPrivate();
@@ -38,6 +41,7 @@ function ListHub() {
 
   const methods = useForm();
   const tableMethods = useForm();
+  const [formSwitchBranch] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [dataSource, setDataSource] = useState([]);
@@ -50,6 +54,7 @@ function ListHub() {
   const [listUserManager, setListUserManager] = useState([]);
   const [listUserDepartment, setListUserDepartment] = useState([]);
 
+  const [hubId, setHubId] = useState("");
   const [hubName, setHubName] = useState("");
   const [hubAddress, setHubAddress] = useState("");
   const [hubCity, setHubCity] = useState("");
@@ -65,8 +70,14 @@ function ListHub() {
       value: "all",
     },
   ];
-
   const [branchList, setBranchList] = useState(allSelectItem);
+
+  /**
+   * modal switch branch
+   */
+  const [isOpen, setIsOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalBranchList, setModalBranchList] = useState([]);
 
   useEffect(() => {
     loadData();
@@ -90,6 +101,9 @@ function ListHub() {
       });
   };
 
+  /**
+   * get branch list
+   */
   const getBranchList = async () => {
     await axiosPrivate
       .get("/api/admin/branch/list")
@@ -98,6 +112,7 @@ function ListHub() {
         // setBranchList(res.data);
         let data = res.data;
         setBranchList([...branchList, ...data]);
+        setModalBranchList(data);
       })
       .catch((err) => {
         console.log("get list hub branch", err);
@@ -107,7 +122,7 @@ function ListHub() {
   };
 
   /**
-   * delete
+   * delete hub
    */
   const confirmDeleteHub = async () => {
     console.log(">>>comfirm delete", editingId);
@@ -339,6 +354,76 @@ function ListHub() {
         setFormLoading(false);
         navigate("/login", { state: { from: location }, replace: true });
       });
+  };
+
+  /**
+   * open modal switch branch
+   */
+  const openModalSwitchBranch = (hubId, hubName) => {
+    setIsOpen(true);
+    setHubId(hubId);
+    setModalTitle("Chuyển hub " + hubName + " đến Chi Nhánh khác");
+  };
+
+  function handleModalCancelOnClick() {
+    setIsOpen(false);
+    setHubId("");
+    formSwitchBranch.resetFields();
+  }
+
+  const handleModalSubmitOnClick = (values) => {
+    setFormLoading(true);
+    console.log("submit branch ", values);
+    setSwitchHubToBranch(values);
+  };
+
+  /**
+   * set switch hub to branch
+   */
+  const setSwitchHubToBranch = async (values) => {
+    await axiosPrivate
+      .post("/api/admin/hub/switch/branch", {
+        branchId: values.branchId,
+        hubId: hubId,
+      })
+      .then((res) => {
+        console.log(">>>>> switch hub to branch", res.data);
+        let result = res.data;
+        if (result.status === 100) {
+          updateHubDataSource(result.hubResponse, hubId);
+          toast.success("Chuyển thành công");
+          formSwitchBranch.resetFields();
+        } else {
+          toast.warning("Không thể chuyển");
+        }
+
+        setIsOpen(false);
+        setFormLoading(false);
+      })
+      .catch((err) => {
+        console.log(">>>>> add new hub error", err);
+        toast.error("Lỗi. Không thể chuyển");
+        setFormLoading(false);
+      });
+  };
+
+  /**
+   * update data source maintenance history
+   */
+  const updateHubDataSource = (response, hubId) => {
+    const updateHubArray = dataSource.map((hub) => {
+      if (hub.hubId === hubId) {
+        return {
+          ...hub,
+          branchName: response.branchResponse.branchName,
+          hubManagerName: response.hubManagerName,
+          hubManagerPhone: response.hubManagerPhone,
+        };
+      } else {
+        return hub;
+      }
+    });
+    setDataSource(updateHubArray);
   };
 
   return (
@@ -578,10 +663,17 @@ function ListHub() {
                         cancelText="No"
                       >
                         <DeleteOutlined
-                          className="btnUserDelete"
+                          className="buttonDeleteCell"
                           onClick={() => handleDeleteHubOnClick(record)}
                         />
                       </Popconfirm>
+                      <ApartmentOutlined
+                        className="buttonSwitchToBranch"
+                        onClick={() =>
+                          openModalSwitchBranch(record.hubId, record.hubName)
+                        }
+                        title="Chuyển Hub đến Chi Nhánh khác"
+                      />
                     </>
                   ),
                 },
@@ -601,7 +693,7 @@ function ListHub() {
         isLoading={isLoading}
         methods={methods}
         branchValue={branchValue}
-        branchList={branchList}
+        branchList={modalBranchList}
         listUserManager={listUserManager}
         listUserDepartment={listUserDepartment}
         setBranchValue={setBranchValue}
@@ -611,6 +703,16 @@ function ListHub() {
         staffManagerId={staffManagerId}
         setStaffManagerId={setStaffManagerId}
       />
+      <ModalSwitchBranch
+        isOpen={isOpen}
+        isLoading={isLoading}
+        modalTitle={modalTitle}
+        branchList={modalBranchList}
+        formSwitchBranch={formSwitchBranch}
+        handleModalCancelOnClick={handleModalCancelOnClick}
+        handleModalSubmitOnClick={handleModalSubmitOnClick}
+      />
+
       {formLoading && <SpanLoading />}
     </>
   );

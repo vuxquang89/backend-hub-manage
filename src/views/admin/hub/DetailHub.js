@@ -119,6 +119,8 @@ function DetailHub() {
 
   /**
    * get list user department
+   * 4: role department
+   * 5: role user
    */
   const getUserDepartment = async () => {
     setFormLoading(true);

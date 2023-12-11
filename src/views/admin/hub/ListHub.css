@@ -12,6 +12,29 @@
   color: #dc9009;
 }
 
+.buttonDeleteCell {
+  margin-right: 10px;
+  color: #e00f0f;
+}
+
+.buttonSwitchToBranch {
+  /* margin-right: 10px; */
+  color: #3586ff;
+}
+
+.buttonModalCancel {
+  font-size: 14px;
+  border: 1px solid #b1adad;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.modalSwitchBranchContent {
+  margin-top: 15px;
+}
+
 .formListHub p {
   font-size: 12px;
 }

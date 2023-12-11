@@ -20,7 +20,7 @@ const SearchBar = ({ onSearch, inputSearch, setInputSearch, loadData }) => {
   window.addEventListener("scroll", toggleFixSearchBar);
 
   return (
-    <Row className={visible ? `fix-search justify-content-center` : ""}>
+    <Row className={visible ? `fix-search ms-100 justify-content-center` : ""}>
       <Col span={8}>
         <div className="mb-10 boxSearch">
           <label className="lblTitleSearch">Tìm kiếm</label>
