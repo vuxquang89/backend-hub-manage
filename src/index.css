@@ -34,6 +34,11 @@ code {
 .text-align-center {
   text-align: center;
 }
+
+.text-align-end {
+  text-align: end;
+}
+
 .ps-12 {
   padding-left: 12px;
 }

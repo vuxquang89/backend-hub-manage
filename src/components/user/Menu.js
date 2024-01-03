@@ -50,6 +50,37 @@ function HeaderMenu({ isInLine = false }) {
     },
   ];
 
+  const menuLeader = [
+    {
+      label: "Trang chủ",
+      key: "/",
+    },
+    {
+      label: "Chi tiết phòng hub",
+      key: "/manager",
+    },
+    {
+      label: "Quản lý hub",
+      key: "/manager/hub",
+    },
+    {
+      label: "Quản lý User",
+      key: "/manager/user",
+    },
+    {
+      label: (
+        <a
+          href="https://drive.google.com/file/d/1CzCAkGe9naJ3s7txfmKmQb5fUMNwsfiC/view?usp=sharing"
+          target="_blank"
+          rel="Hướng dẫn sử dụng web"
+        >
+          Hỗ trợ
+        </a>
+      ),
+      key: "support",
+    },
+  ];
+
   return (
     <Menu
       style={{
@@ -65,10 +96,10 @@ function HeaderMenu({ isInLine = false }) {
       }}
       mode={isInLine ? "inline" : "horizontal"}
       items={
-        auth.roles[0] === "ROLE_MANAGER" ||
-        auth.roles[0] === "ROLE_BRANCH" ||
-        auth.roles[0] === "ROLE_DEPARTMENT"
+        auth.roles[0] === "ROLE_MANAGER" || auth.roles[0] === "ROLE_DEPARTMENT"
           ? menuManager
+          : auth.roles[0] === "ROLE_BRANCH"
+          ? menuLeader
           : menuUser
       }
     ></Menu>

@@ -39,6 +39,9 @@ function EditUser() {
   const [branchName, setBranchName] = useState("");
   const [activate, setActivate] = useState(0);
 
+  const [itemBranchUser, setItemBranchUser] = [];
+  const item = [{ label: "", value: "" }];
+
   const [formLoading, setFormLoading] = useState(false);
 
   useEffect(() => {
@@ -52,7 +55,7 @@ function EditUser() {
 
   const getBranchList = async () => {
     await axiosPrivate
-      .get("/api/branch/list")
+      .get("/api/admin/branch/list/user")
       .then((res) => {
         console.log(">>>>get list branch", res.data);
         setBranchList(res.data);
@@ -82,6 +85,15 @@ function EditUser() {
           setActivate(response.status);
           setBranchId(response.branchId);
           setBranchName(response.branchName);
+
+          setItemBranchUser([
+            {
+              ...itemBranchUser,
+              label: response.branchId,
+              value: response.branchName,
+            },
+          ]);
+
           setStatus(true);
         } else {
           console.log(">>>> khong tim thay ", id);

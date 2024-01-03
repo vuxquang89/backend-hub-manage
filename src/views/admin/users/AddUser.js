@@ -48,7 +48,7 @@ function AddUser() {
 
   const getBranchList = async () => {
     await axiosPrivate
-      .get("/api/branch/list")
+      .get("/api/admin/branch/list/user")
       .then((res) => {
         console.log(">>>>get list branch", res.data);
         setBranchList(res.data);

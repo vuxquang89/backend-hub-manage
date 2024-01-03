@@ -39,6 +39,7 @@ import AddUserManager from "./views/admin/users/branch/AddUserManager";
 import EditUserManager from "./views/admin/users/branch/EditUserManager";
 import ChangePassword from "./views/user/change_password/ChangePassword";
 import SupportPage from "./components/SupportPage";
+import ManagerUser from "./views/user/manager_user/ManagerUser";
 
 const ROLES = {
   User: "ROLE_USER",
@@ -218,6 +219,18 @@ const App = () => {
                   actionStatus={actionStatus}
                   receive={receive}
                   sendPrivateValue={sendPrivateActionValue}
+                />
+              }
+            />
+
+            <Route
+              path="manager/user"
+              element={
+                <ManagerUser
+                  stompClient={stompClient}
+                  sendPrivateValue={sendPrivateActionValue}
+                  actionStatus={actionStatus}
+                  receive={receive}
                 />
               }
             />
