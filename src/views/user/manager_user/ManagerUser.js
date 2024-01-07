@@ -9,6 +9,7 @@ import {
   Row,
   Select,
   Space,
+  Popconfirm,
   Table,
   Typography,
 } from "antd";
@@ -217,10 +218,38 @@ const ManagerUser = ({
     setDetailUser(true);
   };
 
+  const cancel = (e) => {
+    console.log(e);
+    setUsername("");
+    //message.error('Click on No');
+  };
+
+  const handleResetPasswordOnClick = (record) => {
+    setUsername(record.username);
+  };
+
   /**
    * handle reset password
    */
-  const handleResetPassword = async () => {};
+  const handleConfirmResetPassword = async () => {
+    setFormLoading(true);
+    await axiosPrivate
+      .put(`/api/leader/user/password/reset`, { username: username })
+      .then((res) => {
+        let result = res.data;
+        if (result.status === 100) {
+          toast.success("Reset mật khẩu thành công! Hãy kiểm tra email");
+        } else {
+          toast.warning("Không thể reset mật khẩu cho tài khoản này");
+        }
+        setFormLoading(false);
+      })
+      .catch((err) => {
+        console.log(">>>>>reset password error", err);
+        toast.error("Reset mật khẩu thất bại");
+        setFormLoading(false);
+      });
+  };
 
   return (
     <>
@@ -336,10 +365,22 @@ const ManagerUser = ({
                                         }
                                       />
 
-                                      <RedoOutlined
-                                        className="buttonIconReset"
-                                        title="Reset mật khẩu"
-                                      />
+                                      <Popconfirm
+                                        title="Alarm"
+                                        description="Bạn có muốn reset mật khẩu cho tài khoản này?"
+                                        onConfirm={handleConfirmResetPassword}
+                                        onCancel={cancel}
+                                        okText="Yes"
+                                        cancelText="No"
+                                      >
+                                        <RedoOutlined
+                                          className="buttonIconReset"
+                                          title="Reset mật khẩu"
+                                          onClick={() =>
+                                            handleResetPasswordOnClick(record)
+                                          }
+                                        />
+                                      </Popconfirm>
                                     </>
                                   ),
                                 },
@@ -385,7 +426,7 @@ const ManagerUser = ({
                             <Row>
                               <Col span={24}>
                                 <Row>
-                                  <Col span={24} className="pe-50">
+                                  <Col span={24}>
                                     <div className="updateItem">
                                       <Form.Item
                                         label="Tên đăng nhập"
