@@ -17,6 +17,7 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import {
   DeleteOutlined,
   EyeOutlined,
+  EditOutlined,
   UserSwitchOutlined,
   PlusOutlined,
   SearchOutlined,
@@ -25,6 +26,7 @@ import { toast } from "react-toastify";
 import { AuthContext } from "../../context/AuthProvider";
 import { useContext } from "react";
 import ModalSwitchManager from "./ModalSwitchManager";
+import FormViewDetailHub from "./FormViewDetailHub";
 
 const HubDetail = ({
   stompClient,
@@ -59,11 +61,16 @@ const HubDetail = ({
   const [isOpenModalSwitchManager, setIsOpenModalSwitchManager] =
     useState(false);
   const [managerId, setManagerId] = useState("");
+  const [hubManagerName, setHubManagerName] = useState("");
   const [listUserManager, setListUserManager] = useState([]);
+
+  //-------------------detail hub--------------
+  const [isFormHubDetail, setIsFormHubDetail] = useState(false);
+  const [formHubDetail] = Form.useForm();
 
   useEffect(() => {
     localStorage.getItem("isLogin") && getHubByUsername();
-    getUserManager();
+    auth.roles[0] === "ROLE_BRANCH" && getUserManager();
   }, []);
 
   useEffect(() => {
@@ -165,6 +172,7 @@ const HubDetail = ({
     setHubName(record.hubName);
     setHubId(record.hubId);
     setIsAddDevice(true);
+    setIsFormHubDetail(false);
   };
 
   const handleSubmit = (values) => {
@@ -222,7 +230,7 @@ const HubDetail = ({
   };
 
   /**
-   * switch manager
+   *===================== switch manager==============
    */
 
   /**
@@ -248,6 +256,7 @@ const HubDetail = ({
   const handleViewModalSelectManager = (record) => {
     setIsOpenModalSwitchManager(true);
     setIsAddDevice(false);
+    setIsFormHubDetail(false);
     setHubName(record.hubName);
     setHubId(record.hubId);
     setManagerId(record.managerResponse.id);
@@ -310,6 +319,50 @@ const HubDetail = ({
       }
     });
     setDataSource(updateHub);
+  };
+
+  /**
+   * hub detail
+   */
+  const handleViewFormHubDetailOnClick = (record) => {
+    // setUsername(record.username);
+
+    formHubDetail.setFieldsValue({
+      hubName: record.hubName,
+      hubAddress: record.hubAddress,
+      hubCity: record.hubCity,
+      hubManagerId: record.managerResponse.id,
+      departmentName: record.departmentResponse.fullname,
+    });
+    setHubManagerName(record.hubManagerName);
+    setHubId(record.hubId);
+    setHubName(record.hubName);
+    setIsAddDevice(false);
+    setIsFormHubDetail(true);
+  };
+
+  const handleEditFormDetailSubmit = async (formValues) => {
+    setFormLoading(true);
+    await axiosPrivate
+      .put(`/api/leader/hub/${hubId}`, {
+        staffManagerId: formValues.hubManagerId,
+        hubName: formValues.hubName,
+        hubAddress: formValues.hubAddress,
+        hubCity: formValues.hubCity,
+      })
+      .then((res) => {
+        console.log(">>>>> update hub", res.data);
+        let result = res.data;
+        updateHubDataSource(result, hubId);
+        setFormLoading(false);
+
+        toast.success("Cập nhật thành công");
+      })
+      .catch((err) => {
+        console.log(">>>>> update hub error", err);
+        toast.error("Lỗi. Không thể cập nhật");
+        setFormLoading(false);
+      });
   };
 
   return localStorage.getItem("isLogin") ? (
@@ -420,13 +473,25 @@ const HubDetail = ({
                                         title="Thêm thiết bị cho phòng hub"
                                       />
 
-                                      <UserSwitchOutlined
-                                        className="buttonIconChangeManager"
-                                        onClick={() => {
-                                          handleViewModalSelectManager(record);
-                                        }}
-                                        title="Thay đổi quản lý phòng máy"
+                                      <EditOutlined
+                                        className="buttonIconEdit"
+                                        title="Chi tiết user"
+                                        onClick={() =>
+                                          handleViewFormHubDetailOnClick(record)
+                                        }
                                       />
+
+                                      {auth.roles[0] === "ROLE_BRANCH" && (
+                                        <UserSwitchOutlined
+                                          className="buttonIconChangeManager"
+                                          onClick={() => {
+                                            handleViewModalSelectManager(
+                                              record
+                                            );
+                                          }}
+                                          title="Thay đổi quản lý phòng máy"
+                                        />
+                                      )}
                                     </>
                                   ),
                                 },
@@ -830,6 +895,16 @@ const HubDetail = ({
                             </div>
                           </Form>
                         </Card>
+                      )}
+
+                      {isFormHubDetail && (
+                        <FormViewDetailHub
+                          formHubDetail={formHubDetail}
+                          hubName={hubName}
+                          managerList={listUserManager}
+                          hubManagerName={hubManagerName}
+                          handleSubmit={handleEditFormDetailSubmit}
+                        />
                       )}
                     </Col>
                   </Row>

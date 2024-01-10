@@ -63,7 +63,7 @@ function HeaderMenu({ isInLine = false }) {
       label: "Quản lý hub",
       key: "/manager/hub",
     },
-    {
+    auth.roles[0] === "ROLE_BRANCH" && {
       label: "Quản lý User",
       key: "/manager/user",
     },
@@ -96,9 +96,9 @@ function HeaderMenu({ isInLine = false }) {
       }}
       mode={isInLine ? "inline" : "horizontal"}
       items={
-        auth.roles[0] === "ROLE_MANAGER" || auth.roles[0] === "ROLE_DEPARTMENT"
-          ? menuManager
-          : auth.roles[0] === "ROLE_BRANCH"
+        auth.roles[0] === "ROLE_MANAGER" ||
+        auth.roles[0] === "ROLE_DEPARTMENT" ||
+        auth.roles[0] === "ROLE_BRANCH"
           ? menuLeader
           : menuUser
       }
