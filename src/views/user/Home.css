@@ -151,6 +151,13 @@ tr.red th {
   cursor: pointer;
 }
 
+.buttonIconChangeManager {
+  margin-left: 5px;
+  margin-right: 5px;
+  color: #0424ff;
+  font-size: 15px;
+}
+
 .borderItem {
   display: flex;
   flex-direction: column;

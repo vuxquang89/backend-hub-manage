@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SpanLoading from "../../components/loading/SpanLoading";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import {
   Card,
   Checkbox,
@@ -16,12 +17,14 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import {
   DeleteOutlined,
   EyeOutlined,
+  UserSwitchOutlined,
   PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import { AuthContext } from "../../context/AuthProvider";
 import { useContext } from "react";
+import ModalSwitchManager from "./ModalSwitchManager";
 
 const HubDetail = ({
   stompClient,
@@ -31,6 +34,8 @@ const HubDetail = ({
 }) => {
   const axiosPrivate = useAxiosPrivate();
   const { auth, setAuth } = useContext(AuthContext);
+  let navigate = useNavigate();
+  const location = useLocation();
   const [getData, setGetData] = useState(false);
   const [dataSource, setDataSource] = useState([]);
   const [hubId, setHubId] = useState("");
@@ -49,8 +54,16 @@ const HubDetail = ({
   const [checked, setChecked] = useState(true);
   const [disabled, setDisabled] = useState(false);
 
+  //-------------------switch manager ---------
+  const [formSwitchManager] = Form.useForm();
+  const [isOpenModalSwitchManager, setIsOpenModalSwitchManager] =
+    useState(false);
+  const [managerId, setManagerId] = useState("");
+  const [listUserManager, setListUserManager] = useState([]);
+
   useEffect(() => {
     localStorage.getItem("isLogin") && getHubByUsername();
+    getUserManager();
   }, []);
 
   useEffect(() => {
@@ -208,6 +221,97 @@ const HubDetail = ({
     // console.log(">>>>>>>set rơ class name", record);
   };
 
+  /**
+   * switch manager
+   */
+
+  /**
+   * get list manager
+   */
+  const getUserManager = async () => {
+    setFormLoading(true);
+    // methods.reset();
+    await axiosPrivate
+      .get(`/api/leader/users/manager`)
+      .then((res) => {
+        console.log(">>>>get list user manager", res.data);
+        setListUserManager(res.data);
+        setFormLoading(false);
+      })
+      .catch((err) => {
+        console.log("get list user manager error", err);
+        setFormLoading(false);
+        navigate("/login", { state: { from: location }, replace: true });
+      });
+  };
+
+  const handleViewModalSelectManager = (record) => {
+    setIsOpenModalSwitchManager(true);
+    setIsAddDevice(false);
+    setHubName(record.hubName);
+    setHubId(record.hubId);
+    setManagerId(record.managerResponse.id);
+  };
+
+  const handleCloseModalSwitchManager = () => {
+    setIsOpenModalSwitchManager(false);
+    setHubName("");
+    setHubId("");
+    setManagerId("");
+  };
+
+  const handleSubmitModalSwitchManager = async (formValues) => {
+    await axiosPrivate
+      .post("/api/leader/hub/switch/manager", {
+        hubId: hubId,
+        staffManagerId: formValues.managerId,
+      })
+      .then((res) => {
+        console.log(">>>>> switch hub to MANAGER", res.data);
+        let result = res.data;
+        if (result.status === 100) {
+          updateHubDataSource(result.hubResponse, hubId);
+          toast.success("Chuyển thành công");
+          // formSwitchBranch.resetFields();
+        } else {
+          toast.warning("Không thể chuyển");
+        }
+
+        setIsOpenModalSwitchManager(false);
+        setFormLoading(false);
+      })
+      .catch((err) => {
+        console.log(">>>>> add new hub error", err);
+        toast.error("Lỗi. Không thể chuyển");
+        setFormLoading(false);
+      });
+  };
+
+  /**
+   * update hub data
+   * @param {*} res
+   * @param {*} hubId
+   */
+  const updateHubDataSource = async (res, hubId) => {
+    // let dateMaintenance = res.dateMaintenance;
+
+    const updateHub = dataSource.map((hub) => {
+      if (hub.hubId === hubId) {
+        return {
+          ...hub,
+          hubManagerName: res.hubManagerName,
+          hubManagerPhone: res.hubManagerPhone,
+          hubCity: res.hubCity,
+          hubAddress: res.hubAddress,
+          hubName: res.hubName,
+        };
+      } else {
+        return hub;
+      }
+    });
+    setDataSource(updateHub);
+  };
+
   return localStorage.getItem("isLogin") ? (
     <>
       <div className="container">
@@ -314,6 +418,14 @@ const HubDetail = ({
                                           handleViewFormHubOnClick(record)
                                         }
                                         title="Thêm thiết bị cho phòng hub"
+                                      />
+
+                                      <UserSwitchOutlined
+                                        className="buttonIconChangeManager"
+                                        onClick={() => {
+                                          handleViewModalSelectManager(record);
+                                        }}
+                                        title="Thay đổi quản lý phòng máy"
                                       />
                                     </>
                                   ),
@@ -750,6 +862,15 @@ const HubDetail = ({
       handleSubmit={handleSwitchSubmit}
       title="Chuyển thiết bị đến Hub khác"
     /> */}
+      <ModalSwitchManager
+        form={formSwitchManager}
+        hubName={hubName}
+        open={isOpenModalSwitchManager}
+        managerId={managerId}
+        managerList={listUserManager}
+        handleCancelOnClick={handleCloseModalSwitchManager}
+        handleSubmit={handleSubmitModalSwitchManager}
+      />
       {formLoading && <SpanLoading />}
     </>
   ) : (
