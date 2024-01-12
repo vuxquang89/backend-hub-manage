@@ -475,7 +475,7 @@ const HubDetail = ({
 
                                       <EditOutlined
                                         className="buttonIconEdit"
-                                        title="Chi tiết user"
+                                        title="Chi tiết Hub"
                                         onClick={() =>
                                           handleViewFormHubDetailOnClick(record)
                                         }

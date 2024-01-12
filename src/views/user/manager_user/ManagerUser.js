@@ -504,7 +504,7 @@ const ManagerUser = ({
                                     </div>
                                     <div className="updateItem">
                                       <Form.Item
-                                        label="Số điện thoại"
+                                        label="SĐT"
                                         name="phone"
                                         rules={[
                                           {

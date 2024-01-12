@@ -69,11 +69,20 @@ function HeaderMenu({ isInLine = false }) {
     },
     {
       label: (
+        auth.roles[0] === "ROLE_BRANCH" ? 
         <a
+          href="https://drive.google.com/file/d/1UsAkN4aKSTw5-PrRYdjL8NNuVOtQOVTm/view?usp=sharing"
+          target="_blank"
+          rel="Hướng dẫn sử dụng web"
+        >
+           Hỗ trợ
+        </a>
+          : <a
           href="https://drive.google.com/file/d/1CzCAkGe9naJ3s7txfmKmQb5fUMNwsfiC/view?usp=sharing"
           target="_blank"
           rel="Hướng dẫn sử dụng web"
         >
+        
           Hỗ trợ
         </a>
       ),
