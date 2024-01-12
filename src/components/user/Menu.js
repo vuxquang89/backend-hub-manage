@@ -68,24 +68,24 @@ function HeaderMenu({ isInLine = false }) {
       key: "/manager/user",
     },
     {
-      label: (
-        auth.roles[0] === "ROLE_BRANCH" ? 
-        <a
-          href="https://drive.google.com/file/d/1UsAkN4aKSTw5-PrRYdjL8NNuVOtQOVTm/view?usp=sharing"
-          target="_blank"
-          rel="Hướng dẫn sử dụng web"
-        >
-           Hỗ trợ
-        </a>
-          : <a
-          href="https://drive.google.com/file/d/1CzCAkGe9naJ3s7txfmKmQb5fUMNwsfiC/view?usp=sharing"
-          target="_blank"
-          rel="Hướng dẫn sử dụng web"
-        >
-        
-          Hỗ trợ
-        </a>
-      ),
+      label:
+        auth.roles[0] === "ROLE_BRANCH" ? (
+          <a
+            href="https://drive.google.com/file/d/1oEf45T4fe6Z3UU6_MEjp9REAAoN7VWen/view?usp=sharing"
+            target="_blank"
+            rel="Hướng dẫn sử dụng web"
+          >
+            Hỗ trợ
+          </a>
+        ) : (
+          <a
+            href="https://drive.google.com/file/d/1CUFKRJDNUFhrJVZXHJ9pAsWKh0EDZ5bh/view?usp=sharing"
+            target="_blank"
+            rel="Hướng dẫn sử dụng web"
+          >
+            Hỗ trợ
+          </a>
+        ),
       key: "support",
     },
   ];

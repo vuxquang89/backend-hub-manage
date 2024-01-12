@@ -51,7 +51,7 @@ function SideMenu() {
     ]),
     getItem(
       <a
-        href="https://drive.google.com/file/d/18bILxQI9cmtO7fk-5NPJYP5sikpfZO87/view"
+        href="https://drive.google.com/file/d/1dVsI8ygEeqQVPTijRHYovFsde_XayPOA/view?usp=sharing"
         target="_blank"
         rel="Hướng dẫn sử dụng"
       >
