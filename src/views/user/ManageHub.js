@@ -720,7 +720,8 @@ const ManageHub = ({
                       >
                         <EditOutlined className="buttonIconEdit" />
                       </Link>
-                      {auth.roles[0] === "ROLE_DEPARTMENT" && (
+                      {(auth.roles[0] === "ROLE_DEPARTMENT" ||
+                        auth.roles[0] === "ROLE_BRANCH") && (
                         <Popconfirm
                           title="Alarm"
                           description="Bạn có chắc muốn xóa?"
