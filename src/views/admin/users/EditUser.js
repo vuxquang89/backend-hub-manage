@@ -85,7 +85,7 @@ function EditUser() {
           setActivate(response.status);
           setBranchId(response.branchId);
           setBranchName(response.branchName);
-
+          /*
           setItemBranchUser([
             {
               ...itemBranchUser,
@@ -93,7 +93,7 @@ function EditUser() {
               value: response.branchName,
             },
           ]);
-
+          */
           setStatus(true);
         } else {
           console.log(">>>> khong tim thay ", id);
