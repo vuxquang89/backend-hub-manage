@@ -935,7 +935,7 @@ const DetailDevice = ({
     formData.append("maintenanceTime", dayMaintenance.toLocaleDateString());
 
     formData.append("maintenanceNote", refMaintenanceNote.current.value);
-
+    console.log(">>>>>>>>form data date", dayMaintenance.toLocaleDateString());
     await axiosPrivate
       .post("/api/hub/device/maintenancehistory", formData, {
         headers: {
@@ -1564,7 +1564,8 @@ const DetailDevice = ({
                         console.log(">>>>>date", date.toLocaleDateString());
                         setDayMaintenance(date);
                       }}
-                      minDate={moment().toDate()}
+                      //minDate={moment().toDate()}
+                      maxDate={moment().toDate()}
                     />
 
                     {/* <input
