@@ -44,9 +44,15 @@ const Home = () => {
     let role = auth?.roles;
 
     let api = "/api/user/hub/detail";
-    if (role[0] !== "ROLE_USER") {
+    /*
+    if (
+      role[0] !== "ROLE_USER" &&
+      role[0] !== "ROLE_EDITOR" &&
+      role[0] !== "ROLE_DEPARTMENT_1"
+    ) {
       api = "/api/hub/manager/detail";
     }
+    */
     setFormLoading(true);
     await axiosPrivate
       // .get("/api/user/hub/detail")
@@ -93,9 +99,16 @@ const Home = () => {
     let role = auth?.roles;
 
     let api = "/api/hub/detail/search/";
-    if (role[0] !== "ROLE_USER" || role[0] !== "ROLE_ADMIN") {
+    /*
+    if (
+      role[0] !== "ROLE_USER" &&
+      role[0] !== "ROLE_ADMIN" &&
+      role[0] !== "ROLE_EDITOR" &&
+      role[0] !== "ROLE_DEPARTMENT_1"
+    ) {
       api = "/api/hub/manager/detail/search/";
     }
+    */
     setFormLoading(true);
     await axiosPrivate
       // .get("/api/hub/detail/search/" + value)

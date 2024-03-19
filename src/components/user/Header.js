@@ -110,7 +110,9 @@ const UserHeader = ({ countAlarm }) => {
         <div className="notiRight">
           {auth.roles[0] === "ROLE_MANAGER" ||
           auth.roles[0] === "ROLE_BRANCH" ||
-          auth.roles[0] === "ROLE_DEPARTMENT" ? (
+          auth.roles[0] === "ROLE_DEPARTMENT" ||
+          auth.roles[0] === "ROLE_DEPARTMENT_1" ||
+          auth.roles[0] === "ROLE_EDITOR" ? (
             <>
               <Badge
                 count={countAlarm}
@@ -189,7 +191,9 @@ const UserHeader = ({ countAlarm }) => {
         <HeaderMenu isInLine />
         {auth.roles[0] === "ROLE_MANAGER" ||
         auth.roles[0] === "ROLE_BRANCH" ||
-        auth.roles[0] === "ROLE_DEPARTMENT" ? (
+        auth.roles[0] === "ROLE_DEPARTMENT" ||
+        auth.roles[0] === "ROLE_DEPARTMENT_1" ||
+        auth.roles[0] === "ROLE_EDITOR" ? (
           <>
             <Badge
               count={countAlarm}

@@ -1677,7 +1677,9 @@ const DetailDevice = ({
                                 />
 
                                 {img.service === "server" ? (
-                                  auth.roles[0] === "ROLE_DEPARTMENT" ? (
+                                  auth.roles[0] === "ROLE_DEPARTMENT" ||
+                                  auth.roles[0] === "ROLE_DEPARTMENT_1" ||
+                                  auth.roles[0] === "ROLE_EDITOR" ? (
                                     <button
                                       type="button"
                                       className="img-delete"
@@ -1753,7 +1755,8 @@ const DetailDevice = ({
                                 /> */}
 
                                 {img.service === "server" ? (
-                                  auth.roles[0] === "ROLE_DEPARTMENT" ? (
+                                  auth.roles[0] === "ROLE_DEPARTMENT" ||
+                                  auth.roles[0] === "ROLE_EDITOR" ? (
                                     <button
                                       type="button"
                                       className="img-delete"
@@ -1811,7 +1814,9 @@ const DetailDevice = ({
                         handleEditOnClick(record);
                       }}
                     />
-                    {auth.roles[0] === "ROLE_DEPARTMENT" && (
+                    {(auth.roles[0] === "ROLE_DEPARTMENT" ||
+                      auth.roles[0] === "ROLE_DEPARTMENT_1" ||
+                      auth.roles[0] === "ROLE_EDITOR") && (
                       <Popconfirm
                         title="Alarm"
                         description="Bạn có chắc muốn xóa?"

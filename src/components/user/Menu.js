@@ -107,7 +107,9 @@ function HeaderMenu({ isInLine = false }) {
       items={
         auth.roles[0] === "ROLE_MANAGER" ||
         auth.roles[0] === "ROLE_DEPARTMENT" ||
-        auth.roles[0] === "ROLE_BRANCH"
+        auth.roles[0] === "ROLE_DEPARTMENT_1" ||
+        auth.roles[0] === "ROLE_BRANCH" ||
+        auth.roles[0] === "ROLE_EDITOR"
           ? menuLeader
           : menuUser
       }

@@ -247,6 +247,7 @@ function EditUserDepartment() {
                       >
                         <option value="4">Department</option>
                         <option value="5">User</option>
+                        <option value="6">Editor</option>
                       </select>
                     </div>
                     <div className="userUpdateItem">

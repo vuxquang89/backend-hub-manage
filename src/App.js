@@ -46,7 +46,9 @@ const ROLES = {
   Manager: "ROLE_MANAGER",
   Branch: "ROLE_BRANCH",
   Department: "ROLE_DEPARTMENT",
+  Department_1: "ROLE_DEPARTMENT_1",
   Admin: "ROLE_ADMIN",
+  Editor: "ROLE_EDITOR",
 };
 
 const App = () => {
@@ -150,9 +152,11 @@ const App = () => {
             allowedRoles={[
               ROLES.User,
               ROLES.Admin,
+              ROLES.Editor,
               ROLES.Manager,
               ROLES.Branch,
               ROLES.Department,
+              ROLES.Department_1,
             ]}
           />
         }
@@ -170,9 +174,11 @@ const App = () => {
                 allowedRoles={[
                   ROLES.User,
                   ROLES.Admin,
+                  ROLES.Editor,
                   ROLES.Manager,
                   ROLES.Branch,
                   ROLES.Department,
+                  ROLES.Department_1,
                 ]}
               />
             }
@@ -183,7 +189,13 @@ const App = () => {
           <Route
             element={
               <RequireAuth
-                allowedRoles={[ROLES.Manager, ROLES.Branch, ROLES.Department]}
+                allowedRoles={[
+                  ROLES.Manager,
+                  ROLES.Branch,
+                  ROLES.Department,
+                  ROLES.Department_1,
+                  ROLES.Editor,
+                ]}
               />
             }
           >
@@ -280,8 +292,10 @@ const App = () => {
                 allowedRoles={[
                   ROLES.Manager,
                   ROLES.Admin,
+                  ROLES.Editor,
                   ROLES.Branch,
                   ROLES.Department,
+                  ROLES.Department_1,
                   ROLES.User,
                 ]}
               />

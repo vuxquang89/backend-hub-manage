@@ -164,7 +164,10 @@ const FormViewDetailHub = ({
         </Row>
 
         <div className="bottomForm text-align-center">
-          {auth.roles[0] === "ROLE_BRANCH" && (
+          {(auth.roles[0] === "ROLE_BRANCH" ||
+            auth.roles[0] === "ROLE_EDITOR" ||
+            auth.roles[0] === "ROLE_DEPARTMENT" ||
+            auth.roles[0] === "ROLE_DEPARTMENT_1") && (
             <button className="userUpdateButton">Cập nhật</button>
           )}
         </div>
