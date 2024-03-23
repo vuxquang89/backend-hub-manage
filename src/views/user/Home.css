@@ -108,7 +108,7 @@ tr.red th {
 }
 
 .b-B-UPS {
-  background-color: #dbdbdb;
+  background-color: #dcd4d4;
 }
 
 .b-MPD {
@@ -121,6 +121,14 @@ tr.red th {
 
 .b-ML {
   background-color: #c6e0b4;
+}
+
+.b-CLS {
+  background-color: #c4bbe1;
+}
+
+.b-Gray {
+  background-color: #c9c9c9;
 }
 
 .deviceTitle {
