@@ -542,12 +542,14 @@ const ManageHub = ({
               <th style={{ width: "3%" }}>Số chuỗi Battery hiện tại</th>
               <th style={{ width: "5%" }}>Model (dung lượng AH)</th>
               <th style={{ width: "5%" }}>Ngày sản xuất</th>
-              <th style={{ width: "5%" }}>Dây dẫn</th>
-              <th style={{ width: "4%" }}>CB nguồn</th>
-              <th style={{ width: "5%" }}>Cắt lọc sét</th>
-              <th style={{ width: "5%" }}>Năm lắp đặt HTĐ</th>
-              <th style={{ width: "7%" }}>Số lượng</th>
-              <th style={{ width: "5%" }}>Hiện trạng</th>
+              <th style={{ width: "4%" }}>Dây dẫn (mm2)</th>
+              <th style={{ width: "4%" }}>CB nguồn (A)</th>
+              <th style={{ width: "3%" }}>Dòng tải mỗi pha (A)</th>
+              <th style={{ width: "6%" }}>Mắc nối tiếp/ song song</th>
+              <th style={{ width: "4%" }}>Điện trở đất</th>
+              <th style={{ width: "5%" }}>Năm lắp đặt</th>
+
+              <th style={{ width: "6%" }}>Hiện trạng</th>
               <th style={{ width: "6%" }}>Ngày bảo dưỡng, bảo trì gần nhất</th>
               <th style={{ width: "7%" }}>Action</th>
             </tr>
@@ -558,7 +560,7 @@ const ManageHub = ({
                 <>
                   {cellTableTitle[index] > 0 && (
                     <tr>
-                      <th className="deviceTitle" colSpan={21}>
+                      <th className="deviceTitle" colSpan={22}>
                         {el.branchName} ( {el.deputyTechnicalDirector}{" "}
                         {el.phoneDeputyTechnicalDirector})
                       </th>
@@ -595,7 +597,11 @@ const ManageHub = ({
 
                     <td
                       className={`b-${
-                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                        el.alarmMaintenanceStatus === 1
+                          ? 1
+                          : el.trademark === null
+                          ? "Gray"
+                          : el.backgroundColor
                       }`}
                       // style={{
                       //   background:
@@ -604,11 +610,15 @@ const ManageHub = ({
                       //       : "red",
                       // }}
                     >
-                      {el.trademark}
+                      {el.trademark === "null" ? "" : el.trademark}
                     </td>
                     <td
                       className={`b-${
-                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                        el.alarmMaintenanceStatus === 1
+                          ? 1
+                          : el.ratedPower === null
+                          ? "Gray"
+                          : el.backgroundColor
                       }`}
                       // style={{
                       //   background:
@@ -617,84 +627,146 @@ const ManageHub = ({
                       //       : "red",
                       // }}
                     >
-                      {el.ratedPower}
+                      {el.ratedPower === "null" ? "" : el.ratedPower}
                     </td>
                     <td
                       className={`b-${
-                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                        el.alarmMaintenanceStatus === 1
+                          ? 1
+                          : el.loadDuringPowerOutage === null
+                          ? "Gray"
+                          : el.backgroundColor
                       }`}
                     >
-                      {el.loadDuringPowerOutage}
+                      {el.loadDuringPowerOutage === "null"
+                        ? ""
+                        : el.loadDuringPowerOutage}
                     </td>
                     <td
                       className={`b-${
-                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                        el.alarmMaintenanceStatus === 1
+                          ? 1
+                          : el.batteryQuantity === null
+                          ? "Gray"
+                          : el.backgroundColor
                       }`}
                     >
-                      {el.batteryQuantity}
+                      {el.batteryQuantity === "null" ? "" : el.batteryQuantity}
                     </td>
                     <td
                       className={`b-${
-                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                        el.alarmMaintenanceStatus === 1
+                          ? 1
+                          : el.batteryNumber === null
+                          ? "Gray"
+                          : el.backgroundColor
                       }`}
                     >
-                      {el.batteryNumber}
+                      {el.batteryNumber === "null" ? "" : el.batteryNumber}
                     </td>
                     <td
                       className={`b-${
-                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                        el.alarmMaintenanceStatus === 1
+                          ? 1
+                          : el.batteryCapacity === null
+                          ? "Gray"
+                          : el.backgroundColor
                       }`}
                     >
-                      {el.batteryCapacity}
+                      {el.batteryCapacity === "null" ? "" : el.batteryCapacity}
                     </td>
                     <td
                       className={`b-${
-                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                        el.alarmMaintenanceStatus === 1
+                          ? 1
+                          : el.productionTime === null
+                          ? "Gray"
+                          : el.backgroundColor
                       }`}
                     >
-                      {el.productionTime}
+                      {el.productionTime === "null" ? "" : el.productionTime}
                     </td>
                     <td
                       className={`b-${
-                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                        el.alarmMaintenanceStatus === 1
+                          ? 1
+                          : el.conductorType === null
+                          ? "Gray"
+                          : el.backgroundColor
                       }`}
                     >
-                      {el.conductorType}
+                      {el.conductorType === "null" ? "" : el.conductorType}
                     </td>
                     <td
                       className={`b-${
-                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                        el.alarmMaintenanceStatus === 1
+                          ? 1
+                          : el.cbPower === null
+                          ? "Gray"
+                          : el.backgroundColor
                       }`}
                     >
-                      {el.cbPower}
+                      {el.cbPower === "null" ? "" : el.cbPower}
                     </td>
                     <td
                       className={`b-${
-                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                        el.alarmMaintenanceStatus === 1
+                          ? 1
+                          : el.loadCurrentPerPhase === null
+                          ? "Gray"
+                          : el.backgroundColor
                       }`}
                     >
-                      {el.schneider}
+                      {el.loadCurrentPerPhase === "null"
+                        ? ""
+                        : el.loadCurrentPerPhase}
                     </td>
                     <td
                       className={`b-${
-                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                        el.alarmMaintenanceStatus === 1
+                          ? 1
+                          : el.seriesOrParallel === null
+                          ? "Gray"
+                          : el.backgroundColor
                       }`}
                     >
-                      {el.yearInstall}
+                      {el.seriesOrParallel === "null"
+                        ? ""
+                        : el.seriesOrParallel}
                     </td>
                     <td
                       className={`b-${
-                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                        el.alarmMaintenanceStatus === 1
+                          ? 1
+                          : el.resistor === null
+                          ? "Gray"
+                          : el.backgroundColor
                       }`}
                     >
-                      {el.number}
+                      {el.resistor === "null" ? "" : el.resistor}
                     </td>
                     <td
                       className={`b-${
-                        el.alarmMaintenanceStatus === 1 ? 1 : el.backgroundColor
+                        el.alarmMaintenanceStatus === 1
+                          ? 1
+                          : el.yearInstall === null
+                          ? "Gray"
+                          : el.backgroundColor
                       }`}
                     >
-                      {el.currentStatus}
+                      {el.yearInstall === "null" ? "" : el.yearInstall}
+                    </td>
+
+                    <td
+                      className={`b-${
+                        el.alarmMaintenanceStatus === 1
+                          ? 1
+                          : el.currentStatus === null
+                          ? "Gray"
+                          : el.backgroundColor
+                      }`}
+                    >
+                      {el.currentStatus === "null" ? "" : el.currentStatus}
                     </td>
                     <td
                       className={`b-${

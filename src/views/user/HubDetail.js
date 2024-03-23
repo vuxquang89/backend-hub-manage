@@ -68,6 +68,25 @@ const HubDetail = ({
   const [isFormHubDetail, setIsFormHubDetail] = useState(false);
   const [formHubDetail] = Form.useForm();
 
+  //-------------------form value--------------
+  const [trademark, setTrademark] = useState("null"); //thuong hieu
+  const [ratedPower, setRatePower] = useState(0); //cong suat dinh muc
+  const [loadDuringPowerOutage, setLoadDuringPowerOutage] = useState(0); //tai khi mat dien
+  const [batteryQuantity, setBatteryQuantity] = useState(0); //binh / chuoi hien tai
+  const [batteryNumber, setBatteryNumber] = useState(0); //so chuoi battery hien tai
+  const [batteryCapacity, setBatteryCapacity] = useState(0); //model (dung luong AH)
+  const [productionTime, setProductionTime] = useState("null"); //thoi gian san xuat
+  const [conductorType, setConductorType] = useState("null"); //day dan
+  const [cbPower, setCBPower] = useState("null");
+  //const [schneider, setSchneider] = useState("");
+  const [loadCurrentPerPhase, setLoadCurrentPerPhase] = useState(0); //dong tai moi pha
+  const [resistor, setResistor] = useState(0); //dien tro
+  const [seriesOrParallel, setSeriesOrParallel] = useState("null"); //mac noi tiep / song song
+  const [yearInstall, setYearInstall] = useState("null"); //nam lap dat he thong dien
+  const [currentStatus, setCurrentStatus] = useState("null"); //hien trang
+  //const [number, setNumber] = useState("");
+  const [dateMaintenance, setDateMaintenance] = useState(90); //so ngay bao duong dinh ky
+
   useEffect(() => {
     localStorage.getItem("isLogin") && getHubByUsername();
     auth.roles[0] === "ROLE_BRANCH" && getUserManager();
@@ -93,7 +112,7 @@ const HubDetail = ({
 
   const handleCheckBoxOnChange = (e) => {
     console.log("checked = ", e.target.checked);
-    form.resetFields();
+    //form.resetFields();
     setChecked(e.target.checked);
   };
 
@@ -149,7 +168,137 @@ const HubDetail = ({
       label: "Máy lạnh",
       value: "5",
     },
+    {
+      label: "Cắt lọc sét",
+      value: "6",
+    },
   ];
+
+  //set default value
+  function setDefaultValue(deviceId) {
+    switch (deviceId) {
+      case "1":
+        setTrademark("null"); //thuong hieu
+        setRatePower(0);
+
+        setLoadDuringPowerOutage(0); //tai khi mat dien
+        setBatteryQuantity(0); //binh / chuoi hien tai
+        setBatteryNumber(0); //so chuoi battery hien tai
+        setBatteryCapacity(); //model (dung luong AH)
+        setProductionTime("null"); //thoi gian san xuat
+        setConductorType("null"); //day dan
+
+        setCBPower("null");
+
+        setLoadCurrentPerPhase(); //dong tai moi pha
+        setResistor(); //dien tro
+        setSeriesOrParallel(); //mac noi tiep/song song
+        setYearInstall("null"); //nam lap dat he thong dien
+        setCurrentStatus("null"); //hien trang
+        setDateMaintenance(365); //so ngay bao duong dinh ky
+        break;
+      case "2":
+        setTrademark("null"); //thuong hieu
+        setRatePower();
+
+        setLoadDuringPowerOutage(); //tai khi mat dien
+        setBatteryQuantity(); //binh / chuoi hien tai
+        setBatteryNumber(); //so chuoi battery hien tai
+        setBatteryCapacity(0); //model (dung luong AH)
+        setProductionTime("null"); //thoi gian san xuat
+        setConductorType("null"); //day dan
+
+        setCBPower("null");
+
+        setLoadCurrentPerPhase(); //dong tai moi pha
+        setResistor(); //dien tro
+        setSeriesOrParallel(); //mac noi tiep/song song
+        setYearInstall("null"); //nam lap dat he thong dien
+        setCurrentStatus("null"); //hien trang
+        setDateMaintenance(365);
+        break;
+      case "3":
+        setTrademark("null");
+        setRatePower(0);
+
+        setLoadDuringPowerOutage(0); //tai khi mat dien
+        setBatteryQuantity(0); //binh / chuoi hien tai
+        setBatteryNumber(); //so chuoi battery hien tai
+        setBatteryCapacity(0); //model (dung luong AH)
+        setProductionTime("null"); //thoi gian san xuat
+        setConductorType("null"); //day dan
+
+        setCBPower("null");
+
+        setLoadCurrentPerPhase(0); //dong tai moi pha
+        setResistor(); //dien tro
+        setSeriesOrParallel(); //mac noi tiep/song song
+        setYearInstall("null");
+        setCurrentStatus("null");
+        setDateMaintenance(180);
+        break;
+      case "4":
+        setTrademark("null");
+        setRatePower(0);
+
+        setLoadDuringPowerOutage(); //tai khi mat dien
+        setBatteryQuantity(); //binh / chuoi hien tai
+        setBatteryNumber(); //so chuoi battery hien tai
+        setBatteryCapacity(); //model (dung luong AH)
+        setProductionTime("null"); //thoi gian san xuat
+        setConductorType("null"); //day dan
+
+        setCBPower("null");
+
+        setLoadCurrentPerPhase(); //dong tai moi pha
+        setResistor(); //dien tro
+        setSeriesOrParallel(); //mac noi tiep/song song
+        setYearInstall("null");
+        setCurrentStatus("null");
+        setDateMaintenance(90);
+        break;
+      case "5":
+        setTrademark("null");
+        setRatePower(0);
+
+        setLoadDuringPowerOutage(); //tai khi mat dien
+        setBatteryQuantity(); //binh / chuoi hien tai
+        setBatteryNumber(); //so chuoi battery hien tai
+        setBatteryCapacity(); //model (dung luong AH)
+        setProductionTime("null"); //thoi gian san xuat
+        setConductorType("null"); //day dan
+
+        setCBPower("null");
+
+        setLoadCurrentPerPhase(0); //dong tai moi pha
+        setResistor(); //dien tro
+        setSeriesOrParallel(); //mac noi tiep/song song
+        setYearInstall("null");
+        setCurrentStatus("null");
+        setDateMaintenance(90);
+        break;
+      default:
+        setTrademark("null");
+        setRatePower(0);
+
+        setLoadDuringPowerOutage(); //tai khi mat dien
+        setBatteryQuantity(); //binh / chuoi hien tai
+        setBatteryNumber(); //so chuoi battery hien tai
+        setBatteryCapacity(); //model (dung luong AH)
+        setProductionTime("null"); //thoi gian san xuat
+        setConductorType("null"); //day dan
+
+        setCBPower("null");
+
+        setLoadCurrentPerPhase(0); //dong tai moi pha
+        setResistor(0); //dien tro
+        setSeriesOrParallel("null"); //mac noi tiep/song song
+        setYearInstall("null");
+        setCurrentStatus("null");
+        setDateMaintenance(90);
+        break;
+    }
+  }
 
   const getHubByUsername = async () => {
     setIsLoading(true);
@@ -185,20 +334,23 @@ const HubDetail = ({
       .post("/api/hub/detail", {
         deviceId: deviceId,
         hubId: hubId,
-        trademark: record.trademark,
-        ratedPower: record.ratedPower,
-        loadDuringPowerOutage: record.loadDuringPowerOutage,
-        batteryQuantity: record.batteryQuantity,
-        batteryNumber: record.batteryNumber,
-        batteryCapacity: record.batteryCapacity,
-        productionTime: record.productionTime,
-        conductorType: record.conductorType,
-        cbPower: record.cbPower,
-        schneider: record.schneider,
-        yearInstall: record.yearInstall,
-        currentStatus: record.currentStatus,
-        number: record.number,
-        dateMaintenance: record.dateMaintenance,
+        //trademark: record.trademark,
+        trademark: trademark,
+        ratedPower: ratedPower,
+        loadDuringPowerOutage: loadDuringPowerOutage,
+        batteryQuantity: batteryQuantity,
+        batteryNumber: batteryNumber,
+        batteryCapacity: batteryCapacity,
+        productionTime: productionTime,
+        conductorType: conductorType,
+        cbPower: cbPower,
+        resistor: resistor, //
+        loadCurrentPerPhase: loadCurrentPerPhase, //
+        seriesOrParallel: seriesOrParallel, //
+        yearInstall: yearInstall,
+        currentStatus: currentStatus,
+
+        dateMaintenance: dateMaintenance,
         orderMaintenance: checked,
       })
       .then((res) => {
@@ -581,28 +733,115 @@ const HubDetail = ({
                                                 deviceId: e,
                                               });
                                             }
-                                            if (e === "1" || e === "2") {
+
+                                            if (
+                                              e === "1" ||
+                                              e === "2" ||
+                                              e === "3" ||
+                                              e === "5"
+                                            ) {
                                               setDisabled(true);
                                               setChecked(true);
                                             } else {
                                               setDisabled(false);
                                             }
+
                                             setDeviceId(value.value);
+                                            setDefaultValue(value.value);
                                           }}
                                           options={listItemDevice}
                                         />
                                       </Form.Item>
                                     </div>
-                                    <div className="updateItem">
-                                      <label>Thương hiệu</label>
-                                      <Form.Item name="trademark">
-                                        <Input />
-                                      </Form.Item>
-                                    </div>
-                                    <div className="updateItem">
-                                      <label>
-                                        CS định mức (KVA){" "}
-                                        <span
+
+                                    {deviceId !== "4" ? (
+                                      <div className="updateItem">
+                                        <label>
+                                          Thương hiệu
+                                          <span className="tick">*</span>
+                                        </label>
+                                        <Form.Item
+                                          name="trademark"
+                                          rules={
+                                            //(deviceId === "1" ||
+                                            //deviceId === "3") &&
+
+                                            (trademark === null ||
+                                              trademark.length < 1) && [
+                                              {
+                                                required: true,
+                                                message: "Không được để trống",
+                                              },
+                                            ]
+                                          }
+                                        >
+                                          <Input
+                                            defaultValue={trademark}
+                                            onChange={(e) => {
+                                              setTrademark(e.target.value);
+                                            }}
+                                          />
+                                        </Form.Item>
+                                      </div>
+                                    ) : null}
+                                    {deviceId !== "2" ? (
+                                      <div className="updateItem">
+                                        <label>
+                                          CS định mức (KVA){" "}
+                                          <span
+                                            /*
+                                          hidden={
+                                            (deviceId === "1" ||
+                                              deviceId === "3") &&
+                                            checked
+                                              ? false
+                                              : true
+                                          }*/
+                                            className="tick"
+                                          >
+                                            *
+                                          </span>
+                                        </label>
+                                        <Form.Item
+                                          name="ratedPower"
+                                          rules={[
+                                            (ratedPower === null ||
+                                              ratedPower.length < 1) && {
+                                              required: true,
+                                              message: "Không được để trống",
+                                            },
+                                            {
+                                              pattern: new RegExp(
+                                                /^([1-9][0-9]*|0)$/
+                                              ),
+                                              message:
+                                                "Chỉ được nhập số nguyên dương",
+                                            },
+                                          ]}
+                                        >
+                                          <Input
+                                            type="number"
+                                            defaultValue={ratedPower}
+                                            onChange={(e) => {
+                                              setRatePower(e.target.value);
+                                            }}
+                                            /*
+                                          disabled={
+                                            deviceId === "1" || deviceId === "3"
+                                              ? false
+                                              : true
+                                          }
+                                          */
+                                          />
+                                        </Form.Item>
+                                      </div>
+                                    ) : null}
+                                    {deviceId === "1" || deviceId === "3" ? (
+                                      <div className="updateItem">
+                                        <label>
+                                          %Tải khi mất điện{" "}
+                                          <span
+                                            /*
                                           hidden={
                                             (deviceId === "1" ||
                                               deviceId === "3") &&
@@ -610,186 +849,398 @@ const HubDetail = ({
                                               ? false
                                               : true
                                           }
-                                          className="tick"
-                                        >
-                                          *
-                                        </span>
-                                      </label>
-                                      <Form.Item
-                                        name="ratedPower"
-                                        rules={
-                                          (deviceId === "1" ||
-                                            deviceId === "3") &&
-                                          checked && [
-                                            {
+                                          */
+                                            className="tick"
+                                          >
+                                            *
+                                          </span>
+                                        </label>
+                                        <Form.Item
+                                          name="loadDuringPowerOutage"
+                                          rules={[
+                                            (loadDuringPowerOutage === null ||
+                                              loadDuringPowerOutage.length <
+                                                1) && {
                                               required: true,
                                               message: "Không được để trống",
                                             },
-                                          ]
-                                        }
-                                      >
-                                        <Input
+                                            {
+                                              pattern: new RegExp(
+                                                /^([1-9][0-9]*|0)$/
+                                              ),
+                                              message:
+                                                "Chỉ được nhập số nguyên dương",
+                                            },
+                                          ]}
+                                        >
+                                          <Input
+                                            defaultValue={loadDuringPowerOutage}
+                                            type="number"
+                                            onChange={(e) => {
+                                              setLoadDuringPowerOutage(
+                                                e.target.value
+                                              );
+                                            }}
+                                            /*
                                           disabled={
                                             deviceId === "1" || deviceId === "3"
                                               ? false
                                               : true
                                           }
-                                        />
-                                      </Form.Item>
-                                    </div>
-                                    <div className="updateItem">
-                                      <label>
-                                        %Tải khi mất điện{" "}
-                                        <span
-                                          hidden={
-                                            (deviceId === "1" ||
-                                              deviceId === "3") &&
-                                            checked
-                                              ? false
-                                              : true
-                                          }
-                                          className="tick"
-                                        >
-                                          *
-                                        </span>
-                                      </label>
-                                      <Form.Item
-                                        name="loadDuringPowerOutage"
-                                        rules={
-                                          (deviceId === "1" ||
-                                            deviceId === "3") &&
-                                          checked && [
-                                            {
-                                              required: true,
-                                              message: "Không được để trống",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        <Input
-                                          disabled={
-                                            deviceId === "1" || deviceId === "3"
-                                              ? false
-                                              : true
-                                          }
-                                        />
-                                      </Form.Item>
-                                    </div>
-                                    <div className="updateItem">
-                                      <label>
-                                        Số bình/ Chuỗi hiện tại{" "}
-                                        <span
+                                          */
+                                          />
+                                        </Form.Item>
+                                      </div>
+                                    ) : null}
+                                    {deviceId === "1" || deviceId === "3" ? (
+                                      <div className="updateItem">
+                                        <label>
+                                          Số bình/ Chuỗi hiện tại{" "}
+                                          <span
+                                            /*
                                           hidden={
                                             deviceId === "1" && checked
                                               ? false
                                               : true
                                           }
-                                          className="tick"
-                                        >
-                                          *
-                                        </span>
-                                      </label>
-                                      <Form.Item
-                                        name="batteryQuantity"
-                                        rules={
-                                          deviceId === "1" &&
-                                          checked && [
-                                            {
+                                          */
+                                            className="tick"
+                                          >
+                                            *
+                                          </span>
+                                        </label>
+                                        <Form.Item
+                                          name="batteryQuantity"
+                                          rules={[
+                                            (batteryQuantity === null ||
+                                              batteryQuantity.length < 1) && {
                                               required: true,
                                               message: "Không được để trống",
                                             },
-                                          ]
-                                        }
-                                      >
-                                        <Input
+                                            {
+                                              pattern: new RegExp(
+                                                /^([1-9][0-9]*|0)$/
+                                              ),
+                                              message:
+                                                "Chỉ được nhập số nguyên dương",
+                                            },
+                                          ]}
+                                        >
+                                          <Input
+                                            type="number"
+                                            defaultValue={batteryQuantity}
+                                            onChange={(e) => {
+                                              setBatteryQuantity(
+                                                e.target.value
+                                              );
+                                            }}
+                                            /*
                                           disabled={
                                             deviceId === "1" ? false : true
                                           }
-                                        />
-                                      </Form.Item>
-                                    </div>
+                                          */
+                                          />
+                                        </Form.Item>
+                                      </div>
+                                    ) : null}
                                   </Col>
                                   <Col span={8} className="pe-50">
-                                    <div className="updateItem">
-                                      <label>
-                                        Số chuỗi Battery hiện tại{" "}
-                                        <span
+                                    {deviceId === "1" ? (
+                                      <div className="updateItem">
+                                        <label>
+                                          Số chuỗi Battery hiện tại{" "}
+                                          <span
+                                            /*
                                           hidden={
                                             deviceId === "1" && checked
                                               ? false
                                               : true
                                           }
-                                          className="tick"
-                                        >
-                                          *
-                                        </span>
-                                      </label>
-                                      <Form.Item
-                                        name="batteryNumber"
-                                        rules={
-                                          deviceId === "1" &&
-                                          checked && [
-                                            {
+                                          */
+                                            className="tick"
+                                          >
+                                            *
+                                          </span>
+                                        </label>
+                                        <Form.Item
+                                          name="batteryNumber"
+                                          rules={[
+                                            (batteryNumber === null ||
+                                              batteryNumber.length < 1) && {
                                               required: true,
                                               message: "Không được để trống",
                                             },
-                                          ]
-                                        }
-                                      >
-                                        <Input
+                                            {
+                                              pattern: new RegExp(
+                                                /^([1-9][0-9]*|0)$/
+                                              ),
+                                              message:
+                                                "Chỉ được nhập số nguyên dương",
+                                            },
+                                          ]}
+                                        >
+                                          <Input
+                                            type="number"
+                                            defaultValue={batteryNumber}
+                                            onChange={(e) => {
+                                              setBatteryNumber(e.target.value);
+                                            }}
+                                            /*
                                           disabled={
                                             deviceId === "1" ? false : true
                                           }
-                                        />
-                                      </Form.Item>
-                                    </div>
-                                    <div className="updateItem">
-                                      <label>
-                                        Model (dung lượng AH){" "}
-                                        <span
+                                          */
+                                          />
+                                        </Form.Item>
+                                      </div>
+                                    ) : null}
+
+                                    {deviceId === "6" ? (
+                                      <div className="updateItem">
+                                        <label>
+                                          Mắc nối tiếp/song song
+                                          <span className="tick">*</span>
+                                        </label>
+                                        <Form.Item
+                                          name="seriesOrParallel"
+                                          rules={[
+                                            (seriesOrParallel === null ||
+                                              seriesOrParallel.length < 1) && {
+                                              required: true,
+                                              message: "Không được để trống",
+                                            },
+                                          ]}
+                                        >
+                                          <Input
+                                            defaultValue={seriesOrParallel}
+                                            onChange={(e) => {
+                                              setSeriesOrParallel(
+                                                e.target.value
+                                              );
+                                            }}
+                                            //disabled={deviceId !== 4}
+                                          />
+                                        </Form.Item>
+                                      </div>
+                                    ) : null}
+
+                                    {deviceId === "6" ? (
+                                      <div className="updateItem">
+                                        <label>
+                                          Điện trở đất
+                                          <span className="tick">*</span>
+                                        </label>
+                                        <Form.Item
+                                          name="resistor"
+                                          rules={[
+                                            (resistor === null ||
+                                              resistor.length < 1) && {
+                                              required: true,
+                                              message: "Không được để trống",
+                                            },
+                                            {
+                                              pattern: new RegExp(
+                                                /^([1-9][0-9]*|0)$/
+                                              ),
+                                              message:
+                                                "Chỉ được nhập số nguyên dương",
+                                            },
+                                          ]}
+                                        >
+                                          <Input
+                                            type="number"
+                                            defaultValue={resistor}
+                                            onChange={(e) => {
+                                              setResistor(e.target.value);
+                                            }}
+                                            //disabled={deviceId !== 4}
+                                          />
+                                        </Form.Item>
+                                      </div>
+                                    ) : null}
+
+                                    {deviceId === "2" || deviceId === "3" ? (
+                                      <div className="updateItem">
+                                        <label>
+                                          Model (dung lượng AH){" "}
+                                          <span
+                                            /*
                                           hidden={
                                             (deviceId === "2") & checked
                                               ? false
                                               : true
                                           }
-                                          className="tick"
-                                        >
-                                          *
-                                        </span>
-                                      </label>
-                                      <Form.Item
-                                        name="batteryCapacity"
-                                        rules={
-                                          (deviceId === "2") & checked && [
-                                            {
+                                          */
+                                            className="tick"
+                                          >
+                                            *
+                                          </span>
+                                        </label>
+                                        <Form.Item
+                                          name="batteryCapacity"
+                                          rules={[
+                                            (batteryCapacity === null ||
+                                              batteryCapacity.length < 1) && {
                                               required: true,
                                               message: "Không được để trống",
                                             },
-                                          ]
-                                        }
-                                      >
-                                        <Input disabled={deviceId !== "2"} />
-                                      </Form.Item>
-                                    </div>
-                                    <div className="updateItem">
-                                      <label>
-                                        Ngày sản xuất{" "}
-                                        <span
+                                          ]}
+                                        >
+                                          <Input
+                                            defaultValue={batteryCapacity}
+                                            onChange={(e) => {
+                                              setBatteryCapacity(
+                                                e.target.value
+                                              );
+                                            }}
+                                            //disabled={deviceId !== "2"}
+                                          />
+                                        </Form.Item>
+                                      </div>
+                                    ) : null}
+
+                                    {deviceId !== "4" || deviceId !== "5" ? (
+                                      <div className="updateItem">
+                                        <label>
+                                          Ngày sản xuất{" "}
+                                          <span
+                                            /*
                                           hidden={
                                             deviceId === "2" && checked
                                               ? false
                                               : true
                                           }
-                                          className="tick"
+                                          */
+                                            className="tick"
+                                          >
+                                            *
+                                          </span>
+                                        </label>
+                                        <Form.Item
+                                          name="productionTime"
+                                          rules={
+                                            (productionTime === null ||
+                                              productionTime.length < 1) && [
+                                              {
+                                                required: true,
+                                                message: "Không được để trống",
+                                              },
+                                            ]
+                                          }
                                         >
-                                          *
-                                        </span>
+                                          <Input
+                                            defaultValue={productionTime}
+                                            onChange={(e) => {
+                                              setProductionTime(e.target.value);
+                                            }}
+                                            //disabled={deviceId !== "2"}
+                                          />
+                                        </Form.Item>
+                                      </div>
+                                    ) : null}
+
+                                    <div className="updateItem">
+                                      <label>
+                                        Dây dẫn (mm2)
+                                        <span className="tick">*</span>
                                       </label>
                                       <Form.Item
-                                        name="productionTime"
+                                        name="conductorType"
+                                        rules={[
+                                          (conductorType === null ||
+                                            conductorType.length < 1) && {
+                                            required: true,
+                                            message: "Không được để trống",
+                                          },
+                                        ]}
+                                      >
+                                        <Input
+                                          defaultValue={conductorType}
+                                          onChange={(e) => {
+                                            setConductorType(e.target.value);
+                                          }}
+                                          //disabled={deviceId !== "4"}
+                                        />
+                                      </Form.Item>
+                                    </div>
+
+                                    <div className="updateItem">
+                                      <label>
+                                        CB nguồn (A)
+                                        <span className="tick">*</span>
+                                      </label>
+                                      <Form.Item
+                                        name="cbPower"
+                                        rules={[
+                                          (cbPower === null ||
+                                            cbPower.length < 1) && {
+                                            required: true,
+                                            message: "Không được để trống",
+                                          },
+                                        ]}
+                                      >
+                                        <Input
+                                          defaultValue={cbPower}
+                                          onChange={(e) => {
+                                            setCBPower(e.target.value);
+                                          }}
+                                          //disabled={deviceId !== "4"}
+                                        />
+                                      </Form.Item>
+                                    </div>
+                                  </Col>
+
+                                  <Col span={8} className="pe-50">
+                                    {deviceId === "3" ||
+                                    deviceId === "5" ||
+                                    deviceId === "6" ? (
+                                      <div className="updateItem">
+                                        <label>
+                                          Dòng tải mỗi pha (A)
+                                          <span className="tick">*</span>
+                                        </label>
+                                        <Form.Item
+                                          name="loadCurrentPerPhase"
+                                          rules={[
+                                            (loadCurrentPerPhase === null ||
+                                              loadCurrentPerPhase.length <
+                                                1) && {
+                                              required: true,
+                                              message: "Không được để trống",
+                                            },
+                                            {
+                                              pattern: new RegExp(
+                                                /^([1-9][0-9]*|0)$/
+                                              ),
+                                              message:
+                                                "Chỉ được nhập số nguyên dương",
+                                            },
+                                          ]}
+                                        >
+                                          <Input
+                                            type="number"
+                                            defaultValue={loadCurrentPerPhase}
+                                            onChange={(e) => {
+                                              setLoadCurrentPerPhase(
+                                                e.target.value
+                                              );
+                                            }}
+                                            //disabled={deviceId !== 4}
+                                          />
+                                        </Form.Item>
+                                      </div>
+                                    ) : null}
+
+                                    <div className="updateItem">
+                                      <label>
+                                        Năm lắp đặt
+                                        <span className="tick">*</span>
+                                      </label>
+                                      <Form.Item
+                                        name="yearInstall"
                                         rules={
-                                          deviceId === "2" &&
-                                          checked && [
+                                          (yearInstall === null ||
+                                            yearInstall.length < 1) && [
                                             {
                                               required: true,
                                               message: "Không được để trống",
@@ -797,47 +1248,41 @@ const HubDetail = ({
                                           ]
                                         }
                                       >
-                                        <Input disabled={deviceId !== "2"} />
+                                        <Input
+                                          defaultValue={yearInstall}
+                                          onChange={(e) => {
+                                            setYearInstall(e.target.value);
+                                          }}
+                                          //disabled={deviceId !== "4"}
+                                        />
                                       </Form.Item>
                                     </div>
                                     <div className="updateItem">
-                                      <label>Dây dẫn</label>
-                                      <Form.Item name="conductorType">
-                                        <Input disabled={deviceId !== "4"} />
+                                      <label>
+                                        Hiện trạng
+                                        <span className="tick">*</span>
+                                      </label>
+                                      <Form.Item
+                                        name="currentStatus"
+                                        rules={
+                                          (currentStatus === null ||
+                                            currentStatus.length < 1) && [
+                                            {
+                                              required: true,
+                                              message: "Không được để trống",
+                                            },
+                                          ]
+                                        }
+                                      >
+                                        <TextArea
+                                          defaultValue={currentStatus}
+                                          onChange={(e) => {
+                                            setCurrentStatus(e.target.value);
+                                          }}
+                                        />
                                       </Form.Item>
                                     </div>
-                                    <div className="updateItem">
-                                      <label>CB nguồn</label>
-                                      <Form.Item name="cbPower">
-                                        <Input disabled={deviceId !== "4"} />
-                                      </Form.Item>
-                                    </div>
-                                  </Col>
-                                  <Col span={8} className="pe-50">
-                                    <div className="updateItem">
-                                      <label>Cắt lọc sét</label>
-                                      <Form.Item name="schneider">
-                                        <Input disabled={deviceId !== "4"} />
-                                      </Form.Item>
-                                    </div>
-                                    <div className="updateItem">
-                                      <label>Năm lắp đặt HTĐ</label>
-                                      <Form.Item name="yearInstall">
-                                        <Input disabled={deviceId !== "4"} />
-                                      </Form.Item>
-                                    </div>
-                                    <div className="updateItem">
-                                      <label>Hiện trạng</label>
-                                      <Form.Item name="currentStatus">
-                                        <Input />
-                                      </Form.Item>
-                                    </div>
-                                    <div className="updateItem">
-                                      <label>Số lượng</label>
-                                      <Form.Item name="number">
-                                        <TextArea disabled={deviceId !== "5"} />
-                                      </Form.Item>
-                                    </div>
+
                                     <div className="updateItem">
                                       <Form.Item name="orderMaintenance">
                                         <Checkbox
@@ -863,7 +1308,8 @@ const HubDetail = ({
                                         name="dateMaintenance"
                                         rules={
                                           checked && [
-                                            {
+                                            (dateMaintenance === null ||
+                                              dateMaintenance.length < 1) && {
                                               required: true,
                                               message: "Không được để trống",
                                             },
@@ -879,6 +1325,10 @@ const HubDetail = ({
                                       >
                                         <Input
                                           type="number"
+                                          defaultValue={dateMaintenance}
+                                          onChange={(e) => {
+                                            setDateMaintenance(e.target.value);
+                                          }}
                                           disabled={!checked}
                                         />
                                       </Form.Item>
